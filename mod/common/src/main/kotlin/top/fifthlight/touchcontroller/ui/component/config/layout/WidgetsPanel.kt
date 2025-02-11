@@ -92,6 +92,10 @@ private val DEFAULT_CONFIGS = persistentListOf(
         name = Texts.SCREEN_OPTIONS_WIDGET_SCREENSHOT_BUTTON_NAME,
         config = ScreenshotButton()
     ),
+    WidgetItem(
+        name = Texts.SCREEN_OPTIONS_WIDGET_FORWARD_BUTTON_NAME,
+        config = ForwardButton()
+    )
 )
 
 @Composable

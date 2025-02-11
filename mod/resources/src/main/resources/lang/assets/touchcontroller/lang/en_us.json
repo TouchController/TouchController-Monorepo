@@ -242,6 +242,12 @@
 
   "touchcontroller.screen.options.presets.title": "Presets",
 
+  "touchcontroller.screen.options.widget.forward_button.name": "Forward button",
+  "touchcontroller.screen.options.widget.forward_button.property.size": "Button size: %s%%",
+  "touchcontroller.screen.options.widget.forward_button.property.style": "Style",
+  "touchcontroller.screen.options.widget.forward_button.property.style.classic": "Classic",
+  "touchcontroller.screen.options.widget.forward_button.property.style.new": "New",
+
   "touchcontroller.screen.options.category.items.title": "Items",
 
   "touchcontroller.screen.options.category.items.usable_items.title": "Usable items by long pressing screen",
