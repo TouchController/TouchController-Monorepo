@@ -27,12 +27,12 @@ enum class ForwardButtonTexture {
 @Serializable
 @SerialName("forward_button")
 data class ForwardButton(
-    val size : Float = 2f,
+    val size: Float = 2f,
     val texture: ForwardButtonTexture = ForwardButtonTexture.CLASSIC,
     override val align: Align = Align.LEFT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f
-): ControllerWidget(){
+) : ControllerWidget() {
     companion object {
         private val textFactory: TextFactory by inject()
 
