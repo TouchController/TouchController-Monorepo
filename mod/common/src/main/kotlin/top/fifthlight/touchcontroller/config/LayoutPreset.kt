@@ -87,11 +87,16 @@ val defaultControllerLayout: ControllerLayout = controllerLayoutOf(
             LayerConditionKey.ON_MINECART to LayerConditionValue.REQUIRE,
         ),
         widgets = persistentListOf(
-            DPad(
+            ForwardButton(
                 align = Align.LEFT_BOTTOM,
-                offset = IntOffset(8, 8),
+                offset = IntOffset(64, 116),
                 opacity = 0.6f,
-                extraButton = DPadExtraButton.DISMOUNT_DOUBLE_CLICK,
+            ),
+            SneakButton(
+                align = Align.LEFT_BOTTOM,
+                offset = IntOffset(68, 68),
+                opacity = 0.6f,
+                trigger = SneakButtonTrigger.DOUBLE_CLICK_TRIGGER,
             ),
         )
     ),
