@@ -155,7 +155,11 @@ sourceSets.main {
     resources.srcDir("../common-fabric/src/main/resources")
     resources.srcDir("../resources/src/main/resources/lang")
     resources.srcDir("../resources/src/main/resources/icon")
-    resources.srcDir("../resources/src/main/resources/textures")
+    resources.srcDir(project(":mod:resources").layout.buildDirectory.dir("generated/resources/atlas"))
+}
+
+tasks.processResources {
+    dependsOn(":mod:resources:generateTextureAtlas")
 }
 
 val minecraftShadow = configurations.create("minecraftShadow") {

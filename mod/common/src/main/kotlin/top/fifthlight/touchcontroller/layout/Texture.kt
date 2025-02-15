@@ -2,15 +2,17 @@ package top.fifthlight.touchcontroller.layout
 
 import top.fifthlight.combine.data.Texture
 import top.fifthlight.combine.paint.Color
+import top.fifthlight.data.IntOffset
+import top.fifthlight.data.IntRect
 import top.fifthlight.data.Rect
 
-fun Context.Texture(texture: Texture, textureUv: Rect = Rect.ONE) {
+fun Context.Texture(texture: Texture, srcRect: IntRect = IntRect(IntOffset.ZERO, texture.size)) {
     if (opacity == 1f) {
         drawQueue.enqueue { canvas ->
             canvas.drawTexture(
                 texture = texture,
                 dstRect = Rect(size = size.toSize()),
-                uvRect = textureUv
+                srcRect = srcRect,
             )
         }
     } else {
@@ -19,20 +21,20 @@ fun Context.Texture(texture: Texture, textureUv: Rect = Rect.ONE) {
             canvas.drawTexture(
                 texture = texture,
                 dstRect = Rect(size = size.toSize()),
-                uvRect = textureUv,
+                srcRect = srcRect,
                 tint = color
             )
         }
     }
 }
 
-fun Context.Texture(texture: Texture, textureUv: Rect = Rect.ONE, color: UInt) {
+fun Context.Texture(texture: Texture, srcRect: IntRect = IntRect(IntOffset.ZERO, texture.size), color: UInt) {
     if (opacity == 1f) {
         drawQueue.enqueue { canvas ->
             canvas.drawTexture(
                 texture = texture,
                 dstRect = Rect(size = size.toSize()),
-                uvRect = textureUv,
+                srcRect = srcRect,
                 tint = Color(color)
             )
         }
@@ -43,7 +45,7 @@ fun Context.Texture(texture: Texture, textureUv: Rect = Rect.ONE, color: UInt) {
             canvas.drawTexture(
                 texture = texture,
                 dstRect = Rect(size = size.toSize()),
-                uvRect = textureUv,
+                srcRect = srcRect,
                 tint = colorWithAlpha,
             )
         }

@@ -8,12 +8,8 @@ import kotlinx.collections.immutable.persistentListOf
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Column
-import top.fifthlight.combine.widget.ui.AlertDialog
-import top.fifthlight.combine.widget.ui.Button
-import top.fifthlight.combine.widget.ui.Tab
-import top.fifthlight.combine.widget.ui.TabItem
+import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.model.ConfigScreenViewModel
 import top.fifthlight.touchcontroller.ui.view.config.category.*
@@ -57,12 +53,12 @@ fun ConfigScreen(viewModel: ConfigScreenViewModel) {
                 Button(onClick = {
                     viewModel.exit()
                 }) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_UNSAVED_WARNING_YES_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_UNSAVED_WARNING_YES_TITLE))
                 }
                 Button(onClick = {
                     viewModel.dismissExitDialog()
                 }) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_UNSAVED_WARNING_NO_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_UNSAVED_WARNING_NO_TITLE))
                 }
             },
         ) {

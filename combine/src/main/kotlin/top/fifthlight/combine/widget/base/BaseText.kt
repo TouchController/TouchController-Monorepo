@@ -10,7 +10,7 @@ import top.fifthlight.combine.paint.Colors
 import top.fifthlight.data.IntOffset
 
 @Composable
-fun Text(
+fun BaseText(
     text: Text,
     modifier: Modifier = Modifier,
     color: Color = Colors.WHITE,
@@ -38,7 +38,7 @@ fun Text(
 }
 
 @Composable
-fun Text(
+fun BaseText(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Colors.WHITE,

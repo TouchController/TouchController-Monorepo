@@ -41,6 +41,7 @@ value class Size(private val packed: Long) {
     operator fun minus(offset: Offset) = Size(width = width - offset.x, height = height - offset.y)
     operator fun times(num: Float) = Size(width = width * num, height = height * num)
     operator fun div(num: Float) = Size(width = width / num, height = height / num)
+    operator fun div(other: Size): Size = Size(width = width / other.width, height = height / other.height)
 
     val squaredLength
         get() = width * width + height * height

@@ -16,24 +16,24 @@ fun Context.UseButton(config: UseButton) {
                 UseButtonTexture.CLASSIC -> {
                     if (isLockTrigger && locked) {
                         if (clicked) {
-                            Texture(texture = Textures.GUI_USE_USE_CLASSIC_ACTIVE, color = 0xFFAAAAAAu)
+                            Texture(texture = Textures.GUI_CONTROL_USE_USE_CLASSIC_ACTIVE, color = 0xFFAAAAAAu)
                         } else {
-                            Texture(texture = Textures.GUI_USE_USE_CLASSIC_ACTIVE)
+                            Texture(texture = Textures.GUI_CONTROL_USE_USE_CLASSIC_ACTIVE)
                         }
                     } else {
                         if (clicked) {
-                            Texture(texture = Textures.GUI_USE_USE_CLASSIC, color = 0xFFAAAAAAu)
+                            Texture(texture = Textures.GUI_CONTROL_USE_USE_CLASSIC, color = 0xFFAAAAAAu)
                         } else {
-                            Texture(texture = Textures.GUI_USE_USE_CLASSIC)
+                            Texture(texture = Textures.GUI_CONTROL_USE_USE_CLASSIC)
                         }
                     }
                 }
 
                 UseButtonTexture.NEW -> {
                     if (clicked || locked) {
-                        Texture(texture = Textures.GUI_USE_USE_ACTIVE)
+                        Texture(texture = Textures.GUI_CONTROL_USE_USE_ACTIVE)
                     } else {
-                        Texture(texture = Textures.GUI_USE_USE)
+                        Texture(texture = Textures.GUI_CONTROL_USE_USE)
                     }
                 }
             }

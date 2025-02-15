@@ -8,11 +8,11 @@ import top.fifthlight.combine.modifier.drawing.background
 import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.paint.Colors
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.Button
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 
 @Composable
@@ -41,20 +41,20 @@ fun DescriptionPanel(
                 modifier = Modifier.weight(1f),
                 onClick = onReset,
             ) {
-                Text(Text.translatable(Texts.SCREEN_OPTIONS_RESET_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_OPTIONS_RESET_TITLE))
             }
             Button(
                 modifier = Modifier.weight(1f),
                 onClick = onCancel,
             ) {
-                Text(Text.translatable(Texts.SCREEN_OPTIONS_CANCEL_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_OPTIONS_CANCEL_TITLE))
             }
         }
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = onSave,
         ) {
-            Text(Text.translatable(Texts.SCREEN_OPTIONS_SAVE_TITLE), shadow = true)
+            Text(Text.translatable(Texts.SCREEN_OPTIONS_SAVE_TITLE))
         }
     }
 }

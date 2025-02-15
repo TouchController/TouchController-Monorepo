@@ -9,10 +9,10 @@ import top.fifthlight.combine.modifier.placement.minWidth
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.ui.DropdownMenuBox
 import top.fifthlight.combine.widget.ui.DropdownMenuIcon
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.LayoutLayer
 

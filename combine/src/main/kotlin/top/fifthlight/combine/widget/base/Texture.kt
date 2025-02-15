@@ -4,14 +4,12 @@ import androidx.compose.runtime.Composable
 import top.fifthlight.combine.data.Texture
 import top.fifthlight.combine.layout.Layout
 import top.fifthlight.combine.modifier.Modifier
-import top.fifthlight.data.IntSize
-import top.fifthlight.data.Offset
-import top.fifthlight.data.Rect
+import top.fifthlight.data.*
 
 @Composable
 fun Texture(
     texture: Texture,
-    uvRect: Rect = Rect.ONE,
+    srcRect: IntRect = IntRect(IntOffset.ZERO, texture.size),
     size: IntSize,
     modifier: Modifier = Modifier,
 ) {
@@ -27,7 +25,7 @@ fun Texture(
             canvas.drawTexture(
                 texture = texture,
                 dstRect = Rect(offset = Offset.ZERO, size = size.toSize()),
-                uvRect = uvRect
+                srcRect = srcRect,
             )
         }
     )

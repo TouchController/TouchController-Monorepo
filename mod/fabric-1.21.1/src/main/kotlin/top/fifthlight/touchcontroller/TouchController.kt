@@ -1,5 +1,6 @@
 package top.fifthlight.touchcontroller
 
+import com.mojang.blaze3d.systems.RenderSystem
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
@@ -66,6 +67,7 @@ class TouchController : ClientModInitializer, KoinComponent {
             if (!client.options.hudHidden) {
                 val canvas = CanvasImpl(drawContext, client.textRenderer)
                 RenderEvents.onHudRender(canvas)
+                RenderSystem.disableBlend()
             }
         }
 

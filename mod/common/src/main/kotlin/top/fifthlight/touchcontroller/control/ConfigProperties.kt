@@ -12,7 +12,6 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer

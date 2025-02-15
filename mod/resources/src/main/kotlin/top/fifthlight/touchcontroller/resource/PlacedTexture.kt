@@ -8,4 +8,5 @@ import top.fifthlight.data.IntSize
 data class PlacedTexture(
     val position: IntOffset,
     val size: IntSize,
+    val ninePatch: NinePatch?,
 )

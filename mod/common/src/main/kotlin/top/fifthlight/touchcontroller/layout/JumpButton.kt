@@ -9,23 +9,23 @@ import top.fifthlight.touchcontroller.gal.KeyBindingType
 private fun Context.JumpButtonTexture(size: IntSize, clicked: Boolean, texture: JumpButtonTexture) {
     withAlign(align = Align.CENTER_CENTER, size = size) {
         when (Pair(texture, clicked)) {
-            Pair(JumpButtonTexture.CLASSIC, false) -> Texture(texture = Textures.GUI_JUMP_JUMP_CLASSIC)
+            Pair(JumpButtonTexture.CLASSIC, false) -> Texture(texture = Textures.GUI_CONTROL_JUMP_JUMP_CLASSIC)
             Pair(JumpButtonTexture.CLASSIC, true) -> Texture(
-                texture = Textures.GUI_JUMP_JUMP_CLASSIC,
+                texture = Textures.GUI_CONTROL_JUMP_JUMP_CLASSIC,
                 color = 0xFFAAAAAAu
             )
 
-            Pair(JumpButtonTexture.CLASSIC_FLYING, false) -> Texture(texture = Textures.GUI_JUMP_JUMP_FLYING)
+            Pair(JumpButtonTexture.CLASSIC_FLYING, false) -> Texture(texture = Textures.GUI_CONTROL_JUMP_JUMP_FLYING)
             Pair(JumpButtonTexture.CLASSIC_FLYING, true) -> Texture(
-                texture = Textures.GUI_JUMP_JUMP_FLYING,
+                texture = Textures.GUI_CONTROL_JUMP_JUMP_FLYING,
                 color = 0xFFAAAAAAu
             )
 
-            Pair(JumpButtonTexture.NEW, false) -> Texture(texture = Textures.GUI_JUMP_JUMP)
-            Pair(JumpButtonTexture.NEW, true) -> Texture(texture = Textures.GUI_JUMP_JUMP_ACTIVE)
+            Pair(JumpButtonTexture.NEW, false) -> Texture(texture = Textures.GUI_CONTROL_JUMP_JUMP)
+            Pair(JumpButtonTexture.NEW, true) -> Texture(texture = Textures.GUI_CONTROL_JUMP_JUMP_ACTIVE)
 
-            Pair(JumpButtonTexture.NEW_HORSE, false) -> Texture(texture = Textures.GUI_JUMP_JUMP_HORSE)
-            Pair(JumpButtonTexture.NEW_HORSE, true) -> Texture(texture = Textures.GUI_JUMP_JUMP_HORSE_ACTIVE)
+            Pair(JumpButtonTexture.NEW_HORSE, false) -> Texture(texture = Textures.GUI_CONTROL_JUMP_JUMP_HORSE)
+            Pair(JumpButtonTexture.NEW_HORSE, true) -> Texture(texture = Textures.GUI_CONTROL_JUMP_JUMP_HORSE_ACTIVE)
         }
     }
 }

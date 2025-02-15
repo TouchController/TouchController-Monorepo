@@ -41,7 +41,7 @@ val textureDir = File(projectDir, "src/main/resources/textures/assets/touchcontr
 
 val outputGuiTextureAtlasJsonFile = layout.buildDirectory.file("generated/resources/atlas.json")
 val outputGuiTextureAtlasFile =
-    layout.buildDirectory.file("generated/resources/altas/assets/touchcontroller/textures/gui/atlas.png")
+    layout.buildDirectory.file("generated/resources/atlas/assets/touchcontroller/textures/gui/atlas.png")
 task<JavaExec>("generateTextureAtlas") {
     dependsOn(tasks.compileKotlin)
 
@@ -62,19 +62,17 @@ task<JavaExec>("generateTextureAtlas") {
 task<JavaExec>("generateTextureBindings") {
     dependsOn(tasks.compileKotlin, "generateTextureAtlas")
 
-    inputs.dir(textureDir)
+    inputs.file(outputGuiTextureAtlasJsonFile)
     outputs.dir(outputKotlinResourceDir)
 
     group = "build"
     description = "Generate bindings for texture files"
     mainClass = "top.fifthlight.touchcontroller.resource.TexturesBindingKt"
     classpath = sourceSets["main"].runtimeClasspath
-    args =
-        listOf(
-            textureDir.toString(),
-            outputGuiTextureAtlasJsonFile.get().toString(),
-            outputKotlinResourceDir.get().toString()
-        )
+    args = listOf(
+        outputGuiTextureAtlasJsonFile.get().toString(),
+        outputKotlinResourceDir.get().toString()
+    )
 }
 
 val outputKotlinBuildInfoDir = layout.buildDirectory.dir("generated/kotlin/buildinfo")
@@ -127,6 +125,13 @@ dependencies {
     implementation(project(":common-data"))
     implementation(libs.kotlinpoet)
     implementation(libs.kotlinx.serialization.json)
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.kotlin.test.junit5)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 kotlin {

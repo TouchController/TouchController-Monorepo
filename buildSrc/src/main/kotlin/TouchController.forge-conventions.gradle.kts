@@ -168,10 +168,11 @@ sourceSets.main {
     if (!legacyLanguageFormatBool) {
         resources.srcDir("../resources/src/main/resources/lang")
     }
-    resources.srcDir("../resources/src/main/resources/textures")
+    resources.srcDir(project(":mod:resources").layout.buildDirectory.dir("generated/resources/atlas"))
 }
 
 tasks.processResources {
+    dependsOn(":mod:resources:generateTextureAtlas")
     from("../resources/src/main/resources/icon/assets/touchcontroller/icon.png")
     if (legacyLanguageFormatBool) {
         dependsOn(":mod:resources:generateLegacyText")

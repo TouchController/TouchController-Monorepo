@@ -20,6 +20,7 @@ import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Rect
+import top.fifthlight.touchcontroller.assets.Textures
 import java.util.function.Supplier
 import top.fifthlight.combine.data.Text as CombineText
 
@@ -36,6 +37,17 @@ class CanvasImpl(
     val drawContext: GuiGraphics,
     val textRenderer: Font,
 ) : Canvas {
+    companion object {
+        private val IDENTIFIER_ATLAS = ResourceLocation("touchcontroller", "textures/gui/atlas.png")
+        private val IDENTIFIER_WIDGETS =
+            ResourceLocation(ResourceLocation.DEFAULT_NAMESPACE, "textures/gui/widgets.png")
+    }
+
+    init {
+        enableBlend()
+    }
+
+    override var blendEnabled = true
     override val textMeasurer: TextMeasurer = TextMeasurerImpl(textRenderer)
 
     override fun pushState() {
@@ -107,13 +119,22 @@ class CanvasImpl(
         drawContext.drawString(textRenderer, text.toMinecraft(), offset.x, offset.y, color.value, true)
     }
 
-    companion object {
-        private val IDENTIFIER_WIDGETS =
-            ResourceLocation(ResourceLocation.DEFAULT_NAMESPACE, "textures/gui/widgets.png")
-    }
-
-    override fun drawTexture(texture: Texture, dstRect: Rect, uvRect: Rect, tint: Color) {
-        RenderSystem.setShaderTexture(0, texture.identifier.toMinecraft())
+    override fun drawTexture(
+        texture: Texture,
+        dstRect: Rect,
+        srcRect: IntRect,
+        tint: Color,
+    ) {
+        if (blendEnabled) {
+            enableBlend()
+        } else {
+            disableBlend()
+        }
+        RenderSystem.setShaderTexture(0, IDENTIFIER_ATLAS)
+        val uvRect = Rect(
+            offset = (texture.atlasOffset + srcRect.offset).toOffset() / Textures.atlasSize.toSize(),
+            size = srcRect.size.toSize() / Textures.atlasSize.toSize(),
+        )
         withShader({ GameRenderer.getPositionTexColorShader()!! }) {
             val matrix = drawContext.pose().last().pose()
             val bufferBuilder = Tesselator.getInstance().builder
@@ -176,10 +197,12 @@ class CanvasImpl(
     }
 
     override fun enableBlend() {
+        blendEnabled = true
         RenderSystem.enableBlend()
     }
 
     override fun disableBlend() {
+        blendEnabled = false
         RenderSystem.disableBlend()
     }
 

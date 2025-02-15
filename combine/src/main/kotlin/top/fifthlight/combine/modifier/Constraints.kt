@@ -2,6 +2,7 @@ package top.fifthlight.combine.modifier
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import top.fifthlight.data.IntSize
 
 @Immutable
 class Constraints(
@@ -28,7 +29,13 @@ fun Constraints.offset(horizontal: Int = 0, vertical: Int = 0) = Constraints(
     (minWidth + horizontal).coerceAtLeast(0),
     addMaxWithMinimum(maxWidth, horizontal),
     (minHeight + vertical).coerceAtLeast(0),
-    addMaxWithMinimum(maxHeight, vertical)
+    addMaxWithMinimum(maxHeight, vertical),
+)
+
+@Stable
+fun IntSize.coerceIn(constraints: Constraints) = IntSize(
+    width = width.coerceIn(constraints.minWidth, constraints.maxWidth),
+    height = height.coerceIn(constraints.minHeight, constraints.maxHeight),
 )
 
 private fun addMaxWithMinimum(max: Int, value: Int): Int {

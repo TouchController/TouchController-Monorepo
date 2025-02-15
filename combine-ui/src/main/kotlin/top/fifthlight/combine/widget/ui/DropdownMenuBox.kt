@@ -12,7 +12,6 @@ import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.pointer.consumePress
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.widget.base.Popup
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.RowScope

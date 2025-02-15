@@ -15,11 +15,11 @@ import top.fifthlight.combine.modifier.placement.size
 import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.scroll.verticalScroll
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.FlowRow
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.Slider
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.control.*
 import top.fifthlight.touchcontroller.gal.GameFeatures

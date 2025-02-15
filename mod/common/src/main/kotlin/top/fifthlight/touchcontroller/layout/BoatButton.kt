@@ -13,15 +13,15 @@ fun Context.BoatButton(config: BoatButton) {
     val (_, clicked) = Button(id) { clicked ->
         if (config.classic) {
             if (clicked) {
-                Texture(Textures.GUI_BOAT_BOAT_CLASSIC, color = 0xFFAAAAAAu)
+                Texture(Textures.GUI_CONTROL_BOAT_BOAT_CLASSIC, color = 0xFFAAAAAAu)
             } else {
-                Texture(Textures.GUI_BOAT_BOAT_CLASSIC)
+                Texture(Textures.GUI_CONTROL_BOAT_BOAT_CLASSIC)
             }
         } else {
             if (clicked) {
-                Texture(Textures.GUI_BOAT_BOAT_ACTIVE)
+                Texture(Textures.GUI_CONTROL_BOAT_BOAT_ACTIVE)
             } else {
-                Texture(Textures.GUI_BOAT_BOAT)
+                Texture(Textures.GUI_CONTROL_BOAT_BOAT)
             }
         }
     }

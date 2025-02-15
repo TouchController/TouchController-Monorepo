@@ -9,8 +9,8 @@ fun Context.PlayerListButton(config: PlayerListButton) {
     KeyMappingButton(id = "player_list", keyType = KeyBindingType.PLAYER_LIST) { clicked ->
         withAlign(align = Align.CENTER_CENTER, size = size) {
             when (config.texture) {
-                PlayerListButtonTexture.CLASSIC -> Texture(Textures.GUI_PLAYER_LIST_PLAYER_LIST)
-                PlayerListButtonTexture.NEW -> Texture(Textures.GUI_PLAYER_LIST_PLAYER_LIST_NEW)
+                PlayerListButtonTexture.CLASSIC -> Texture(Textures.GUI_CONTROL_PLAYER_LIST_PLAYER_LIST)
+                PlayerListButtonTexture.NEW -> Texture(Textures.GUI_CONTROL_PLAYER_LIST_PLAYER_LIST_NEW)
             }
         }
     }

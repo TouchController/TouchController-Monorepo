@@ -23,18 +23,16 @@ private data class ColorBackgroundNode(
     }
 }
 
-fun Modifier.textureBackground(texture: Texture, textureUv: Rect = Rect.ONE) =
-    then(TextureBackgroundNode(texture, textureUv))
+fun Modifier.textureBackground(texture: Texture) =
+    then(TextureBackgroundNode(texture))
 
 private data class TextureBackgroundNode(
     val texture: Texture,
-    val uvRect: Rect = Rect.ONE
 ) : DrawModifierNode, Modifier.Node<TextureBackgroundNode> {
     override fun RenderContext.renderBefore(node: Placeable) {
         canvas.drawTexture(
             texture = texture,
             dstRect = Rect(offset = Offset.ZERO, size = node.size.toSize()),
-            uvRect = uvRect
         )
     }
 }

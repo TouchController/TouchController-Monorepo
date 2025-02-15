@@ -13,14 +13,10 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.placement.width
 import top.fifthlight.combine.modifier.pointer.hoverable
 import top.fifthlight.combine.screen.LocalScreenFactory
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
-import top.fifthlight.combine.widget.ui.Button
-import top.fifthlight.combine.widget.ui.IntSlider
-import top.fifthlight.combine.widget.ui.Slider
-import top.fifthlight.combine.widget.ui.Switch
+import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.ItemList
 import top.fifthlight.touchcontroller.ui.component.ItemShower
@@ -252,7 +248,7 @@ fun ItemListConfigItem(
                     }
                 )
             }) {
-                Text(text = Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ITEMS_EDIT_TITLE), shadow = true)
+                Text(text = Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ITEMS_EDIT_TITLE))
             }
         }
 
@@ -276,7 +272,7 @@ fun ItemListConfigItem(
                     }
                 )
             }) {
-                Text(text = Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ITEMS_EDIT_TITLE), shadow = true)
+                Text(text = Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ITEMS_EDIT_TITLE))
             }
         }
 
@@ -328,7 +324,7 @@ fun ItemListConfigItem(
                         }
                     )
                 }) {
-                    Text(text = Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ITEMS_EDIT_TITLE), shadow = true)
+                    Text(text = Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ITEMS_EDIT_TITLE))
                 }
             }
         }

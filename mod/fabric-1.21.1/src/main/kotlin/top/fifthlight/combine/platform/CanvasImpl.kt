@@ -7,6 +7,7 @@ import net.minecraft.client.gl.ShaderProgram
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*
 import net.minecraft.text.Text
+import net.minecraft.util.Identifier
 import org.joml.Quaternionf
 import top.fifthlight.combine.data.ItemStack
 import top.fifthlight.combine.data.Texture
@@ -15,6 +16,7 @@ import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Rect
+import top.fifthlight.touchcontroller.assets.Textures
 import java.util.function.Supplier
 import top.fifthlight.combine.data.Text as CombineText
 
@@ -31,6 +33,16 @@ class CanvasImpl(
     val drawContext: DrawContext,
     val textRenderer: TextRenderer,
 ) : Canvas {
+    companion object {
+        private val IDENTIFIER_ATLAS = Identifier.of("touchcontroller", "textures/gui/atlas.png")
+    }
+
+    init {
+        enableBlend()
+        defaultBlendFunction()
+    }
+
+    override var blendEnabled = true
     override val textMeasurer: TextMeasurer = TextMeasurerImpl(textRenderer)
 
     override fun pushState() {
@@ -102,8 +114,22 @@ class CanvasImpl(
         drawContext.drawText(textRenderer, text.toMinecraft(), offset.x, offset.y, color.value, true)
     }
 
-    override fun drawTexture(texture: Texture, dstRect: Rect, uvRect: Rect, tint: Color) {
-        RenderSystem.setShaderTexture(0, texture.identifier.toMinecraft())
+    override fun drawTexture(
+        texture: Texture,
+        dstRect: Rect,
+        srcRect: IntRect,
+        tint: Color,
+    ) {
+        if (blendEnabled) {
+            enableBlend()
+        } else {
+            disableBlend()
+        }
+        RenderSystem.setShaderTexture(0, IDENTIFIER_ATLAS)
+        val uvRect = Rect(
+            offset = (texture.atlasOffset + srcRect.offset).toOffset() / Textures.atlasSize.toSize(),
+            size = srcRect.size.toSize() / Textures.atlasSize.toSize(),
+        )
         withShader({ GameRenderer.getPositionTexColorProgram()!! }) {
             val matrix = drawContext.matrices.peek().positionMatrix
             val bufferBuilder =
@@ -147,10 +173,12 @@ class CanvasImpl(
     }
 
     override fun enableBlend() {
+        blendEnabled = true
         RenderSystem.enableBlend()
     }
 
     override fun disableBlend() {
+        blendEnabled = false
         RenderSystem.disableBlend()
     }
 

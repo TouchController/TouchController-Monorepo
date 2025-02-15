@@ -18,12 +18,12 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.util.LocalCloseHandler
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.Button
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.component.ItemShower
 import top.fifthlight.touchcontroller.ui.model.ComponentListScreenViewModel
@@ -90,7 +90,7 @@ fun ComponentListScreen(viewModel: ComponentListScreenViewModel) {
                     Button(onClick = {
                         viewModel.update(uiState.list.remove(component))
                     }) {
-                        Text(Text.translatable(Texts.SCREEN_COMPONENT_REMOVE_TITLE), shadow = true)
+                        Text(Text.translatable(Texts.SCREEN_COMPONENT_REMOVE_TITLE))
                     }
                 }
             }
@@ -107,7 +107,7 @@ fun ComponentListScreen(viewModel: ComponentListScreenViewModel) {
                         Button(onClick = {
                             viewModel.update(uiState.list.add(component))
                         }) {
-                            Text(Text.translatable(Texts.SCREEN_COMPONENT_ADD_TITLE), shadow = true)
+                            Text(Text.translatable(Texts.SCREEN_COMPONENT_ADD_TITLE))
                         }
                     }
                 }
@@ -126,7 +126,7 @@ fun ComponentListScreen(viewModel: ComponentListScreenViewModel) {
                 modifier = Modifier.fillMaxWidth(.25f),
                 onClick = { viewModel.done(closeHandler) }
             ) {
-                Text(Text.translatable(Texts.SCREEN_COMPONENT_DONE_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_COMPONENT_DONE_TITLE))
             }
         }
     }

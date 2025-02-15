@@ -24,19 +24,27 @@ private fun Path.makeParentDirs() {
 private data class Texture(
     val path: Path,
     val transformedPath: String,
+    val ninePatch: NinePatch?,
     val image: BufferedImage,
 ) {
     val size: IntSize
         get() = IntSize(
             image.width,
             image.height,
-        )
+        ) - if (ninePatch != null) {
+            2
+        } else {
+            0
+        }
 
     fun place(position: IntOffset) = PlacedTexture(
         position = position,
         size = size,
+        ninePatch = ninePatch,
     )
 }
+
+val atlasSize = IntSize(512, 512)
 
 fun main(args: Array<String>) {
     val (textureDirPath, outputGuiTextureAtlasPath, outputGuiTextureAtlasJsonPath) = args
@@ -49,17 +57,35 @@ fun main(args: Array<String>) {
     @OptIn(ExperimentalPathApi::class)
     textureDir.visitFileTree {
         onVisitFile { file, _ ->
-            if (file.fileName.toString().endsWith(".png", true)) {
-                val relativePath = file.relativeTo(textureDir)
-                val transformedPath = relativePath.joinToString("_").uppercase().removeSuffix(".PNG")
-                val image = ImageIO.read(file.toFile())
-                textures.add(
-                    Texture(
-                        path = file,
-                        transformedPath = transformedPath,
-                        image = image,
+            val relativePath = file.relativeTo(textureDir)
+            val fileName = file.fileName.toString()
+            when {
+                fileName.endsWith(".9.png", true) -> {
+                    val transformedPath = relativePath.joinToString("_").uppercase().removeSuffix(".9.PNG")
+                    val image = ImageIO.read(file.toFile())
+                    val ninePatch = NinePatch(image)
+                    textures.add(
+                        Texture(
+                            path = file,
+                            transformedPath = transformedPath,
+                            image = image,
+                            ninePatch = ninePatch,
+                        )
                     )
-                )
+                }
+
+                fileName.endsWith(".png", true) -> {
+                    val transformedPath = relativePath.joinToString("_").uppercase().removeSuffix(".PNG")
+                    val image = ImageIO.read(file.toFile())
+                    textures.add(
+                        Texture(
+                            path = file,
+                            transformedPath = transformedPath,
+                            image = image,
+                            ninePatch = null,
+                        )
+                    )
+                }
             }
             FileVisitResult.CONTINUE
         }
@@ -68,20 +94,19 @@ fun main(args: Array<String>) {
         texture.size.width * texture.size.height
     }
 
-    val textureSize = IntSize(256, 256)
-    val outputImage = BufferedImage(textureSize.width, textureSize.height, TYPE_INT_ARGB)
+    val outputImage = BufferedImage(atlasSize.width, atlasSize.height, TYPE_INT_ARGB)
     val outputGraphics = outputImage.createGraphics()
     val placedTextures = hashMapOf<String, PlacedTexture>()
     var cursorPosition = IntOffset(0, 0)
     var maxLineHeight = 0
     for (texture in textures) {
-        if (texture.size.width > textureSize.width) {
+        if (texture.size.width > atlasSize.width) {
             error("Texture ${texture.transformedPath} too big: ${texture.size}")
         }
-        if (texture.size.height + cursorPosition.y > textureSize.height) {
+        if (texture.size.height + cursorPosition.y > atlasSize.height) {
             error("No space left for texture ${texture.transformedPath}")
         }
-        if (cursorPosition.x + texture.size.width > textureSize.width) {
+        if (cursorPosition.x + texture.size.width > atlasSize.width) {
             if (maxLineHeight == 0) {
                 error("Texture ${texture.transformedPath} too big: ${texture.size}")
             }
@@ -90,7 +115,22 @@ fun main(args: Array<String>) {
         }
         maxLineHeight = max(maxLineHeight, texture.size.height)
         placedTextures[texture.transformedPath] = texture.place(cursorPosition)
-        outputGraphics.drawImage(texture.image, cursorPosition.x, cursorPosition.y, null)
+        if (texture.ninePatch != null) {
+            outputGraphics.drawImage(
+                texture.image,
+                cursorPosition.x,
+                cursorPosition.y,
+                cursorPosition.x + texture.size.width,
+                cursorPosition.y + texture.size.height,
+                1,
+                1,
+                1 + texture.size.width,
+                1 + texture.size.height,
+                null
+            )
+        } else {
+            outputGraphics.drawImage(texture.image, cursorPosition.x, cursorPosition.y, null)
+        }
         cursorPosition = IntOffset(cursorPosition.x + texture.size.width, cursorPosition.y)
     }
     outputGraphics.dispose()

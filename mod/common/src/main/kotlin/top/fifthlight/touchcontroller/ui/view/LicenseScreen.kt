@@ -14,10 +14,10 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.util.LocalCloseHandler
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.ui.Button
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.model.LicenseScreenViewModel
 
@@ -57,7 +57,7 @@ fun LicenseScreen(viewModel: LicenseScreenViewModel) {
                 modifier = Modifier.fillMaxWidth(.25f),
                 onClick = { viewModel.close(closeHandler) }
             ) {
-                Text(Text.translatable(Texts.SCREEN_LICENSE_CLOSE_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_LICENSE_CLOSE_TITLE))
             }
         }
     }

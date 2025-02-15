@@ -19,6 +19,7 @@ slf4j = "2.0.16"
 #noinspection GradleDependency
 log4j = "2.8.1"
 aboutlibraries = "11.5.0"
+junit = "5.11.4"
 
 # Android
 agp = "8.7.3"
@@ -45,6 +46,9 @@ gr8 = { group = "com.gradleup.gr8", name = "com.gradleup.gr8.gradle.plugin", ver
 slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 log4j-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j" }
 log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j" }
+kotlin-test-junit5 = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 
 # BELOW ARE GRADLE PLUGINS
 aboutlibraries-plugin = { group = "com.mikepenz.aboutlibraries.plugin", name = "com.mikepenz.aboutlibraries.plugin.gradle.plugin", version.ref = "aboutlibraries" }

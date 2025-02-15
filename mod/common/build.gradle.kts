@@ -11,12 +11,11 @@ version = modVersion
 group = "top.fifthlight.touchcontroller"
 
 sourceSets.main {
-    kotlin.srcDir(project(":mod:resources").layout.buildDirectory.dir("generated/kotlin/resources"))
     kotlin.srcDir(project(":mod:resources").layout.buildDirectory.dir("generated/kotlin/buildinfo"))
 }
 
 tasks.compileKotlin {
-    dependsOn(":mod:resources:generate")
+    dependsOn(":mod:resources:generateBuildInfo")
 }
 
 dependencies {
@@ -26,6 +25,7 @@ dependencies {
 
     api(libs.compose.runtime)
     api(project(":combine"))
+    api(project(":combine-ui"))
 
     compileOnlyApi(libs.joml)
 

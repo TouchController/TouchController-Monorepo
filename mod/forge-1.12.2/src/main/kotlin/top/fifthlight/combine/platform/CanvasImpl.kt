@@ -17,14 +17,25 @@ import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Rect
+import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.combine.data.Text as CombineText
 
 class CanvasImpl(
     val fontRenderer: FontRenderer,
 ) : Canvas, Gui() {
+    companion object {
+        private val IDENTIFIER_ATLAS = ResourceLocation("touchcontroller", "textures/gui/atlas.png")
+        private val IDENTIFIER_WIDGETS = ResourceLocation("textures/gui/widgets.png")
+    }
+
+    init {
+        enableBlend()
+    }
+
     private val client = Minecraft.getMinecraft()
     private val scaledResolution by lazy { ScaledResolution(client) }
     private val itemRenderer = client.renderItem
+    override var blendEnabled = true
     override val textMeasurer: TextMeasurer = TextMeasurerImpl(fontRenderer)
 
     override fun pushState() {
@@ -149,12 +160,17 @@ class CanvasImpl(
     override fun drawTextWithShadow(offset: IntOffset, width: Int, text: CombineText, color: Color) =
         drawTextWithShadow(offset, width, text.toMinecraft().formattedText, color)
 
-    companion object {
-        private val IDENTIFIER_WIDGETS = ResourceLocation("textures/gui/widgets.png")
-    }
-
-    override fun drawTexture(texture: Texture, dstRect: Rect, uvRect: Rect, tint: Color) {
-        client.textureManager.bindTexture(texture.identifier.toMinecraft())
+    override fun drawTexture(
+        texture: Texture,
+        dstRect: Rect,
+        srcRect: IntRect,
+        tint: Color,
+    ) {
+        this.client.textureManager.bindTexture(IDENTIFIER_ATLAS)
+        val uvRect = Rect(
+            offset = (texture.atlasOffset + srcRect.offset).toOffset() / Textures.atlasSize.toSize(),
+            size = srcRect.size.toSize() / Textures.atlasSize.toSize(),
+        )
         GlStateManager.color(tint.r / 256f, tint.g / 256f, tint.b / 256f, tint.a / 256f)
         val tessellator = Tessellator.getInstance()
         val bufferBuilder = tessellator.buffer
@@ -218,14 +234,23 @@ class CanvasImpl(
         RenderHelper.disableStandardItemLighting()
         GlStateManager.disableDepth()
         popState()
+        if (blendEnabled) {
+            enableBlend()
+        } else {
+            disableBlend()
+        }
     }
 
     override fun enableBlend() {
+        blendEnabled = true
         GlStateManager.enableBlend()
+        GlStateManager.enableAlpha()
     }
 
     override fun disableBlend() {
+        blendEnabled = false
         GlStateManager.disableBlend()
+        GlStateManager.disableAlpha()
     }
 
     override fun blendFunction(func: BlendFunction) {

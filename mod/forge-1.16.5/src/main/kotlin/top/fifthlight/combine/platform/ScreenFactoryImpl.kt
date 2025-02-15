@@ -204,6 +204,7 @@ private class CombineScreen(
 
         val size = IntSize(width, height)
         owner.render(size, context)
+        canvas.enableBlend()
     }
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")

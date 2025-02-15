@@ -18,13 +18,13 @@ import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.sound.LocalSoundManager
 import top.fifthlight.combine.sound.SoundKind
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.Button
 import top.fifthlight.combine.widget.ui.EditText
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.ControllerLayout
 import top.fifthlight.touchcontroller.config.LayerConditionKey
@@ -118,7 +118,7 @@ fun LayersPanel(
                     onLayerAdded(LayoutLayer())
                 },
             ) {
-                Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_NEW_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_NEW_TITLE))
             }
             if (currentLayer != null) {
                 Button(
@@ -127,7 +127,7 @@ fun LayersPanel(
                         onLayerAdded(currentLayer.second)
                     },
                 ) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_COPY_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_COPY_TITLE))
                 }
                 Button(
                     modifier = Modifier.fillMaxWidth(),
@@ -135,7 +135,7 @@ fun LayersPanel(
                         onLayerRemoved(currentLayer.first, currentLayer.second)
                     },
                 ) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_REMOVE_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_REMOVE_TITLE))
                 }
             }
         }

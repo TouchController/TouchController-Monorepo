@@ -205,6 +205,7 @@ private class CombineScreen(
 
         val size = IntSize(width, height)
         owner.render(size, context)
+        canvas.enableBlend()
     }
 
     override fun close() {

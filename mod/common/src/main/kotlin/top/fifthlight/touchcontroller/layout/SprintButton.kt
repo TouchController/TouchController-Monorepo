@@ -18,30 +18,30 @@ fun Context.SprintButton(config: SprintButton) {
                 CLASSIC -> if (isLockTrigger) {
                     if (sprintButtonState.locked) {
                         if (clicked) {
-                            Texture(texture = Textures.GUI_SPRINT_SPRINT_CLASSIC_ACTIVE, color = 0xFFAAAAAAu)
+                            Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT_CLASSIC_ACTIVE, color = 0xFFAAAAAAu)
                         } else {
-                            Texture(texture = Textures.GUI_SPRINT_SPRINT_CLASSIC_ACTIVE)
+                            Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT_CLASSIC_ACTIVE)
                         }
                     } else {
                         if (clicked) {
-                            Texture(texture = Textures.GUI_SPRINT_SPRINT_CLASSIC, color = 0xFFAAAAAAu)
+                            Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT_CLASSIC, color = 0xFFAAAAAAu)
                         } else {
-                            Texture(texture = Textures.GUI_SPRINT_SPRINT_CLASSIC)
+                            Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT_CLASSIC)
                         }
                     }
                 } else {
                     if (clicked) {
-                        Texture(texture = Textures.GUI_SPRINT_SPRINT_CLASSIC, color = 0xFFAAAAAAu)
+                        Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT_CLASSIC, color = 0xFFAAAAAAu)
                     } else {
-                        Texture(texture = Textures.GUI_SPRINT_SPRINT_CLASSIC)
+                        Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT_CLASSIC)
                     }
 
                 }
 
                 NEW -> if (showActive) {
-                    Texture(texture = Textures.GUI_SPRINT_SPRINT_ACTIVE)
+                    Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT_ACTIVE)
                 } else {
-                    Texture(texture = Textures.GUI_SPRINT_SPRINT)
+                    Texture(texture = Textures.GUI_CONTROL_SPRINT_SPRINT)
                 }
             }
         }

@@ -14,11 +14,11 @@ import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.screen.LocalScreenFactory
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.Button
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.BuildInfo
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.screen.openLicenseScreen
@@ -73,7 +73,7 @@ data object AboutCategory : ConfigCategory(
                         Text(BuildInfo.MOD_LICENSE)
                         Spacer(modifier = Modifier.weight(1f))
                         Button(onClick = { showLicense(modLicense) }) {
-                            Text(Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ABOUT_SHOW_TITLE), shadow = true)
+                            Text(Text.translatable(Texts.SCREEN_OPTIONS_CATEGORY_ABOUT_SHOW_TITLE))
                         }
                     }
                 }

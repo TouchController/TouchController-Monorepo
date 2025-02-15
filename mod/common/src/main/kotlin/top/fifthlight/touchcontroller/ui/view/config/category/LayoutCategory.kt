@@ -12,13 +12,13 @@ import top.fifthlight.combine.modifier.placement.fillMaxWidth
 import top.fifthlight.combine.modifier.placement.height
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.paint.Colors
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.Button
 import top.fifthlight.combine.widget.ui.Switch
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.component.config.layout.*
 import top.fifthlight.touchcontroller.ui.state.LayoutPanelState
@@ -43,7 +43,7 @@ data object LayoutCategory : ConfigCategory(
                     Button(onClick = {
                         viewModel.toggleWidgetsPanel()
                     }) {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_WIDGET_ADD_TITLE), shadow = true)
+                        Text(Text.translatable(Texts.SCREEN_OPTIONS_WIDGET_ADD_TITLE))
                     }
 
                     val copiedWidget = uiState.copiedWidget
@@ -51,7 +51,7 @@ data object LayoutCategory : ConfigCategory(
                         Button(onClick = {
                             viewModel.pasteWidget()
                         }) {
-                            Text(Text.translatable(Texts.SCREEN_OPTIONS_WIDGET_PASTE_TITLE), shadow = true)
+                            Text(Text.translatable(Texts.SCREEN_OPTIONS_WIDGET_PASTE_TITLE))
                         }
                     }
 
@@ -67,13 +67,13 @@ data object LayoutCategory : ConfigCategory(
                     Button(onClick = {
                         viewModel.toggleLayersPanel()
                     }) {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_PROPERTIES_TITLE), shadow = true)
+                        Text(Text.translatable(Texts.SCREEN_OPTIONS_LAYER_PROPERTIES_TITLE))
                     }
                 } else {
                     Button(onClick = {
                         viewModel.closePanel()
                     }) {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_BACK_TITLE), shadow = true)
+                        Text(Text.translatable(Texts.SCREEN_OPTIONS_BACK_TITLE))
                     }
                 }
 
@@ -90,18 +90,18 @@ data object LayoutCategory : ConfigCategory(
                     Button(onClick = {
                         viewModel.togglePresetsPanel()
                     }) {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESETS_TITLE), shadow = true)
+                        Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESETS_TITLE))
                     }
                 }
                 Button(onClick = {
                     viewModel.tryExit()
                 }) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_CANCEL_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_CANCEL_TITLE))
                 }
                 Button(onClick = {
                     viewModel.saveAndExit()
                 }) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_SAVE_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_SAVE_TITLE))
                 }
             }
             val selectedLayer = uiState.selectedLayer

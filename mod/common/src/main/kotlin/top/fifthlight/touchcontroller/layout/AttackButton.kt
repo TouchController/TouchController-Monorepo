@@ -11,17 +11,17 @@ fun Context.AttackButton(config: AttackButton) {
             when (config.texture) {
                 AttackButtonTexture.CLASSIC -> {
                     if (clicked) {
-                        Texture(texture = Textures.GUI_ATTACK_ATTACK_CLASSIC, color = 0xFFAAAAAAu)
+                        Texture(texture = Textures.GUI_CONTROL_ATTACK_ATTACK_CLASSIC, color = 0xFFAAAAAAu)
                     } else {
-                        Texture(texture = Textures.GUI_ATTACK_ATTACK_CLASSIC)
+                        Texture(texture = Textures.GUI_CONTROL_ATTACK_ATTACK_CLASSIC)
                     }
                 }
 
                 AttackButtonTexture.NEW -> {
                     if (clicked) {
-                        Texture(texture = Textures.GUI_ATTACK_ATTACK_ACTIVE)
+                        Texture(texture = Textures.GUI_CONTROL_ATTACK_ATTACK_ACTIVE)
                     } else {
-                        Texture(texture = Textures.GUI_ATTACK_ATTACK)
+                        Texture(texture = Textures.GUI_CONTROL_ATTACK_ATTACK)
                     }
                 }
             }

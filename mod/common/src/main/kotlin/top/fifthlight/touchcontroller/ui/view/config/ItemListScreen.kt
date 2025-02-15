@@ -18,15 +18,11 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.util.LocalCloseHandler
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.base.layout.Spacer
-import top.fifthlight.combine.widget.ui.Button
-import top.fifthlight.combine.widget.ui.EditText
-import top.fifthlight.combine.widget.ui.Item
-import top.fifthlight.combine.widget.ui.ItemGrid
+import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.ui.model.ItemListScreenViewModel
 
@@ -53,7 +49,7 @@ private fun ItemList(
                 Button(onClick = {
                     onValueChanged(value.removeAt(index))
                 }) {
-                    Text(Text.translatable(Texts.SCREEN_ITEMS_REMOVE_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_ITEMS_REMOVE_TITLE))
                 }
             }
         }
@@ -137,7 +133,7 @@ fun ItemListScreen(viewModel: ItemListScreenViewModel) {
                 modifier = Modifier.fillMaxWidth(.25f),
                 onClick = { viewModel.done(closeHandler) }
             ) {
-                Text(Text.translatable(Texts.SCREEN_ITEMS_DONE_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_ITEMS_DONE_TITLE))
             }
         }
     }

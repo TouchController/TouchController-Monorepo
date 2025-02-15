@@ -8,6 +8,7 @@ import net.minecraft.client.gl.ShaderProgramKeys
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*
 import net.minecraft.text.Text
+import net.minecraft.util.Identifier
 import org.joml.Quaternionf
 import top.fifthlight.combine.data.ItemStack
 import top.fifthlight.combine.data.Texture
@@ -16,7 +17,10 @@ import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Rect
+import top.fifthlight.touchcontroller.assets.Textures
+import top.fifthlight.touchcontroller.mixin.DrawContextAccessor
 import top.fifthlight.combine.data.Text as CombineText
+
 
 private inline fun withShader(program: ShaderProgramKey, crossinline block: () -> Unit) {
     val originalShader = RenderSystem.getShader()
@@ -31,7 +35,17 @@ class CanvasImpl(
     val drawContext: DrawContext,
     val textRenderer: TextRenderer,
 ) : Canvas {
+    companion object {
+        private val IDENTIFIER_ATLAS = Identifier.of("touchcontroller", "textures/gui/atlas.png")
+    }
+
+    init {
+        enableBlend()
+    }
+
+    override var blendEnabled = true
     override val textMeasurer: TextMeasurer = TextMeasurerImpl(textRenderer)
+    private val vertexConsumers = (drawContext as DrawContextAccessor).vertexConsumers
 
     override fun pushState() {
         drawContext.matrices.push()
@@ -102,29 +116,36 @@ class CanvasImpl(
         drawContext.drawText(textRenderer, text.toMinecraft(), offset.x, offset.y, color.value, true)
     }
 
-    override fun drawTexture(texture: Texture, dstRect: Rect, uvRect: Rect, tint: Color) {
-        RenderSystem.setShaderTexture(0, texture.identifier.toMinecraft())
+    override fun drawTexture(
+        texture: Texture,
+        dstRect: Rect,
+        srcRect: IntRect,
+        tint: Color,
+    ) {
+        val renderLayer = RenderLayer::getGuiTextured.invoke(IDENTIFIER_ATLAS)
+        val uvRect = Rect(
+            offset = (texture.atlasOffset + srcRect.offset).toOffset() / Textures.atlasSize.toSize(),
+            size = srcRect.size.toSize() / Textures.atlasSize.toSize(),
+        )
         withShader(ShaderProgramKeys.POSITION_TEX_COLOR) {
             val matrix = drawContext.matrices.peek().positionMatrix
-            val bufferBuilder =
-                Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR)
-            bufferBuilder
+            val vertexConsumer = vertexConsumers.getBuffer(renderLayer)
+            vertexConsumer
                 .vertex(matrix, dstRect.left, dstRect.top, 0f)
                 .texture(uvRect.left, uvRect.top)
                 .color(tint.value)
-            bufferBuilder
+            vertexConsumer
                 .vertex(matrix, dstRect.left, dstRect.bottom, 0f)
                 .texture(uvRect.left, uvRect.bottom)
                 .color(tint.value)
-            bufferBuilder
+            vertexConsumer
                 .vertex(matrix, dstRect.right, dstRect.bottom, 0f)
                 .texture(uvRect.right, uvRect.bottom)
                 .color(tint.value)
-            bufferBuilder
+            vertexConsumer
                 .vertex(matrix, dstRect.right, dstRect.top, 0f)
                 .texture(uvRect.right, uvRect.top)
                 .color(tint.value)
-            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end())
         }
     }
 
@@ -148,10 +169,12 @@ class CanvasImpl(
     }
 
     override fun enableBlend() {
+        blendEnabled = true
         RenderSystem.enableBlend()
     }
 
     override fun disableBlend() {
+        blendEnabled = false
         RenderSystem.disableBlend()
     }
 

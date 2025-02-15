@@ -18,7 +18,6 @@ import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.sound.LocalSoundManager
 import top.fifthlight.combine.sound.SoundKind
-import top.fifthlight.combine.widget.base.Text
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
@@ -26,6 +25,7 @@ import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.AlertDialog
 import top.fifthlight.combine.widget.ui.Button
 import top.fifthlight.combine.widget.ui.EditText
+import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.ControllerLayout
 import top.fifthlight.touchcontroller.config.LayoutLayer
@@ -99,7 +99,7 @@ fun PresetsPanel(
                     onPresetAdded(LayoutPreset())
                 },
             ) {
-                Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_NEW_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_NEW_TITLE))
             }
             if (currentPreset != null && !currentPreset.second.default) {
                 var removeDialogShown by remember { mutableStateOf(false) }
@@ -115,18 +115,12 @@ fun PresetsPanel(
                             Button(onClick = {
                                 onPresetRemoved(currentPreset.first)
                             }) {
-                                Text(
-                                    Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_WARNING_YES_TITLE),
-                                    shadow = true
-                                )
+                                Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_WARNING_YES_TITLE))
                             }
                             Button(onClick = {
                                 removeDialogShown = false
                             }) {
-                                Text(
-                                    Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_WARNING_NO_TITLE),
-                                    shadow = true
-                                )
+                                Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_WARNING_NO_TITLE))
                             }
                         }
                     ) {
@@ -139,7 +133,7 @@ fun PresetsPanel(
                         removeDialogShown = true
                     },
                 ) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_TITLE))
                 }
             }
             Button(
@@ -148,7 +142,7 @@ fun PresetsPanel(
                     onPresetSaved()
                 },
             ) {
-                Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_SAVE_TITLE), shadow = true)
+                Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_SAVE_TITLE))
             }
             if (currentPreset != null) {
                 Button(
@@ -157,7 +151,7 @@ fun PresetsPanel(
                         onPresetAdded(currentPreset.second.copy(default = false))
                     },
                 ) {
-                    Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_COPY_TITLE), shadow = true)
+                    Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_COPY_TITLE))
                 }
             }
         }
@@ -252,16 +246,13 @@ fun PresetsPanel(
                     Button(onClick = {
                         onAllLayersRead(preset)
                     }) {
-                        Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_READ_ALL_LAYERS_TITLE), shadow = true)
+                        Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_READ_ALL_LAYERS_TITLE))
                     }
                     if (selectedLayer != null) {
                         Button(onClick = {
                             onLayerRead(selectedLayer)
                         }) {
-                            Text(
-                                Text.translatable(Texts.SCREEN_OPTIONS_PRESET_READ_SELECTED_LAYER_TITLE),
-                                shadow = true
-                            )
+                            Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_READ_SELECTED_LAYER_TITLE))
                         }
                         if (!preset.default) {
                             Button(onClick = {
@@ -273,10 +264,7 @@ fun PresetsPanel(
                                     )
                                 )
                             }) {
-                                Text(
-                                    Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_SELECTED_LAYER_TITLE),
-                                    shadow = true
-                                )
+                                Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_DELETE_SELECTED_LAYER_TITLE))
                             }
                         }
                     }
@@ -285,7 +273,7 @@ fun PresetsPanel(
                         Button(onClick = {
                             onSaveCurrentLayer(currentLayer)
                         }) {
-                            Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_SAVE_CURRENT_LAYER_TITLE), shadow = true)
+                            Text(Text.translatable(Texts.SCREEN_OPTIONS_PRESET_SAVE_CURRENT_LAYER_TITLE))
                         }
                     }
                 }

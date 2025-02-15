@@ -6,9 +6,9 @@ import top.fifthlight.touchcontroller.control.HideHudButton
 fun Context.HideHudButton(config: HideHudButton) {
     val (newClick) = Button(id = "hide_hud") {
         if (config.classic) {
-            Texture(texture = Textures.GUI_HIDE_HUD_HIDE_HUD)
+            Texture(texture = Textures.GUI_CONTROL_HIDE_HUD_HIDE_HUD)
         } else {
-            Texture(texture = Textures.GUI_HIDE_HUD_HIDE_HUD_NEW)
+            Texture(texture = Textures.GUI_CONTROL_HIDE_HUD_HIDE_HUD_NEW)
         }
     }
 
