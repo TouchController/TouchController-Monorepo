@@ -19,16 +19,16 @@ data class RadioTextureSet(
 val defaultRadioTextureSet = RadioTextureSet(
     unchecked = TextureSet(
         normal = Textures.GUI_WIDGET_RADIO_RADIO,
-        focus = Textures.GUI_WIDGET_RADIO_RADIO,
-        hover = Textures.GUI_WIDGET_RADIO_RADIO,
-        active = Textures.GUI_WIDGET_RADIO_RADIO,
+        focus = Textures.GUI_WIDGET_RADIO_RADIO_HOVER,
+        hover = Textures.GUI_WIDGET_RADIO_RADIO_HOVER,
+        active = Textures.GUI_WIDGET_RADIO_RADIO_ACTIVE,
         disabled = Textures.GUI_WIDGET_RADIO_RADIO,
     ),
     checked = TextureSet(
         normal = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED,
-        focus = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED,
-        hover = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED,
-        active = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED,
+        focus = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED_HOVER,
+        hover = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED_HOVER,
+        active = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED_ACTIVE,
         disabled = Textures.GUI_WIDGET_RADIO_RADIO_CHECKED,
     )
 )

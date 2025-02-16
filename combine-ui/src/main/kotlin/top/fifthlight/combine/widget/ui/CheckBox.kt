@@ -19,16 +19,16 @@ data class CheckBoxTextureSet(
 val defaultCheckBoxTextureSet = CheckBoxTextureSet(
     unchecked = TextureSet(
         normal = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX,
-        focus = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX,
-        hover = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX,
-        active = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX,
+        focus = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_HOVER,
+        hover = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_HOVER,
+        active = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_ACTIVE,
         disabled = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX,
     ),
     checked = TextureSet(
         normal = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED,
-        focus = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED,
-        hover = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED,
-        active = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED,
+        focus = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED_HOVER,
+        hover = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED_HOVER,
+        active = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED_ACTIVE,
         disabled = Textures.GUI_WIDGET_CHECKBOX_CHECKBOX_CHECKED,
     )
 )
