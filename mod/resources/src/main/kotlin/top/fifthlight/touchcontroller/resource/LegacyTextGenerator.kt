@@ -3,17 +3,17 @@ package top.fifthlight.touchcontroller.resource
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.inputStream
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.nameWithoutExtension
+import kotlin.io.path.writer
 
 @OptIn(ExperimentalSerializationApi::class)
-fun main(args: Array<String>) {
-    val (language, legacyLanguage) = args
-    val languageDir = File(language)
-    val legacyLanguageDir = File(legacyLanguage)
-
-    val languageFiles = languageDir.listFiles { it.extension.lowercase() == "json" } ?: arrayOf<File>()
+fun generateLegacyText(languageDir: Path, legacyLanguageDir: Path) {
+    val languageFiles = languageDir.listDirectoryEntries("*.json")
     for (file in languageFiles) {
-        val outputFile = File(legacyLanguageDir, "${file.nameWithoutExtension}.lang")
+        val outputFile = legacyLanguageDir.resolve("${file.nameWithoutExtension}.lang")
         val map: Map<String, String> = Json.decodeFromStream(file.inputStream())
         outputFile.writer().use { writer ->
             map.entries.sortedBy { (key, _) -> key }.forEach { (key, value) ->

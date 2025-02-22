@@ -1,24 +1,9 @@
 package top.fifthlight.touchcontroller.resource
 
 import com.squareup.kotlinpoet.*
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
-import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.inputStream
 
-fun main(args: Array<String>) {
-    val (atlasFilePath, textureOutput) = args
-
-    val outputDir = File(textureOutput)
-    outputDir.mkdirs()
-
-    val atlasFile = Path.of(atlasFilePath)
-
-    @OptIn(ExperimentalSerializationApi::class)
-    val atlasTextures: Map<String, PlacedTexture> = Json.decodeFromStream(atlasFile.inputStream())
-
+fun generateTexturesBinding(atlasTextures: Map<String, PlacedTexture>, outputDir: Path) {
     val texturesBuilder = TypeSpec.objectBuilder("Textures")
 
     val atlasSize = PropertySpec
@@ -29,29 +14,26 @@ fun main(args: Array<String>) {
 
     for ((name, placed) in atlasTextures) {
         if (placed.ninePatch == null) {
-            texturesBuilder.addProperty(
-                PropertySpec
-                    .builder(name, ClassName("top.fifthlight.combine.data", "Texture"))
-                    .initializer(
-                        """
+            PropertySpec
+                .builder(name, ClassName("top.fifthlight.combine.data", "Texture"))
+                .initializer(
+                    """
                             Texture(
                                 size = IntSize(%L, %L),
                                 atlasOffset = IntOffset(%L, %L),
                             )
                         """.trimIndent(),
-                        placed.size.width,
-                        placed.size.height,
-                        placed.position.x,
-                        placed.position.y,
-                    )
-                    .build()
-            )
+                    placed.size.width,
+                    placed.size.height,
+                    placed.position.x,
+                    placed.position.y,
+                )
+                .build()
         } else {
-            texturesBuilder.addProperty(
-                PropertySpec
-                    .builder(name, ClassName("top.fifthlight.combine.data", "NinePatchTexture"))
-                    .initializer(
-                        """
+            PropertySpec
+                .builder(name, ClassName("top.fifthlight.combine.data", "NinePatchTexture"))
+                .initializer(
+                    """
                             NinePatchTexture(
                                 size = IntSize(%L, %L),
                                 atlasOffset = IntOffset(%L, %L),
@@ -67,22 +49,21 @@ fun main(args: Array<String>) {
                                 )
                             )
                         """.trimIndent(),
-                        placed.size.width,
-                        placed.size.height,
-                        placed.position.x,
-                        placed.position.y,
-                        placed.ninePatch.scaleArea.offset.x,
-                        placed.ninePatch.scaleArea.offset.y,
-                        placed.ninePatch.scaleArea.size.width,
-                        placed.ninePatch.scaleArea.size.height,
-                        placed.ninePatch.padding.left,
-                        placed.ninePatch.padding.top,
-                        placed.ninePatch.padding.right,
-                        placed.ninePatch.padding.bottom,
-                    )
-                    .build()
-            )
-        }
+                    placed.size.width,
+                    placed.size.height,
+                    placed.position.x,
+                    placed.position.y,
+                    placed.ninePatch.scaleArea.offset.x,
+                    placed.ninePatch.scaleArea.offset.y,
+                    placed.ninePatch.scaleArea.size.width,
+                    placed.ninePatch.scaleArea.size.height,
+                    placed.ninePatch.padding.left,
+                    placed.ninePatch.padding.top,
+                    placed.ninePatch.padding.right,
+                    placed.ninePatch.padding.bottom,
+                )
+                .build()
+        }.let(texturesBuilder::addProperty)
     }
 
     val textures = texturesBuilder.build()

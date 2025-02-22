@@ -1,5 +1,14 @@
 package top.fifthlight.combine.paint
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+
+@Serializable(with = ColorSerializer::class)
 @JvmInline
 value class Color(val value: Int) {
     val a: Int
@@ -10,6 +19,14 @@ value class Color(val value: Int) {
         get() = (value shr 8) and 0xFF
     val b: Int
         get() = value and 0xFF
+}
+
+private class ColorSerializer : KSerializer<Color> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("top.fifthlight.combine.paint.Color", PrimitiveKind.INT)
+
+    override fun serialize(encoder: Encoder, value: Color) = encoder.encodeInt(value.value)
+    override fun deserialize(decoder: Decoder) = Color(decoder.decodeInt())
 }
 
 fun Color(value: UInt) = Color(value.toInt())

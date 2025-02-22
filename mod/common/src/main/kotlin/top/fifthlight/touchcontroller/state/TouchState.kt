@@ -1,7 +1,10 @@
 package top.fifthlight.touchcontroller.state
 
 import top.fifthlight.data.Offset
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 sealed class PointerState {
     data object New : PointerState()
 
@@ -33,9 +36,9 @@ sealed class PointerState {
         }
     }
 
-    data class Button(val id: String) : PointerState()
+    data class Button(val id: Uuid) : PointerState()
 
-    data class SwipeButton(val id: String) : PointerState()
+    data class SwipeButton(val id: Uuid) : PointerState()
 
     data class InventorySlot(val index: Int, val startTick: Int) : PointerState()
 }

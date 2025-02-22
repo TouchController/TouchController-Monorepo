@@ -66,7 +66,7 @@ class TouchController : ClientModInitializer, KoinComponent {
         FabricHudRenderCallback.EVENT.register { drawContext, _ ->
             val client = MinecraftClient.getInstance()
             if (!client.options.hudHidden) {
-                val canvas = CanvasImpl(drawContext, client.textRenderer)
+                val canvas = CanvasImpl(drawContext)
                 RenderEvents.onHudRender(canvas)
             }
         }

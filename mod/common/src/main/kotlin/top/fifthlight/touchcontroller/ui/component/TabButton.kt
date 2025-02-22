@@ -9,19 +9,19 @@ import top.fifthlight.combine.widget.ui.Button
 import top.fifthlight.touchcontroller.assets.Textures
 
 val tabButtonTextures = NinePatchTextureSet(
-    normal = Textures.GUI_WIDGET_TAB_TAB,
-    focus = Textures.GUI_WIDGET_TAB_TAB_HOVER,
-    hover = Textures.GUI_WIDGET_TAB_TAB_HOVER,
-    active = Textures.GUI_WIDGET_TAB_TAB_ACTIVE,
-    disabled = Textures.GUI_WIDGET_TAB_TAB_DISABLED,
+    normal = Textures.WIDGET_TAB_TAB,
+    focus = Textures.WIDGET_TAB_TAB_HOVER,
+    hover = Textures.WIDGET_TAB_TAB_HOVER,
+    active = Textures.WIDGET_TAB_TAB_ACTIVE,
+    disabled = Textures.WIDGET_TAB_TAB_DISABLED,
 )
 
 val selectedTabButtonTextures = NinePatchTextureSet(
-    normal = Textures.GUI_WIDGET_TAB_TAB_PRESSLOCK,
-    focus = Textures.GUI_WIDGET_TAB_TAB_PRESSLOCK_HOVER,
-    hover = Textures.GUI_WIDGET_TAB_TAB_PRESSLOCK_HOVER,
-    active = Textures.GUI_WIDGET_TAB_TAB_ACTIVE,
-    disabled = Textures.GUI_WIDGET_TAB_TAB_DISABLED,
+    normal = Textures.WIDGET_TAB_TAB_PRESSLOCK,
+    focus = Textures.WIDGET_TAB_TAB_PRESSLOCK_HOVER,
+    hover = Textures.WIDGET_TAB_TAB_PRESSLOCK_HOVER,
+    active = Textures.WIDGET_TAB_TAB_ACTIVE,
+    disabled = Textures.WIDGET_TAB_TAB_DISABLED,
 )
 
 @Composable

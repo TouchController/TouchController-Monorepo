@@ -1,17 +1,11 @@
 package top.fifthlight.touchcontroller.resource
 
 import com.squareup.kotlinpoet.*
-import java.io.File
+import java.nio.file.Path
 
-fun main(args: Array<String>) {
-    val (output, properties) = args
-
-    val outputDir = File(output)
-    outputDir.mkdirs()
-
+fun generateBuildInfo(properties: Map<String, String>, outputDir: Path) {
     val buildInfo = TypeSpec.objectBuilder("BuildInfo").apply {
-        properties.split("\n").filter { it.isNotBlank() }.forEach { line ->
-            val (name, value) = line.split(":")
+        properties.forEach { (name, value) ->
             val transformedName = buildString {
                 name.trim().forEach {
                     if (it.isUpperCase()) {

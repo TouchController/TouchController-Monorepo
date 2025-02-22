@@ -2,6 +2,8 @@ package top.fifthlight.touchcontroller.layout
 
 import top.fifthlight.touchcontroller.gal.KeyBindingType
 import top.fifthlight.touchcontroller.state.PointerState
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class ButtonResult(
     val newPointer: Boolean = false,
@@ -9,8 +11,9 @@ data class ButtonResult(
     val release: Boolean = false
 )
 
+@OptIn(ExperimentalUuidApi::class)
 fun Context.SwipeButton(
-    id: String,
+    id: Uuid,
     content: Context.(clicked: Boolean) -> Unit,
 ): ButtonResult {
     var newPointer = false
@@ -50,8 +53,9 @@ fun Context.SwipeButton(
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 fun Context.KeyMappingSwipeButton(
-    id: String,
+    id: Uuid,
     keyType: KeyBindingType,
     content: Context.(clicked: Boolean) -> Unit,
 ) {
@@ -62,8 +66,9 @@ fun Context.KeyMappingSwipeButton(
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 fun Context.Button(
-    id: String,
+    id: Uuid,
     content: Context.(clicked: Boolean) -> Unit,
 ): ButtonResult {
     var newPointer = false
@@ -104,8 +109,9 @@ fun Context.Button(
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 fun Context.KeyMappingButton(
-    id: String,
+    id: Uuid,
     keyType: KeyBindingType,
     content: Context.(clicked: Boolean) -> Unit,
 ) {

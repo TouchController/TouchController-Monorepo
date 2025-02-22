@@ -15,6 +15,8 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.Context
 import top.fifthlight.touchcontroller.layout.PerspectiveSwitchButton
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class PerspectiveSwitchButtonStyle {
@@ -31,11 +33,13 @@ enum class PerspectiveSwitchButtonStyle {
     NEW_SIMPLE
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("perspective_switch_button")
 data class PerspectiveSwitchButton(
     val size: Float = 1f,
     val style: PerspectiveSwitchButtonStyle = PerspectiveSwitchButtonStyle.CLASSIC,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.CENTER_TOP,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -45,7 +49,7 @@ data class PerspectiveSwitchButton(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<PerspectiveSwitchButton, *>>(
+        private val _properties = properties + persistentListOf<Property<PerspectiveSwitchButton, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -84,6 +88,7 @@ data class PerspectiveSwitchButton(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

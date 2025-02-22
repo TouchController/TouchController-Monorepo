@@ -27,7 +27,7 @@ interface DisposableLayer {
 }
 
 class CombineOwner(
-    private val dispatcher: CoroutineDispatcher,
+    dispatcher: CoroutineDispatcher,
     private val textMeasurer: TextMeasurer
 ) : CoroutineScope, PointerEventReceiver, TextInputReceiver, KeyEventReceiver {
     private val clock = BroadcastFrameClock()

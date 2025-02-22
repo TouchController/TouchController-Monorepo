@@ -97,7 +97,7 @@ class TouchController : KoinComponent {
             @SubscribeEvent
             fun hudRender(event: RenderGameOverlayEvent.Post) {
                 val client = Minecraft.getInstance()
-                val canvas = CanvasImpl(event.matrixStack, client.font)
+                val canvas = CanvasImpl(event.matrixStack)
                 RenderEvents.onHudRender(canvas)
                 RenderSystem.enableBlend()
             }

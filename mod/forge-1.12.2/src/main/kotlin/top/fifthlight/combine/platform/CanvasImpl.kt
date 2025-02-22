@@ -1,7 +1,6 @@
 package top.fifthlight.combine.platform
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -20,9 +19,7 @@ import top.fifthlight.data.Rect
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.combine.data.Text as CombineText
 
-class CanvasImpl(
-    val fontRenderer: FontRenderer,
-) : Canvas, Gui() {
+class CanvasImpl : Canvas, Gui() {
     companion object {
         private val IDENTIFIER_ATLAS = ResourceLocation("touchcontroller", "textures/gui/atlas.png")
         private val IDENTIFIER_WIDGETS = ResourceLocation("textures/gui/widgets.png")
@@ -33,11 +30,11 @@ class CanvasImpl(
     }
 
     private val client = Minecraft.getMinecraft()
+    private val fontRenderer = client.fontRenderer
     override val textLineHeight: Int = fontRenderer.FONT_HEIGHT
     private val scaledResolution by lazy { ScaledResolution(client) }
     private val itemRenderer = client.renderItem
     override var blendEnabled = true
-    override val textMeasurer: TextMeasurer = TextMeasurerImpl(fontRenderer)
 
     override fun pushState() {
         GlStateManager.pushMatrix()

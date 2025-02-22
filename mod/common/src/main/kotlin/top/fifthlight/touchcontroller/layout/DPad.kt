@@ -1,19 +1,13 @@
 package top.fifthlight.touchcontroller.layout
 
+import top.fifthlight.combine.paint.Color
 import top.fifthlight.touchcontroller.assets.Textures
 import top.fifthlight.touchcontroller.control.*
 import top.fifthlight.touchcontroller.gal.KeyBindingType
 import top.fifthlight.touchcontroller.state.PointerState
+import kotlin.uuid.ExperimentalUuidApi
 
-private const val ID_FORWARD = "dpad_forward"
-private const val ID_BACKWARD = "dpad_backward"
-private const val ID_LEFT = "dpad_left"
-private const val ID_RIGHT = "dpad_right"
-private const val ID_LEFT_FORWARD = "dpad_left_forward"
-private const val ID_RIGHT_FORWARD = "dpad_right_forward"
-private const val ID_LEFT_BACKWARD = "dpad_left_backward"
-private const val ID_RIGHT_BACKWARD = "dpad_right_backward"
-
+@OptIn(ExperimentalUuidApi::class)
 fun Context.DPad(config: DPad) {
     val buttonSize = config.buttonSize()
     val buttonDisplaySize = config.buttonDisplaySize()
@@ -31,16 +25,16 @@ fun Context.DPad(config: DPad) {
         width = buttonSize.width,
         height = buttonSize.height
     ) {
-        SwipeButton(id = ID_FORWARD) { clicked ->
+        SwipeButton(id = config.idForward) { clicked ->
             withAlign(
                 align = Align.CENTER_CENTER,
                 size = buttonDisplaySize
             ) {
                 when (Pair(config.classic, clicked)) {
-                    Pair(true, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_CLASSIC)
-                    Pair(true, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_CLASSIC, color = 0xFFAAAAAAu)
-                    Pair(false, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP)
-                    Pair(false, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_ACTIVE)
+                    Pair(true, false) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_UP)
+                    Pair(true, true) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_UP, tint = Color(0xFFAAAAAAu))
+                    Pair(false, false) -> Texture(texture = Textures.CONTROL_NEW_DPAD_UP)
+                    Pair(false, true) -> Texture(texture = Textures.CONTROL_NEW_DPAD_UP_ACTIVE)
                 }
             }
         }.clicked
@@ -52,16 +46,16 @@ fun Context.DPad(config: DPad) {
         width = buttonSize.width,
         height = buttonSize.height
     ) {
-        SwipeButton(id = ID_BACKWARD) { clicked ->
+        SwipeButton(id = config.idBackward) { clicked ->
             withAlign(
                 align = Align.CENTER_CENTER,
                 size = buttonDisplaySize
             ) {
                 when (Pair(config.classic, clicked)) {
-                    Pair(true, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN_CLASSIC)
-                    Pair(true, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN_CLASSIC, color = 0xFFAAAAAAu)
-                    Pair(false, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN)
-                    Pair(false, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN_ACTIVE)
+                    Pair(true, false) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_DOWN)
+                    Pair(true, true) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_DOWN, tint = Color(0xFFAAAAAAu))
+                    Pair(false, false) -> Texture(texture = Textures.CONTROL_NEW_DPAD_DOWN)
+                    Pair(false, true) -> Texture(texture = Textures.CONTROL_NEW_DPAD_DOWN_ACTIVE)
                 }
             }
         }.clicked
@@ -73,16 +67,16 @@ fun Context.DPad(config: DPad) {
         width = buttonSize.width,
         height = buttonSize.height
     ) {
-        SwipeButton(id = ID_LEFT) { clicked ->
+        SwipeButton(id = config.idLeft) { clicked ->
             withAlign(
                 align = Align.CENTER_CENTER,
                 size = buttonDisplaySize
             ) {
                 when (Pair(config.classic, clicked)) {
-                    Pair(true, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_LEFT_CLASSIC)
-                    Pair(true, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_LEFT_CLASSIC, color = 0xFFAAAAAAu)
-                    Pair(false, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_LEFT)
-                    Pair(false, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_LEFT_ACTIVE)
+                    Pair(true, false) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_LEFT)
+                    Pair(true, true) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_LEFT, tint = Color(0xFFAAAAAAu))
+                    Pair(false, false) -> Texture(texture = Textures.CONTROL_NEW_DPAD_LEFT)
+                    Pair(false, true) -> Texture(texture = Textures.CONTROL_NEW_DPAD_LEFT_ACTIVE)
                 }
             }
         }.clicked
@@ -94,16 +88,20 @@ fun Context.DPad(config: DPad) {
         width = buttonSize.width,
         height = buttonSize.height
     ) {
-        SwipeButton(id = ID_RIGHT) { clicked ->
+        SwipeButton(id = config.idRight) { clicked ->
             withAlign(
                 align = Align.CENTER_CENTER,
                 size = buttonDisplaySize
             ) {
                 when (Pair(config.classic, clicked)) {
-                    Pair(true, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_RIGHT_CLASSIC)
-                    Pair(true, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_RIGHT_CLASSIC, color = 0xFFAAAAAAu)
-                    Pair(false, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_RIGHT)
-                    Pair(false, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_RIGHT_ACTIVE)
+                    Pair(true, false) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_RIGHT)
+                    Pair(true, true) -> Texture(
+                        texture = Textures.CONTROL_CLASSIC_DPAD_RIGHT,
+                        tint = Color(0xFFAAAAAAu)
+                    )
+
+                    Pair(false, false) -> Texture(texture = Textures.CONTROL_NEW_DPAD_RIGHT)
+                    Pair(false, true) -> Texture(texture = Textures.CONTROL_NEW_DPAD_RIGHT_ACTIVE)
                 }
             }
         }.clicked
@@ -121,21 +119,21 @@ fun Context.DPad(config: DPad) {
             width = buttonSize.width,
             height = buttonSize.height
         ) {
-            SwipeButton(id = ID_LEFT_FORWARD) { clicked ->
+            SwipeButton(id = config.idLeftForward) { clicked ->
                 withAlign(
                     align = Align.RIGHT_BOTTOM,
                     size = smallDisplaySize,
                     offset = offset,
                 ) {
                     when (Pair(config.classic, clicked)) {
-                        Pair(true, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_LEFT_CLASSIC)
+                        Pair(true, false) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_UP_LEFT)
                         Pair(true, true) -> Texture(
-                            texture = Textures.GUI_CONTROL_DPAD_UP_LEFT_CLASSIC,
-                            color = 0xFFAAAAAAu
+                            texture = Textures.CONTROL_CLASSIC_DPAD_UP_LEFT,
+                            tint = Color(0xFFAAAAAAu)
                         )
 
-                        Pair(false, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_LEFT)
-                        Pair(false, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_LEFT_ACTIVE)
+                        Pair(false, false) -> Texture(texture = Textures.CONTROL_NEW_DPAD_UP_LEFT)
+                        Pair(false, true) -> Texture(texture = Textures.CONTROL_NEW_DPAD_UP_LEFT_ACTIVE)
                     }
                 }
             }.clicked
@@ -151,21 +149,21 @@ fun Context.DPad(config: DPad) {
             width = buttonSize.width,
             height = buttonSize.height
         ) {
-            SwipeButton(id = ID_RIGHT_FORWARD) { clicked ->
+            SwipeButton(id = config.idRightForward) { clicked ->
                 withAlign(
                     align = Align.LEFT_BOTTOM,
                     size = smallDisplaySize,
                     offset = offset,
                 ) {
                     when (Pair(config.classic, clicked)) {
-                        Pair(true, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_RIGHT_CLASSIC)
+                        Pair(true, false) -> Texture(texture = Textures.CONTROL_CLASSIC_DPAD_UP_RIGHT)
                         Pair(true, true) -> Texture(
-                            texture = Textures.GUI_CONTROL_DPAD_UP_RIGHT_CLASSIC,
-                            color = 0xFFAAAAAAu
+                            texture = Textures.CONTROL_CLASSIC_DPAD_UP_RIGHT,
+                            tint = Color(0xFFAAAAAAu)
                         )
 
-                        Pair(false, false) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_RIGHT)
-                        Pair(false, true) -> Texture(texture = Textures.GUI_CONTROL_DPAD_UP_RIGHT_ACTIVE)
+                        Pair(false, false) -> Texture(texture = Textures.CONTROL_NEW_DPAD_UP_RIGHT)
+                        Pair(false, true) -> Texture(texture = Textures.CONTROL_NEW_DPAD_UP_RIGHT_ACTIVE)
                     }
                 }
             }.clicked
@@ -181,16 +179,16 @@ fun Context.DPad(config: DPad) {
             width = buttonSize.width,
             height = buttonSize.height
         ) {
-            SwipeButton(id = ID_LEFT_BACKWARD) { clicked ->
+            SwipeButton(id = config.idLeftBackward) { clicked ->
                 withAlign(
                     align = Align.RIGHT_TOP,
                     size = smallDisplaySize,
                     offset = offset,
                 ) {
                     if (clicked) {
-                        Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN_LEFT_ACTIVE)
+                        Texture(texture = Textures.CONTROL_NEW_DPAD_DOWN_LEFT_ACTIVE)
                     } else {
-                        Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN_LEFT)
+                        Texture(texture = Textures.CONTROL_NEW_DPAD_DOWN_LEFT)
                     }
                 }
             }.clicked
@@ -206,16 +204,16 @@ fun Context.DPad(config: DPad) {
             width = buttonSize.width,
             height = buttonSize.height
         ) {
-            SwipeButton(id = ID_RIGHT_BACKWARD) { clicked ->
+            SwipeButton(id = config.idRightBackward) { clicked ->
                 withAlign(
                     align = Align.LEFT_TOP,
                     size = smallDisplaySize,
                     offset = offset,
                 ) {
                     if (clicked) {
-                        Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN_RIGHT_ACTIVE)
+                        Texture(texture = Textures.CONTROL_NEW_DPAD_DOWN_RIGHT_ACTIVE)
                     } else {
-                        Texture(texture = Textures.GUI_CONTROL_DPAD_DOWN_RIGHT)
+                        Texture(texture = Textures.CONTROL_NEW_DPAD_DOWN_RIGHT)
                     }
                 }
             }.clicked
@@ -263,24 +261,28 @@ fun Context.DPad(config: DPad) {
         when (config.extraButton) {
             DPadExtraButton.NONE -> {}
             DPadExtraButton.SNEAK_DOUBLE_CLICK -> RawSneakButton(
+                id = config.idExtraButton,
                 texture = sneakButtonTexture,
                 trigger = SneakButtonTrigger.DOUBLE_CLICK_LOCK,
                 size = extraButtonDisplaySize
             )
 
             DPadExtraButton.SNEAK_SINGLE_CLICK -> RawSneakButton(
+                id = config.idExtraButton,
                 texture = sneakButtonTexture,
                 trigger = SneakButtonTrigger.SINGLE_CLICK_LOCK,
                 size = extraButtonDisplaySize
             )
 
             DPadExtraButton.SNEAK_HOLD -> RawSneakButton(
+                id = config.idExtraButton,
                 texture = sneakButtonTexture,
                 trigger = SneakButtonTrigger.HOLD,
                 size = extraButtonDisplaySize
             )
 
             DPadExtraButton.DISMOUNT_SINGLE_CLICK -> RawSneakButton(
+                id = config.idExtraButton,
                 texture = if (config.classic) {
                     SneakButtonTexture.CLASSIC
                 } else {
@@ -291,6 +293,7 @@ fun Context.DPad(config: DPad) {
             )
 
             DPadExtraButton.DISMOUNT_DOUBLE_CLICK -> RawSneakButton(
+                id = config.idExtraButton,
                 texture = if (config.classic) {
                     SneakButtonTexture.CLASSIC
                 } else {
@@ -304,11 +307,12 @@ fun Context.DPad(config: DPad) {
                 var hasPointer = false
                 for (pointer in getPointersInRect(size)) {
                     val state = (pointer.state as? PointerState.SwipeButton) ?: continue
-                    if (state.id == ID_FORWARD || state.id == ID_BACKWARD || state.id == ID_LEFT || state.id == ID_RIGHT) {
+                    if (state.id == config.idForward || state.id == config.idBackward || state.id == config.idLeft || state.id == config.idRight) {
                         hasPointer = true
                     }
                 }
                 val (_, clicked, _) = DPadJumpButton(
+                    id = config.idExtraButton,
                     size = extraButtonDisplaySize,
                     texture = if (!config.classic) {
                         JumpButtonTexture.NEW

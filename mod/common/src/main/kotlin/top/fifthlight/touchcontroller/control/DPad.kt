@@ -15,6 +15,8 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.Context
 import top.fifthlight.touchcontroller.layout.DPad
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class DPadExtraButton {
@@ -46,6 +48,7 @@ enum class DPadExtraButton {
     FLYING,
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("dpad")
 data class DPad(
@@ -54,6 +57,16 @@ data class DPad(
     val padding: Int = if (classic) 4 else -1,
     val extraButton: DPadExtraButton = DPadExtraButton.SNEAK_DOUBLE_CLICK,
     val extraButtonSize: Int = 18,
+    val idForward: Uuid = Uuid.random(),
+    val idBackward: Uuid = Uuid.random(),
+    val idLeft: Uuid = Uuid.random(),
+    val idRight: Uuid = Uuid.random(),
+    val idLeftForward: Uuid = Uuid.random(),
+    val idRightForward: Uuid = Uuid.random(),
+    val idLeftBackward: Uuid = Uuid.random(),
+    val idRightBackward: Uuid = Uuid.random(),
+    val idExtraButton: Uuid = Uuid.random(),
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.LEFT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -63,7 +76,7 @@ data class DPad(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<DPad, *>>(
+        private val _properties = properties + persistentListOf<Property<DPad, *>>(
             EnumProperty(
                 getValue = { it.extraButton },
                 setValue = { config, value -> config.copy(extraButton = value) },
@@ -129,6 +142,7 @@ data class DPad(
     override fun layout(context: Context) = context.DPad(this@DPad)
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,
@@ -138,5 +152,18 @@ data class DPad(
         offset = offset,
         opacity = opacity,
         lockMoving = lockMoving,
+    )
+
+    override fun newId(): ControllerWidget = copy(
+        idForward = Uuid.random(),
+        idBackward = Uuid.random(),
+        idLeft = Uuid.random(),
+        idRight = Uuid.random(),
+        idLeftForward = Uuid.random(),
+        idRightForward = Uuid.random(),
+        idLeftBackward = Uuid.random(),
+        idRightBackward = Uuid.random(),
+        idExtraButton = Uuid.random(),
+        id = Uuid.random(),
     )
 }

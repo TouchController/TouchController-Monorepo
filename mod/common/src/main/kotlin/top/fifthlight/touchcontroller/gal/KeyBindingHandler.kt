@@ -1,13 +1,32 @@
 package top.fifthlight.touchcontroller.gal
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class KeyBindingType {
+    @SerialName("attack")
     ATTACK,
+
+    @SerialName("use")
     USE,
+
+    @SerialName("inventory")
     INVENTORY,
+
+    @SerialName("swap_hands")
     SWAP_HANDS,
+
+    @SerialName("sneak")
     SNEAK,
+
+    @SerialName("sprint")
     SPRINT,
+
+    @SerialName("jump")
     JUMP,
+
+    @SerialName("player_list")
     PLAYER_LIST,
 }
 

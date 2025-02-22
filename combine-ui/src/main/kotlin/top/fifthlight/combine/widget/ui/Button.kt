@@ -19,23 +19,23 @@ import top.fifthlight.combine.widget.base.layout.BoxScope
 import top.fifthlight.touchcontroller.assets.Textures
 
 val defaultButtonTexture = NinePatchTextureSet(
-    normal = Textures.GUI_WIDGET_BUTTON_BUTTON,
-    focus = Textures.GUI_WIDGET_BUTTON_BUTTON_HOVER,
-    hover = Textures.GUI_WIDGET_BUTTON_BUTTON_HOVER,
-    active = Textures.GUI_WIDGET_BUTTON_BUTTON_ACTIVE,
-    disabled = Textures.GUI_WIDGET_BUTTON_BUTTON_DISABLED,
+    normal = Textures.WIDGET_BUTTON_BUTTON,
+    focus = Textures.WIDGET_BUTTON_BUTTON_HOVER,
+    hover = Textures.WIDGET_BUTTON_BUTTON_HOVER,
+    active = Textures.WIDGET_BUTTON_BUTTON_ACTIVE,
+    disabled = Textures.WIDGET_BUTTON_BUTTON_DISABLED,
 )
 
 val guideButtonTexture = defaultButtonTexture.copy(
-    normal = Textures.GUI_WIDGET_BUTTON_BUTTON_GUIDE,
-    focus = Textures.GUI_WIDGET_BUTTON_BUTTON_GUIDE_HOVER,
-    hover = Textures.GUI_WIDGET_BUTTON_BUTTON_GUIDE_HOVER,
+    normal = Textures.WIDGET_BUTTON_BUTTON_GUIDE,
+    focus = Textures.WIDGET_BUTTON_BUTTON_GUIDE_HOVER,
+    hover = Textures.WIDGET_BUTTON_BUTTON_GUIDE_HOVER,
 )
 
 val warningButtonTexture = defaultButtonTexture.copy(
-    normal = Textures.GUI_WIDGET_BUTTON_BUTTON_WARNING,
-    focus = Textures.GUI_WIDGET_BUTTON_BUTTON_WARNING_HOVER,
-    hover = Textures.GUI_WIDGET_BUTTON_BUTTON_WARNING_HOVER,
+    normal = Textures.WIDGET_BUTTON_BUTTON_WARNING,
+    focus = Textures.WIDGET_BUTTON_BUTTON_WARNING_HOVER,
+    hover = Textures.WIDGET_BUTTON_BUTTON_WARNING_HOVER,
 )
 
 val LocalButtonTexture = staticCompositionLocalOf<NinePatchTextureSet> { defaultButtonTexture }

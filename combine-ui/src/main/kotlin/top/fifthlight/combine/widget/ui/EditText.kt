@@ -24,11 +24,11 @@ import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Textures
 
 val defaultEditTextTexture = NinePatchTextureSet(
-    normal = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD,
-    focus = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_HOVER,
-    hover = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_HOVER,
-    active = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_ACTIVE,
-    disabled = Textures.GUI_WIDGET_TEXTFIELD_TEXTFIELD_DISABLED,
+    normal = Textures.WIDGET_TEXTFIELD_TEXTFIELD,
+    focus = Textures.WIDGET_TEXTFIELD_TEXTFIELD_HOVER,
+    hover = Textures.WIDGET_TEXTFIELD_TEXTFIELD_HOVER,
+    active = Textures.WIDGET_TEXTFIELD_TEXTFIELD_ACTIVE,
+    disabled = Textures.WIDGET_TEXTFIELD_TEXTFIELD_DISABLED,
 )
 
 val LocalEditTextTextureSet = staticCompositionLocalOf<NinePatchTextureSet> { defaultEditTextTexture }
@@ -167,10 +167,10 @@ fun EditText(
                     text = beforeSelectionText,
                     color = Colors.WHITE
                 )
-                textCursor += canvas.textMeasurer.measure(beforeSelectionText).width
+                textCursor += textMeasurer.measure(beforeSelectionText).width
 
                 val selectionText = textInputState.selectionText
-                val selectionWidth = canvas.textMeasurer.measure(selectionText).width
+                val selectionWidth = textMeasurer.measure(selectionText).width
                 val selectionOffset = IntOffset(textCursor, 0)
                 fillRect(
                     offset = selectionOffset,

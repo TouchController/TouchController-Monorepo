@@ -24,25 +24,25 @@ data class SliderTextureSet(
 
 val defaultSliderTexture = SliderTextureSet(
     activeTrack = NinePatchTextureSet(
-        normal = Textures.GUI_WIDGET_SLIDER_SLIDER_ACTIVE_TRACK,
-        focus = Textures.GUI_WIDGET_SLIDER_SLIDER_ACTIVE_TRACK_HOVER,
-        hover = Textures.GUI_WIDGET_SLIDER_SLIDER_ACTIVE_TRACK_HOVER,
-        active = Textures.GUI_WIDGET_SLIDER_SLIDER_ACTIVE_TRACK_ACTIVE,
-        disabled = Textures.GUI_WIDGET_SLIDER_SLIDER_ACTIVE_TRACK_DISABLED,
+        normal = Textures.WIDGET_SLIDER_SLIDER_ACTIVE,
+        focus = Textures.WIDGET_SLIDER_SLIDER_ACTIVE_HOVER,
+        hover = Textures.WIDGET_SLIDER_SLIDER_ACTIVE_HOVER,
+        active = Textures.WIDGET_SLIDER_SLIDER_ACTIVE_ACTIVE,
+        disabled = Textures.WIDGET_SLIDER_SLIDER_ACTIVE_DISABLED,
     ),
     inactiveTrack = NinePatchTextureSet(
-        normal = Textures.GUI_WIDGET_SLIDER_SLIDER_INACTIVE_TRACK,
-        focus = Textures.GUI_WIDGET_SLIDER_SLIDER_INACTIVE_TRACK_HOVER,
-        hover = Textures.GUI_WIDGET_SLIDER_SLIDER_INACTIVE_TRACK_HOVER,
-        active = Textures.GUI_WIDGET_SLIDER_SLIDER_INACTIVE_TRACK_ACTIVE,
-        disabled = Textures.GUI_WIDGET_SLIDER_SLIDER_INACTIVE_TRACK_DISABLED,
+        normal = Textures.WIDGET_SLIDER_SLIDER_INACTIVE,
+        focus = Textures.WIDGET_SLIDER_SLIDER_INACTIVE_HOVER,
+        hover = Textures.WIDGET_SLIDER_SLIDER_INACTIVE_HOVER,
+        active = Textures.WIDGET_SLIDER_SLIDER_INACTIVE_ACTIVE,
+        disabled = Textures.WIDGET_SLIDER_SLIDER_INACTIVE_DISABLED,
     ),
     handle = TextureSet(
-        normal = Textures.GUI_WIDGET_SLIDER_SLIDER_HANDLE,
-        focus = Textures.GUI_WIDGET_SLIDER_SLIDER_HANDLE_HOVER,
-        hover = Textures.GUI_WIDGET_SLIDER_SLIDER_HANDLE_HOVER,
-        active = Textures.GUI_WIDGET_SLIDER_SLIDER_HANDLE_ACTIVE,
-        disabled = Textures.GUI_WIDGET_SLIDER_SLIDER_HANDLE_DISABLED,
+        normal = Textures.WIDGET_HANDLE_HANDLE,
+        focus = Textures.WIDGET_HANDLE_HANDLE_HOVER,
+        hover = Textures.WIDGET_HANDLE_HANDLE_HOVER,
+        active = Textures.WIDGET_HANDLE_HANDLE_ACTIVE,
+        disabled = Textures.WIDGET_HANDLE_HANDLE_DISABLED,
     ),
 )
 

@@ -15,6 +15,8 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.AscendButton
 import top.fifthlight.touchcontroller.layout.Context
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class AscendButtonTexture {
@@ -28,11 +30,13 @@ enum class AscendButtonTexture {
     FLYING,
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("ascend_button")
 data class AscendButton(
     val size: Float = 2f,
     val texture: AscendButtonTexture = AscendButtonTexture.CLASSIC,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.RIGHT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -42,7 +46,7 @@ data class AscendButton(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<AscendButton, *>>(
+        private val _properties = properties + persistentListOf<Property<AscendButton, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -80,6 +84,7 @@ data class AscendButton(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

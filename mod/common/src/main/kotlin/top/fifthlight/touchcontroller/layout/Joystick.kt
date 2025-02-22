@@ -67,7 +67,7 @@ fun Context.Joystick(layout: Joystick) {
         drawQueue.enqueue { canvas ->
             val color = Color(((0xFF * opacity).toInt() shl 24) or 0xFFFFFF)
             canvas.drawTexture(
-                texture = Textures.GUI_CONTROL_JOYSTICK_PAD,
+                texture = Textures.CONTROL_NEW_JOYSTICK_PAD,
                 dstRect = Rect(size = size.toSize()),
                 tint = color
             )
@@ -75,7 +75,7 @@ fun Context.Joystick(layout: Joystick) {
             val stickSize = layout.stickSize()
             val actualOffset = ((drawOffset + 1f) / 2f * size) - stickSize.toSize() / 2f
             canvas.drawTexture(
-                texture = Textures.GUI_CONTROL_JOYSTICK_STICK,
+                texture = Textures.CONTROL_NEW_JOYSTICK_STICK,
                 dstRect = Rect(
                     offset = actualOffset,
                     size = stickSize.toSize()

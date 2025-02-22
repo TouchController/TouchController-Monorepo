@@ -37,7 +37,7 @@ fun SideTabBar(
     val navigator = LocalNavigator.current
     Column(
         modifier = Modifier
-            .border(Textures.GUI_WIDGET_BACKGROUND_BACKGROUND_DARK)
+            .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
             .width(130)
             .then(modifier),
         verticalArrangement = Arrangement.spacedBy(4),

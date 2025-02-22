@@ -15,9 +15,13 @@ import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.Context
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 sealed class ControllerWidget {
+    abstract val id: Uuid
     abstract val align: Align
     abstract val offset: IntOffset
     abstract val opacity: Float
@@ -35,7 +39,7 @@ sealed class ControllerWidget {
     companion object : KoinComponent {
         private val textFactory: TextFactory by inject()
 
-        val baseProperties = persistentListOf<Property<ControllerWidget, *>>(
+        val properties = persistentListOf<Property<ControllerWidget, *>>(
             BooleanProperty(
                 getValue = { it.lockMoving },
                 setValue = { config, value ->
@@ -78,16 +82,19 @@ sealed class ControllerWidget {
     }
 
     @Transient
-    open val properties: PersistentList<Property<ControllerWidget, *>> = baseProperties
+    open val properties: PersistentList<Property<ControllerWidget, *>> = Companion.properties
 
     abstract fun size(): IntSize
 
     abstract fun layout(context: Context)
 
     abstract fun cloneBase(
+        id: Uuid = this.id,
         align: Align = this.align,
         offset: IntOffset = this.offset,
         opacity: Float = this.opacity,
         lockMoving: Boolean = this.lockMoving,
     ): ControllerWidget
+
+    open fun newId() = cloneBase()
 }

@@ -5,6 +5,7 @@ import org.koin.dsl.module
 import top.fifthlight.combine.data.DataComponentTypeFactory
 import top.fifthlight.combine.data.ItemFactory
 import top.fifthlight.combine.data.TextFactory
+import top.fifthlight.combine.paint.TextMeasurer
 import top.fifthlight.combine.platform.*
 import top.fifthlight.combine.screen.ScreenFactory
 import top.fifthlight.combine.sound.SoundManager
@@ -32,4 +33,5 @@ val platformModule = module {
     single<DefaultItemListProvider> { DefaultItemListProviderImpl }
     single<KeyBindingHandler> { KeyBindingHandlerImpl }
     single<GameDispatcher> { GameDispatcherImpl }
+    single<TextMeasurer> { TextMeasurerImpl }
 }

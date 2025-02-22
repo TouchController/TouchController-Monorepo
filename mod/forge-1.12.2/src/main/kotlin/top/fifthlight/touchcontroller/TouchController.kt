@@ -86,8 +86,7 @@ class TouchController : KoinComponent {
             @SubscribeEvent
             fun hudRender(event: RenderGameOverlayEvent.Post) {
                 if (event.type == ElementType.ALL) {
-                    val client = Minecraft.getMinecraft()
-                    val canvas = CanvasImpl(client.fontRenderer)
+                    val canvas = CanvasImpl()
                     GlStateManager.disableAlpha()
                     GlStateManager.disableBlend()
                     GlStateManager.disableLighting()

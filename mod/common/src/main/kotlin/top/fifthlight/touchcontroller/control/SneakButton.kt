@@ -15,6 +15,8 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.Context
 import top.fifthlight.touchcontroller.layout.SneakButton
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class SneakButtonTexture {
@@ -52,12 +54,14 @@ enum class SneakButtonTrigger {
     DOUBLE_CLICK_TRIGGER,
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("sneak_button")
 data class SneakButton(
     val size: Float = 2f,
     val texture: SneakButtonTexture = SneakButtonTexture.CLASSIC,
     val trigger: SneakButtonTrigger = SneakButtonTrigger.DOUBLE_CLICK_LOCK,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.RIGHT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -67,7 +71,7 @@ data class SneakButton(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<SneakButton, *>>(
+        private val _properties = properties + persistentListOf<Property<SneakButton, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -117,6 +121,7 @@ data class SneakButton(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

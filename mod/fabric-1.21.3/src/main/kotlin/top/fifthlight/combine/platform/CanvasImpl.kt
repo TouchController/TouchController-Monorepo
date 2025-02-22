@@ -2,7 +2,7 @@ package top.fifthlight.combine.platform
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.font.TextRenderer
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.ShaderProgramKey
 import net.minecraft.client.gl.ShaderProgramKeys
 import net.minecraft.client.gui.DrawContext
@@ -33,7 +33,6 @@ private inline fun withShader(program: ShaderProgramKey, crossinline block: () -
 
 class CanvasImpl(
     val drawContext: DrawContext,
-    val textRenderer: TextRenderer,
 ) : Canvas {
     companion object {
         private val IDENTIFIER_ATLAS = Identifier.of("touchcontroller", "textures/gui/atlas.png")
@@ -43,9 +42,10 @@ class CanvasImpl(
         enableBlend()
     }
 
+    private val client = MinecraftClient.getInstance()
+    private val textRenderer = client.textRenderer
     override val textLineHeight: Int = textRenderer.fontHeight
     override var blendEnabled = true
-    override val textMeasurer: TextMeasurer = TextMeasurerImpl(textRenderer)
     private val vertexConsumers = (drawContext as DrawContextAccessor).vertexConsumers
 
     override fun pushState() {

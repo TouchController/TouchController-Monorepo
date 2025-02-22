@@ -4,16 +4,12 @@ import com.squareup.kotlinpoet.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.inputStream
 
 @OptIn(ExperimentalSerializationApi::class)
-fun main(args: Array<String>) {
-    val (languageFile, languageOutput) = args
-
-    val outputDir = File(languageOutput)
-    outputDir.mkdirs()
-
-    val map: Map<String, String> = Json.decodeFromStream(File(languageFile).inputStream())
+fun generateTextBinding(languageFile: Path, outputDir: Path) {
+    val map: Map<String, String> = Json.decodeFromStream(languageFile.inputStream())
 
     val textsBuilder = TypeSpec.objectBuilder("Texts")
 

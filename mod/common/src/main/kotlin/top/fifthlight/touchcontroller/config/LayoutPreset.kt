@@ -9,7 +9,9 @@ import top.fifthlight.data.IntOffset
 import top.fifthlight.touchcontroller.control.*
 import top.fifthlight.touchcontroller.ext.LayoutPresetsSerializer
 import top.fifthlight.touchcontroller.layout.Align
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 val defaultControllerLayout: ControllerLayout = controllerLayoutOf(
     LayoutLayer(
         name = "Control",

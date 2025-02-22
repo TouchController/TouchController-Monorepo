@@ -3,7 +3,9 @@ package top.fifthlight.touchcontroller.layout
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import top.fifthlight.combine.paint.Canvas
+import top.fifthlight.combine.paint.TextMeasurer
 import top.fifthlight.combine.paint.withTranslate
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
@@ -11,6 +13,7 @@ import top.fifthlight.data.IntSize
 import top.fifthlight.data.Offset
 import top.fifthlight.touchcontroller.config.GlobalConfig
 import top.fifthlight.touchcontroller.config.LayerConditionKey
+import top.fifthlight.touchcontroller.control.WidgetTriggerAction
 import top.fifthlight.touchcontroller.gal.CameraPerspective
 import top.fifthlight.touchcontroller.gal.KeyBindingHandler
 import top.fifthlight.touchcontroller.state.Pointer
@@ -125,6 +128,7 @@ data class Context(
     val screenOffset: IntOffset,
     val opacity: Float = 1f,
     val pointers: MutableMap<Int, Pointer> = mutableMapOf(),
+    val pendingAction: MutableList<WidgetTriggerAction> = mutableListOf(),
     val input: ContextInput = ContextInput(),
     val result: ContextResult = ContextResult(),
     val status: ContextStatus = ContextStatus(),
@@ -132,6 +136,8 @@ data class Context(
     val timer: ContextCounter = ContextCounter(),
     val config: GlobalConfig,
 ) : KoinComponent {
+    val textMeasurer: TextMeasurer by inject()
+
     inline fun <reified T> transformDrawQueue(
         crossinline drawTransform: Canvas.(block: () -> Unit) -> Unit = { it() },
         crossinline contextTransform: Context.(DrawQueue) -> Context = { copy(drawQueue = it) },

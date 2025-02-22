@@ -15,11 +15,15 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.Context
 import top.fifthlight.touchcontroller.layout.InventoryButton
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("inventory_button")
 data class InventoryButton(
     val size: Float = 1f,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.CENTER_BOTTOM,
     override val offset: IntOffset = IntOffset(101, 0),
     override val opacity: Float = 1f,
@@ -29,7 +33,7 @@ data class InventoryButton(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<InventoryButton, *>>(
+        private val _properties = properties + persistentListOf<Property<InventoryButton, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -54,6 +58,7 @@ data class InventoryButton(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

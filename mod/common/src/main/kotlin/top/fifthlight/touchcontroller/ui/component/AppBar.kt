@@ -21,7 +21,7 @@ fun AppBar(
     Box(
         modifier = Modifier
             .height(20)
-            .border(Textures.GUI_WIDGET_BACKGROUND_BACKGROUND_GRAY_TITLE)
+            .border(Textures.WIDGET_BACKGROUND_BACKGROUND_GRAY_TITLE)
             .then(modifier),
     ) {
         Row(

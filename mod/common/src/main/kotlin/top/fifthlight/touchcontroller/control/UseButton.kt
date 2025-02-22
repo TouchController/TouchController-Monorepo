@@ -15,6 +15,8 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.Context
 import top.fifthlight.touchcontroller.layout.UseButton
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class UseButtonTexture {
@@ -34,12 +36,14 @@ enum class UseButtonTrigger {
     HOLD,
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("use_button")
 data class UseButton(
     val size: Float = 2f,
     val texture: UseButtonTexture = UseButtonTexture.CLASSIC,
     val trigger: UseButtonTrigger = UseButtonTrigger.HOLD,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.RIGHT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -49,7 +53,7 @@ data class UseButton(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<UseButton, *>>(
+        private val _properties = properties + persistentListOf<Property<UseButton, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -95,6 +99,7 @@ data class UseButton(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

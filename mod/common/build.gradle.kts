@@ -10,12 +10,8 @@ val modVersion: String by extra.properties
 version = modVersion
 group = "top.fifthlight.touchcontroller"
 
-sourceSets.main {
-    kotlin.srcDir(project(":mod:resources").layout.buildDirectory.dir("generated/kotlin/buildinfo"))
-}
-
 tasks.compileKotlin {
-    dependsOn(":mod:resources:generateBuildInfo")
+    dependsOn(":mod:resources:generate")
 }
 
 dependencies {

@@ -28,18 +28,18 @@ fun Context.Texture(texture: Texture, srcRect: IntRect = IntRect(IntOffset.ZERO,
     }
 }
 
-fun Context.Texture(texture: Texture, srcRect: IntRect = IntRect(IntOffset.ZERO, texture.size), color: UInt) {
+fun Context.Texture(texture: Texture, srcRect: IntRect = IntRect(IntOffset.ZERO, texture.size), tint: Color) {
     if (opacity == 1f) {
         drawQueue.enqueue { canvas ->
             canvas.drawTexture(
                 texture = texture,
                 dstRect = Rect(size = size.toSize()),
                 srcRect = srcRect,
-                tint = Color(color)
+                tint = tint
             )
         }
     } else {
-        val colorWithoutAlpha = color.toInt() and 0xFFFFFF
+        val colorWithoutAlpha = tint.value and 0xFFFFFF
         val colorWithAlpha = Color(((0xFF * opacity).toInt() shl 24) or colorWithoutAlpha)
         drawQueue.enqueue { canvas ->
             canvas.drawTexture(

@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.BufferUploader
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
-import net.minecraft.client.gui.Font
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.ShaderInstance
@@ -35,7 +35,6 @@ inline fun withShader(program: Supplier<ShaderInstance>, crossinline block: () -
 
 class CanvasImpl(
     val drawContext: GuiGraphics,
-    val textRenderer: Font,
 ) : Canvas {
     companion object {
         private val IDENTIFIER_ATLAS = ResourceLocation("touchcontroller", "textures/gui/atlas.png")
@@ -47,9 +46,10 @@ class CanvasImpl(
         enableBlend()
     }
 
+    private val client = Minecraft.getInstance()
+    private val textRenderer = client.font
     override val textLineHeight: Int = textRenderer.lineHeight
     override var blendEnabled = true
-    override val textMeasurer: TextMeasurer = TextMeasurerImpl(textRenderer)
 
     override fun pushState() {
         drawContext.pose().pushPose()

@@ -24,7 +24,7 @@ fun AlertDialog(
     Dialog(onDismissRequest = onDismissRequest) {
         Column(
             modifier = Modifier
-                .border(Textures.GUI_WIDGET_BACKGROUND_BACKGROUND_LIGHTGRAY)
+                .border(Textures.WIDGET_BACKGROUND_BACKGROUND_LIGHTGRAY)
                 .verticalScroll()
                 .consumePress(),
             horizontalAlignment = Alignment.CenterHorizontally,

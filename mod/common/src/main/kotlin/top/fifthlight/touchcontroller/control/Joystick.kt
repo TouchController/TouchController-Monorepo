@@ -15,7 +15,10 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.Context
 import top.fifthlight.touchcontroller.layout.Joystick
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("joystick")
 data class Joystick(
@@ -23,6 +26,7 @@ data class Joystick(
     val stickSize: Float = 1f,
     val triggerSprint: Boolean = false,
     val increaseOpacityWhenActive: Boolean = true,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.LEFT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -32,7 +36,7 @@ data class Joystick(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<Joystick, *>>(
+        private val _properties = properties + persistentListOf<Property<Joystick, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -80,6 +84,7 @@ data class Joystick(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

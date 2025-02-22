@@ -51,13 +51,12 @@ private class CombineScreen(
 ) : GuiScreen(), CoroutineScope, KoinComponent {
     private val client = Minecraft.getMinecraft()
     private var initialized = false
-    private val textMeasurer = TextMeasurerImpl(client.fontRenderer)
     private val dispatcher: GameDispatcher by inject()
     private val soundManager = SoundManagerImpl(client.soundHandler)
     private val closeHandler = ScreenCloseHandler(this@CombineScreen)
     private val dismissDispatcher = OnDismissRequestDispatcher()
 
-    private val owner = CombineOwner(dispatcher = dispatcher, textMeasurer = textMeasurer)
+    private val owner = CombineOwner(dispatcher = dispatcher, textMeasurer = TextMeasurerImpl)
     override val coroutineContext: CoroutineContext
         get() = owner.coroutineContext
 
@@ -204,7 +203,7 @@ private class CombineScreen(
             lastMouseY = mouseY
         }
 
-        val canvas = CanvasImpl(mc.fontRenderer)
+        val canvas = CanvasImpl()
         val context = RenderContext(canvas)
 
         val size = IntSize(width, height)

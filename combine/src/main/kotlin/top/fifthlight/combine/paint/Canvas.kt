@@ -62,7 +62,6 @@ enum class GuiTexture {
 interface Canvas {
     val textLineHeight: Int
     var blendEnabled: Boolean
-    val textMeasurer: TextMeasurer
 
     fun pushState()
     fun popState()
@@ -280,12 +279,17 @@ inline fun Canvas.withScale(x: Float, y: Float, crossinline block: Canvas.() -> 
     }
 }
 
-fun Canvas.drawCenteredText(offset: IntOffset = IntOffset.ZERO, text: String, color: Color) {
+fun Canvas.drawCenteredText(
+    textMeasurer: TextMeasurer,
+    offset: IntOffset = IntOffset.ZERO,
+    text: String,
+    color: Color
+) {
     val size = textMeasurer.measure(text)
     drawText(offset + size / 2, text, color)
 }
 
-fun Canvas.drawCenteredText(offset: IntOffset = IntOffset.ZERO, text: Text, color: Color) {
+fun Canvas.drawCenteredText(textMeasurer: TextMeasurer, offset: IntOffset = IntOffset.ZERO, text: Text, color: Color) {
     val size = textMeasurer.measure(text)
     drawText(offset + size / 2, text, color)
 }

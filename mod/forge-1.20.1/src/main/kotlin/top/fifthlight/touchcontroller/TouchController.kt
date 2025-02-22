@@ -98,7 +98,7 @@ class TouchController : KoinComponent {
             @SubscribeEvent
             fun hudRender(event: RenderGuiEvent.Post) {
                 val client = Minecraft.getInstance()
-                val canvas = CanvasImpl(event.guiGraphics, client.font)
+                val canvas = CanvasImpl(event.guiGraphics)
                 RenderEvents.onHudRender(canvas)
             }
 

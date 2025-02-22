@@ -15,6 +15,8 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.BoatButton
 import top.fifthlight.touchcontroller.layout.Context
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class BoatButtonSide {
@@ -25,12 +27,14 @@ enum class BoatButtonSide {
     RIGHT
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("boat_button")
 data class BoatButton(
     val size: Float = 3f,
     val side: BoatButtonSide = BoatButtonSide.LEFT,
     val classic: Boolean = true,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.LEFT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -40,7 +44,7 @@ data class BoatButton(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<BoatButton, *>>(
+        private val _properties = properties + persistentListOf<Property<BoatButton, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -79,6 +83,7 @@ data class BoatButton(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

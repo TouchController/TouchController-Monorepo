@@ -18,18 +18,18 @@ data class SwitchTextureSet(
 
 val defaultSwitchTexture = SwitchTextureSet(
     off = TextureSet(
-        normal = Textures.GUI_WIDGET_SWITCH_SWITCH_OFF,
-        focus = Textures.GUI_WIDGET_SWITCH_SWITCH_OFF_HOVER,
-        hover = Textures.GUI_WIDGET_SWITCH_SWITCH_OFF_HOVER,
-        active = Textures.GUI_WIDGET_SWITCH_SWITCH_OFF_ACTIVE,
-        disabled = Textures.GUI_WIDGET_SWITCH_SWITCH_OFF_DISABLED,
+        normal = Textures.WIDGET_SWITCH_SWITCH_OFF,
+        focus = Textures.WIDGET_SWITCH_SWITCH_OFF_HOVER,
+        hover = Textures.WIDGET_SWITCH_SWITCH_OFF_HOVER,
+        active = Textures.WIDGET_SWITCH_SWITCH_OFF_ACTIVE,
+        disabled = Textures.WIDGET_SWITCH_SWITCH_OFF_DISABLED,
     ),
     on = TextureSet(
-        normal = Textures.GUI_WIDGET_SWITCH_SWITCH_ON,
-        focus = Textures.GUI_WIDGET_SWITCH_SWITCH_ON_HOVER,
-        hover = Textures.GUI_WIDGET_SWITCH_SWITCH_ON_HOVER,
-        active = Textures.GUI_WIDGET_SWITCH_SWITCH_ON_ACTIVE,
-        disabled = Textures.GUI_WIDGET_SWITCH_SWITCH_ON_DISABLED,
+        normal = Textures.WIDGET_SWITCH_SWITCH_ON,
+        focus = Textures.WIDGET_SWITCH_SWITCH_ON_HOVER,
+        hover = Textures.WIDGET_SWITCH_SWITCH_ON_HOVER,
+        active = Textures.WIDGET_SWITCH_SWITCH_ON_ACTIVE,
+        disabled = Textures.WIDGET_SWITCH_SWITCH_ON_DISABLED,
     ),
 )
 

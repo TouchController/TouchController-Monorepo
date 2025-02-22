@@ -143,6 +143,14 @@ fun <T : ModuleDependency> DependencyHandlerScope.shadeAndImplementation(
 dependencies {
     minecraft("net.minecraftforge:forge:$gameVersion-$forgeVersion")
 
+    shadeAndImplementation(project(":mod:resources", "texture"))
+    shadeAndImplementation(project(":mod:resources", "forge-icon"))
+    if (legacyLanguageFormatBool) {
+        shadeAndImplementation(project(":mod:resources", "legacy-lang"))
+    } else {
+        shadeAndImplementation(project(":mod:resources", "lang"))
+    }
+
     shadeAndImplementation(project(":mod:common")) {
         exclude("org.slf4j")
     }
@@ -164,21 +172,7 @@ dependencies {
     }
 }
 
-sourceSets.main {
-    if (!legacyLanguageFormatBool) {
-        resources.srcDir("../resources/src/main/resources/lang")
-    }
-    resources.srcDir(project(":mod:resources").layout.buildDirectory.dir("generated/resources/atlas"))
-}
-
 tasks.processResources {
-    dependsOn(":mod:resources:generateTextureAtlas")
-    from("../resources/src/main/resources/icon/assets/touchcontroller/icon.png")
-    if (legacyLanguageFormatBool) {
-        dependsOn(":mod:resources:generateLegacyText")
-        from(project(":mod:resources").layout.buildDirectory.dir("generated/resources/legacy-lang"))
-    }
-
     val modAuthorsList = modAuthors.split(",").map(String::trim).filter(String::isNotEmpty)
     val modContributorsList = modContributors.split(",").map(String::trim).filter(String::isNotEmpty)
     fun String.quote(quoteStartChar: Char = '"', quoteEndChar: Char = '"') = quoteStartChar + this + quoteEndChar

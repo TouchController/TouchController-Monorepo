@@ -5,120 +5,119 @@ plugins {
 
 group = "top.fifthlight.touchcontroller"
 
-val outputKotlinResourceDir = layout.buildDirectory.dir("generated/kotlin/resources")
+val resourcesDir = layout.projectDirectory.dir("src/main/resources")
 
-val languageDir = File(projectDir, "src/main/resources/lang/assets/touchcontroller/lang")
+val generateSourcesDir = layout.buildDirectory.dir("generated/kotlin")
+val generateAtlasFile = layout.buildDirectory.file("generated/atlas.png")
+val generateLegacyLangDir = layout.buildDirectory.dir("generated/legacy-lang")
 
-val defaultLanguageFile = File(languageDir, "en_us.json")
-task<JavaExec>("generateTextBindings") {
-    dependsOn(tasks.compileKotlin)
-
-    inputs.files(defaultLanguageFile)
-    outputs.dir(outputKotlinResourceDir)
-
-    group = "build"
-    description = "Generate binding for translation file"
-    mainClass = "top.fifthlight.touchcontroller.resource.TextsBindingKt"
-    classpath = sourceSets["main"].runtimeClasspath
-    args = listOf(defaultLanguageFile.toString(), outputKotlinResourceDir.get().toString())
+fun getBuildInfo(): Map<String, String> {
+    val propertyNames = listOf(
+        "modId",
+        "modName",
+        "modVersion",
+        "modDescription",
+        "modLicense",
+        "modAuthors",
+        "modContributors",
+    )
+    return propertyNames.associate { Pair(it, properties[it] as String) }
 }
 
-val legacyLanguageDir = layout.buildDirectory.file("generated/resources/legacy-lang/assets/touchcontroller/lang")
-task<JavaExec>("generateLegacyText") {
+task<JavaExec>("generateResource") {
     dependsOn(tasks.compileKotlin)
 
-    inputs.dir(languageDir)
-    outputs.dir(legacyLanguageDir)
+    val buildInfo = getBuildInfo()
+    val buildInfoStr = buildInfo.entries.joinToString("\n") { (key, value) -> "$key: $value" }
+
+    inputs.properties(buildInfo)
+    inputs.dir(resourcesDir)
+    outputs.apply {
+        dir(generateSourcesDir)
+        file(generateAtlasFile)
+        dir(generateLegacyLangDir)
+    }
 
     group = "build"
-    description = "Generate legacy translation file"
-    mainClass = "top.fifthlight.touchcontroller.resource.LegacyTextGeneratorKt"
-    classpath = sourceSets["main"].runtimeClasspath
-    args = listOf(languageDir.toString(), legacyLanguageDir.get().toString())
-}
-
-val textureDir = File(projectDir, "src/main/resources/textures/assets/touchcontroller/textures")
-
-val outputGuiTextureAtlasJsonFile = layout.buildDirectory.file("generated/resources/atlas.json")
-val outputGuiTextureAtlasFile =
-    layout.buildDirectory.file("generated/resources/atlas/assets/touchcontroller/textures/gui/atlas.png")
-task<JavaExec>("generateTextureAtlas") {
-    dependsOn(tasks.compileKotlin)
-
-    inputs.dir(textureDir)
-    outputs.files(outputGuiTextureAtlasFile, outputGuiTextureAtlasJsonFile)
-
-    group = "build"
-    description = "Generate texture atlas"
-    mainClass = "top.fifthlight.touchcontroller.resource.TexturesAtlasKt"
+    description = "Generate resource files"
+    mainClass = "top.fifthlight.touchcontroller.resource.GenerateResourcesKt"
     classpath = sourceSets["main"].runtimeClasspath
     args = listOf(
-        textureDir.toString(),
-        outputGuiTextureAtlasFile.get().toString(),
-        outputGuiTextureAtlasJsonFile.get().toString()
+        buildInfoStr,
+        resourcesDir.asFile.toString(),
+        generateSourcesDir.get().toString(),
+        generateAtlasFile.get().toString(),
+        generateLegacyLangDir.get().toString(),
     )
 }
 
-task<JavaExec>("generateTextureBindings") {
-    dependsOn(tasks.compileKotlin, "generateTextureAtlas")
+val jarTasks = listOf(
+    task<Jar>("generateLangJar") {
+        archiveBaseName = "lang"
+        destinationDirectory = layout.buildDirectory.dir("libs")
 
-    inputs.file(outputGuiTextureAtlasJsonFile)
-    outputs.dir(outputKotlinResourceDir)
+        from(resourcesDir.dir("lang").asFileTree) {
+            into("assets/touchcontroller/lang")
+        }
+    },
+    task<Jar>("generateLegacyLangJar") {
+        dependsOn("generateResource")
+        archiveBaseName = "legacy-lang"
+        destinationDirectory = layout.buildDirectory.dir("libs")
 
-    group = "build"
-    description = "Generate bindings for texture files"
-    mainClass = "top.fifthlight.touchcontroller.resource.TexturesBindingKt"
-    classpath = sourceSets["main"].runtimeClasspath
-    args = listOf(
-        outputGuiTextureAtlasJsonFile.get().toString(),
-        outputKotlinResourceDir.get().toString()
-    )
-}
+        from(fileTree(generateLegacyLangDir)) {
+            into("assets/touchcontroller/lang")
+        }
+    },
+    task<Jar>("generateForgeIconJar") {
+        archiveBaseName = "forge-icon"
+        destinationDirectory = layout.buildDirectory.dir("libs")
 
-val outputKotlinBuildInfoDir = layout.buildDirectory.dir("generated/kotlin/buildinfo")
-task<JavaExec>("generateBuildInfo") {
-    dependsOn(tasks.compileKotlin)
+        from(resourcesDir.file("icon.png"))
+    },
+    task<Jar>("generateFabricIconJar") {
+        archiveBaseName = "fabric-icon"
+        destinationDirectory = layout.buildDirectory.dir("libs")
 
-    val modId: String by properties
-    val modName: String by properties
-    val modVersion: String by properties
-    val modDescription: String by properties
-    val modLicense: String by properties
-    val modAuthors: String by properties
-    val modContributors: String by properties
-    val properties = mapOf(
-        "modId" to modId,
-        "modName" to modName,
-        "modVersion" to modVersion,
-        "modDescription" to modDescription,
-        "modLicense" to modLicense,
-        "modAuthors" to modAuthors,
-        "modContributors" to modContributors,
-    )
-    inputs.properties(properties)
-    outputs.dir(outputKotlinBuildInfoDir)
+        from(resourcesDir.file("icon.png")) {
+            into("assets/touchcontroller")
+        }
+    },
+    task<Jar>("generateTextureJar") {
+        dependsOn("generateResource")
+        archiveBaseName = "texture"
+        destinationDirectory = layout.buildDirectory.dir("libs")
 
-    group = "build"
-    description = "Generate build information"
-    mainClass = "top.fifthlight.touchcontroller.resource.BuildInfoGeneratorKt"
-    classpath = sourceSets["main"].runtimeClasspath
-    args = listOf(
-        outputKotlinBuildInfoDir.get().toString(),
-        properties.entries.joinToString("\n") { (key, value) -> "$key: $value" }
-    )
+        from(generateAtlasFile) {
+            into("assets/touchcontroller/textures/gui")
+        }
+        from(fileTree(resourcesDir.dir("texture/background"))) {
+            into("assets/touchcontroller/textures/gui/background")
+        }
+    },
+)
+
+jarTasks.forEach { task ->
+    val fileName = task.archiveBaseName.get()
+    configurations {
+        create(fileName)
+    }
+    artifacts {
+        add(fileName, task)
+    }
 }
 
 task("generate") {
-    dependsOn(
-        "generateTextBindings",
-        "generateTextureAtlas",
-        "generateTextureBindings",
-        "generateBuildInfo",
-        "generateLegacyText",
-    )
+    dependsOn("generateResource")
+    jarTasks.forEach(::dependsOn)
+}
 
-    group = "build"
-    description = "Generate all source files"
+tasks.build {
+    dependsOn("generate")
+}
+
+tasks.processResources {
+    enabled = false
 }
 
 dependencies {

@@ -3,7 +3,6 @@ package top.fifthlight.combine.platform
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.render.BufferRenderer
 import net.minecraft.client.render.Tessellator
@@ -30,7 +29,6 @@ fun VertexConsumer.color(color: Color): VertexConsumer = color(color.r, color.g,
 
 class CanvasImpl(
     val matrices: MatrixStack,
-    val textRenderer: TextRenderer,
 ) : Canvas, DrawableHelper() {
     companion object {
         private val IDENTIFIER_ATLAS = Identifier("touchcontroller", "textures/gui/atlas.png")
@@ -42,9 +40,9 @@ class CanvasImpl(
     }
 
     private val client = MinecraftClient.getInstance()
+    private val textRenderer = client.textRenderer
     override val textLineHeight: Int = textRenderer.fontHeight
     override var blendEnabled = true
-    override val textMeasurer: TextMeasurer = TextMeasurerImpl(textRenderer)
 
     override fun pushState() {
         matrices.push()

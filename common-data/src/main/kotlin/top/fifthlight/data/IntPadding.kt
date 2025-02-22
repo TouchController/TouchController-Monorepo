@@ -7,8 +7,6 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.*
 
-fun IntPadding(padding: Int) = IntPadding(padding, padding, padding, padding)
-
 @Serializable(with = IntPaddingSerializer::class)
 data class IntPadding(
     val left: Int,
@@ -16,6 +14,8 @@ data class IntPadding(
     val right: Int,
     val bottom: Int
 ) {
+    constructor(padding: Int) : this(padding, padding, padding, padding)
+
     companion object {
         val ZERO = IntPadding(0, 0, 0, 0)
     }

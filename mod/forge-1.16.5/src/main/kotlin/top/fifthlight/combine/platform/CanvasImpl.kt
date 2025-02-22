@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.IVertexBuilder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.AbstractGui
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldVertexBufferUploader
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -30,7 +29,6 @@ fun IVertexBuilder.color(color: Color): IVertexBuilder = color(color.r, color.g,
 
 class CanvasImpl(
     val matrices: MatrixStack,
-    val textRenderer: FontRenderer,
 ) : Canvas, AbstractGui() {
     companion object {
         private val IDENTIFIER_ATLAS = ResourceLocation("touchcontroller", "textures/gui/atlas.png")
@@ -42,9 +40,9 @@ class CanvasImpl(
     }
 
     private val client = Minecraft.getInstance()
+    private val textRenderer = client.font
     override val textLineHeight: Int = textRenderer.lineHeight
     override var blendEnabled = true
-    override val textMeasurer: TextMeasurer = TextMeasurerImpl(textRenderer)
 
     override fun pushState() {
         matrices.pushPose()

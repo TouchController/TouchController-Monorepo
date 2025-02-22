@@ -41,6 +41,7 @@ value class IntSize(private val packed: Long) {
     operator fun component2() = height
     operator fun plus(length: Int) = IntSize(width = width + length, height = height + length)
     operator fun plus(size: IntSize) = IntSize(width = width + size.width, height = height + size.height)
+    operator fun plus(size: IntPadding) = IntSize(width = width + size.width, height = height + size.height)
     operator fun minus(size: Int) = IntSize(width = width - size, height = height - size)
     operator fun minus(size: IntSize) = IntOffset(x = width - size.width, y = height - size.height)
     operator fun minus(offset: IntOffset) = IntSize(width = width - offset.x, height = height - offset.y)

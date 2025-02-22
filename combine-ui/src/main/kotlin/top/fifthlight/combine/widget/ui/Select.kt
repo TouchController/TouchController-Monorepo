@@ -18,7 +18,6 @@ import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.ui.style.ColorTheme
 import top.fifthlight.combine.ui.style.LocalColorTheme
 import top.fifthlight.combine.ui.style.NinePatchTextureSet
-import top.fifthlight.combine.ui.style.TextStyle
 import top.fifthlight.combine.widget.base.Popup
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Row
@@ -37,26 +36,26 @@ data class SelectTextureSet(
 
 val defaultSelectTextureSet = SelectTextureSet(
     menuBox = NinePatchTextureSet(
-        normal = Textures.GUI_WIDGET_SELECT_SELECT,
-        focus = Textures.GUI_WIDGET_SELECT_SELECT_HOVER,
-        hover = Textures.GUI_WIDGET_SELECT_SELECT_HOVER,
-        active = Textures.GUI_WIDGET_SELECT_SELECT_ACTIVE,
-        disabled = Textures.GUI_WIDGET_SELECT_SELECT_DISABLED,
+        normal = Textures.WIDGET_SELECT_SELECT,
+        focus = Textures.WIDGET_SELECT_SELECT_HOVER,
+        hover = Textures.WIDGET_SELECT_SELECT_HOVER,
+        active = Textures.WIDGET_SELECT_SELECT_ACTIVE,
+        disabled = Textures.WIDGET_SELECT_SELECT_DISABLED,
     ),
-    floatPanel = Textures.GUI_WIDGET_SELECT_FLOAT_WINDOW,
+    floatPanel = Textures.WIDGET_SELECT_FLOAT_WINDOW,
     itemUnselected = NinePatchTextureSet(
-        normal = Textures.GUI_WIDGET_LIST_LIST,
-        focus = Textures.GUI_WIDGET_LIST_LIST_HOVER,
-        hover = Textures.GUI_WIDGET_LIST_LIST_HOVER,
-        active = Textures.GUI_WIDGET_LIST_LIST_ACTIVE,
-        disabled = Textures.GUI_WIDGET_LIST_LIST_DISABLED,
+        normal = Textures.WIDGET_LIST_LIST,
+        focus = Textures.WIDGET_LIST_LIST_HOVER,
+        hover = Textures.WIDGET_LIST_LIST_HOVER,
+        active = Textures.WIDGET_LIST_LIST_ACTIVE,
+        disabled = Textures.WIDGET_LIST_LIST_DISABLED,
     ),
     itemSelected = NinePatchTextureSet(
-        normal = Textures.GUI_WIDGET_LIST_LIST_PRESSLOCK,
-        focus = Textures.GUI_WIDGET_LIST_LIST_PRESSLOCK_HOVER,
-        hover = Textures.GUI_WIDGET_LIST_LIST_PRESSLOCK_HOVER,
-        active = Textures.GUI_WIDGET_LIST_LIST_ACTIVE,
-        disabled = Textures.GUI_WIDGET_LIST_LIST_DISABLED,
+        normal = Textures.WIDGET_LIST_LIST_PRESSLOCK,
+        focus = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
+        hover = Textures.WIDGET_LIST_LIST_PRESSLOCK_HOVER,
+        active = Textures.WIDGET_LIST_LIST_ACTIVE,
+        disabled = Textures.WIDGET_LIST_LIST_DISABLED,
     )
 )
 
@@ -70,9 +69,9 @@ fun SelectIcon(
     Icon(
         modifier = modifier,
         texture = if (expanded) {
-            Textures.GUI_ICON_UP
+            Textures.ICON_UP
         } else {
-            Textures.GUI_ICON_DOWN
+            Textures.ICON_DOWN
         }
     )
 }
@@ -185,7 +184,6 @@ fun Select(
     modifier: Modifier = Modifier,
     textureSet: SelectTextureSet = LocalSelectTextureSet.current,
     colorTheme: ColorTheme? = null,
-    textStyle: TextStyle? = null,
     expanded: Boolean = false,
     onExpandedChanged: (Boolean) -> Unit,
     dropDownContent: @Composable SelectScope.() -> Unit,
@@ -262,7 +260,7 @@ fun Select(
                 screenSize?.let { screenSize ->
                     Box(
                         modifier = Modifier
-                            .border(Textures.GUI_WIDGET_SELECT_FLOAT_WINDOW)
+                            .border(Textures.WIDGET_SELECT_FLOAT_WINDOW)
                             .minWidth(currentAnchor.size.width - 2)
                             .maxHeight(screenSize.height / 2)
                             .onPlaced { contentSize = it.size }

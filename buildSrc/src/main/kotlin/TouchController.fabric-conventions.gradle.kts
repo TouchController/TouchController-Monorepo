@@ -35,7 +35,10 @@ val minecraftVersion = MinecraftVersion(gameVersion)
 version = "$modVersion+fabric-$gameVersion"
 group = "top.fifthlight.touchcontroller"
 
-configurations.create("shadow")
+configurations {
+    create("shadow")
+    create("resource")
+}
 
 tasks.jar {
     archiveBaseName = "$modName-slim"
@@ -80,10 +83,18 @@ fun <T : ModuleDependency> DependencyHandlerScope.shadeAndImplementation(
     implementation(dependency, dependencyConfiguration)
 }
 
+fun DependencyHandlerScope.resource(dependency: Any) {
+    add("resource", dependency)
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:$gameVersion")
     mappings("net.fabricmc:yarn:$yarnVersion:v2")
     modImplementation(libs.fabric.loader)
+
+    resource(project(":mod:resources", "texture"))
+    resource(project(":mod:resources", "fabric-icon"))
+    resource(project(":mod:resources", "lang"))
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
     modImplementation("com.terraformersmc:modmenu:$modmenuVersion")
@@ -149,17 +160,23 @@ tasks.processResources {
     from(File(rootDir, "LICENSE")) {
         rename { "${it}_${modName}" }
     }
+
+    from(configurations["resource"].elements.map { fileSet ->
+        fileSet.map { fileLocation ->
+            val fileName = fileLocation.asFile.name
+            if (fileName.endsWith(".jar")) {
+                zipTree(fileLocation)
+            } else {
+                fileLocation
+            }
+        }
+    }) {
+        exclude("META-INF/MANIFEST.MF")
+    }
 }
 
 sourceSets.main {
     resources.srcDir("../common-fabric/src/main/resources")
-    resources.srcDir("../resources/src/main/resources/lang")
-    resources.srcDir("../resources/src/main/resources/icon")
-    resources.srcDir(project(":mod:resources").layout.buildDirectory.dir("generated/resources/atlas"))
-}
-
-tasks.processResources {
-    dependsOn(":mod:resources:generateTextureAtlas")
 }
 
 val minecraftShadow = configurations.create("minecraftShadow") {

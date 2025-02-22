@@ -1,11 +1,14 @@
 package top.fifthlight.combine.platform
 
-import net.minecraft.client.font.TextRenderer
+import net.minecraft.client.MinecraftClient
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.paint.TextMeasurer
 import top.fifthlight.data.IntSize
 
-class TextMeasurerImpl(private val textRenderer: TextRenderer) : TextMeasurer {
+object TextMeasurerImpl : TextMeasurer {
+    private val client = MinecraftClient.getInstance()
+    private val textRenderer = client.textRenderer
+
     override fun measure(text: String) = IntSize(
         width = textRenderer.getWidth(text),
         height = 9

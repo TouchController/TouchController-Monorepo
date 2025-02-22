@@ -15,6 +15,8 @@ import top.fifthlight.touchcontroller.layout.Align
 import top.fifthlight.touchcontroller.layout.AttackButton
 import top.fifthlight.touchcontroller.layout.Context
 import kotlin.math.round
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
 enum class AttackButtonTexture {
@@ -25,11 +27,13 @@ enum class AttackButtonTexture {
     NEW,
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
 @SerialName("attack_button")
 data class AttackButton(
     val size: Float = 2f,
     val texture: AttackButtonTexture = AttackButtonTexture.CLASSIC,
+    override val id: Uuid = Uuid.random(),
     override val align: Align = Align.RIGHT_BOTTOM,
     override val offset: IntOffset = IntOffset.ZERO,
     override val opacity: Float = 1f,
@@ -39,7 +43,7 @@ data class AttackButton(
         private val textFactory: TextFactory by inject()
 
         @Suppress("UNCHECKED_CAST")
-        private val _properties = baseProperties + persistentListOf<Property<AttackButton, *>>(
+        private val _properties = properties + persistentListOf<Property<AttackButton, *>>(
             FloatProperty(
                 getValue = { it.size },
                 setValue = { config, value -> config.copy(size = value) },
@@ -76,6 +80,7 @@ data class AttackButton(
     }
 
     override fun cloneBase(
+        id: Uuid,
         align: Align,
         offset: IntOffset,
         opacity: Float,

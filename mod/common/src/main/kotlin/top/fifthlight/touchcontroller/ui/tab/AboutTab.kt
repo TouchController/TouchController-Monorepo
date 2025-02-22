@@ -82,7 +82,7 @@ object AboutTab : Tab() {
                     horizontalArrangement = Arrangement.spacedBy(8),
                 ) {
                     Icon(
-                        texture = Textures.GUI_CONTROL_DPAD_UP_CLASSIC,
+                        texture = Textures.CONTROL_CLASSIC_DPAD_UP,
                         size = IntSize(iconSize),
                     )
                     Column(
@@ -135,7 +135,7 @@ object AboutTab : Tab() {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .border(Textures.GUI_WIDGET_TAB_TAB),
+                                    .border(Textures.WIDGET_TAB_TAB),
                                 verticalArrangement = Arrangement.spacedBy(4),
                             ) {
                                 Row(
