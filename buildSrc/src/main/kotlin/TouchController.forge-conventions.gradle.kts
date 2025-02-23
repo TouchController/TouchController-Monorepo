@@ -32,6 +32,8 @@ val useMixin: String by extra.properties
 val useMixinBool = useMixin.toBoolean()
 val useAccessTransformer: String by extra.properties
 val useAccessTransformerBool = useAccessTransformer.toBoolean()
+val useCoreMod: String by extra.properties
+val useCoreModBool = useCoreMod.toBoolean()
 val bridgeSlf4j: String by extra.properties
 val bridgeSlf4jBool = bridgeSlf4j.toBoolean()
 val legacyLanguageFormat: String by extra.properties
@@ -217,10 +219,11 @@ tasks.processResources {
 
 tasks.withType<Jar> {
     manifest {
-        val attributes = mutableMapOf(
-            "FMLCorePlugin" to "top.fifthlight.touchcontroller.TouchControllerCorePlugin",
-            "FMLCorePluginContainsFMLMod" to "true",
-        )
+        val attributes = mutableMapOf<String, String>()
+        if (useCoreModBool) {
+            attributes += ("FMLCorePlugin" to "top.fifthlight.touchcontroller.TouchControllerCorePlugin")
+            attributes += ("FMLCorePluginContainsFMLMod" to "true")
+        }
         if (useAccessTransformerBool) {
             attributes += ("FMLAT" to "touchcontroller_at.cfg")
         }
