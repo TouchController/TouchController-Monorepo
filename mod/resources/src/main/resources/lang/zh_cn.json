@@ -79,12 +79,8 @@
   "touchcontroller.screen.config.item.crosshair_aiming_items.description": "配置需要修正使用方向的物品，例如水桶、船等物品。如果使用物品时放置位置有问题，可以尝试添加物品到此项。",
   "touchcontroller.screen.config.item.whitelist.title": "白名单",
   "touchcontroller.screen.config.item.blacklist.title": "黑名单",
-  "touchcontroller.screen.config.item.item.empty": "没有物品",
-  "touchcontroller.screen.config.item.item.and_more_items": "以及 %d 个物品",
   "touchcontroller.screen.config.item.subclasses.title": "子类",
   "touchcontroller.screen.config.item.component.title": "组件",
-  "touchcontroller.screen.config.item.component.empty": "没有组件",
-  "touchcontroller.screen.config.item.component.and_more_components": "以及 %d 个组件",
   "touchcontroller.screen.config.item.edit.title": "编辑",
 
   "touchcontroller.screen.item_list.title": "物品列表",

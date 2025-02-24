@@ -79,12 +79,8 @@
   "touchcontroller.screen.config.item.crosshair_aiming_items.description": "Items which aiming by crosshair when placing, such as buckets and boats. If there are problems placing items, you can try adding them to this list.",
   "touchcontroller.screen.config.item.whitelist.title": "Whitelist",
   "touchcontroller.screen.config.item.blacklist.title": "Blacklist",
-  "touchcontroller.screen.config.item.item.empty": "No item",
-  "touchcontroller.screen.config.item.item.and_more_items": "and %d items",
   "touchcontroller.screen.config.item.subclasses.title": "Subclasses",
   "touchcontroller.screen.config.item.component.title": "Components",
-  "touchcontroller.screen.config.item.component.empty": "No component",
-  "touchcontroller.screen.config.item.component.and_more_components": "and %d components",
   "touchcontroller.screen.config.item.edit.title": "Edit",
 
   "touchcontroller.screen.item_list.title": "Item list",

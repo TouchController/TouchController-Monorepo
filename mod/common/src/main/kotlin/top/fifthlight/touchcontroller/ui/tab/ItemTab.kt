@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import top.fifthlight.combine.data.LocalItemFactory
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
@@ -17,12 +18,14 @@ import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.ui.Button
+import top.fifthlight.combine.widget.ui.Switch
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.BackgroundTextures
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.config.ItemList
 import top.fifthlight.touchcontroller.ui.component.HorizontalPreferenceItem
+import top.fifthlight.touchcontroller.ui.component.ItemShower
 import top.fifthlight.touchcontroller.ui.screen.ComponentScreen
 import top.fifthlight.touchcontroller.ui.screen.ItemListScreen
 
@@ -133,6 +136,23 @@ class ItemTab(
                         }
                     ) {
                         Text(Text.translatable(Texts.SCREEN_CONFIG_ITEM_EDIT_TITLE))
+                    }
+                }
+                val itemFactory = LocalItemFactory.current
+                for (subclass in itemFactory.subclasses) {
+                    HorizontalPreferenceItem(
+                        title = subclass.name,
+                    ) {
+                        Switch(
+                            value = value.subclasses.contains(subclass),
+                            onValueChanged = {
+                                if (it) {
+                                    onValueChanged(value.copy(subclasses = value.subclasses.add(subclass)))
+                                } else {
+                                    onValueChanged(value.copy(subclasses = value.subclasses.remove(subclass)))
+                                }
+                            }
+                        )
                     }
                 }
             }

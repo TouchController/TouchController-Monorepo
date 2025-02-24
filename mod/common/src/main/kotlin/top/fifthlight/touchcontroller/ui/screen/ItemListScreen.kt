@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import kotlinx.collections.immutable.PersistentList
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.data.Item
 import top.fifthlight.combine.data.Text
@@ -21,18 +22,14 @@ import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Box
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
-import top.fifthlight.combine.widget.base.layout.Spacer
 import top.fifthlight.combine.widget.ui.Item
 import top.fifthlight.combine.widget.ui.Text
-import top.fifthlight.combine.widget.ui.TextButton
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
-import top.fifthlight.touchcontroller.ui.component.AppBar
-import top.fifthlight.touchcontroller.ui.component.BackButton
-import top.fifthlight.touchcontroller.ui.component.ListButton
-import top.fifthlight.touchcontroller.ui.component.Scaffold
-import top.fifthlight.touchcontroller.ui.component.TouchControllerNavigator
+import top.fifthlight.touchcontroller.gal.PlayerHandleFactory
+import top.fifthlight.touchcontroller.ui.component.*
 import top.fifthlight.touchcontroller.ui.model.ItemListScreenModel
+import top.fifthlight.touchcontroller.ui.screen.itemlist.DefaultItemListScreen
 import top.fifthlight.touchcontroller.ui.screen.itemlist.ItemListChooseScreen
 
 class ItemListScreen(
@@ -86,7 +83,15 @@ class ItemListScreen(
                     }
                 }
                 Box(modifier = Modifier.fillMaxHeight().weight(.6f)) {
-                    TouchControllerNavigator(ItemListChooseScreen(screenModel::addItem))
+                    val playerHandleFactory: PlayerHandleFactory = koinInject()
+                    val playerHandle = playerHandleFactory.getPlayerHandle()
+                    TouchControllerNavigator(
+                        if (playerHandle == null) {
+                            DefaultItemListScreen(screenModel::addItem)
+                        } else {
+                            ItemListChooseScreen(screenModel::addItem)
+                        }
+                    )
                 }
             }
         }

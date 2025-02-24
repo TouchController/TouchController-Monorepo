@@ -62,7 +62,7 @@ class ComponentScreen(
                         .verticalScroll()
                         .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
                         .fillMaxHeight()
-                        .weight(.4f),
+                        .weight(1f),
                 ) {
                     for ((index, item) in items.withIndex()) {
                         ListButton(
@@ -90,7 +90,7 @@ class ComponentScreen(
                         .padding(4)
                         .border(Textures.WIDGET_BACKGROUND_BACKGROUND_DARK)
                         .fillMaxHeight()
-                        .weight(.6f),
+                        .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4),
                 ) {
                     var searchText by remember { mutableStateOf("") }
@@ -102,13 +102,11 @@ class ComponentScreen(
                         onValueChanged = { searchText = it }
                     )
 
-                    FlowRow(
+                    Column(
                         modifier = Modifier
                             .verticalScroll()
                             .weight(1f)
                             .fillMaxWidth(),
-                        maxColumns = 2,
-                        expandColumnWidth = true,
                     ) {
                         val dataComponentTypeFactory: DataComponentTypeFactory = koinInject()
                         val dataComponentTypes = remember(dataComponentTypeFactory) { dataComponentTypeFactory.allComponents }
