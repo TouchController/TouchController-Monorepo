@@ -18,10 +18,12 @@ sealed class TabGroup(
     data object ItemGroup : TabGroup(Texts.SCREEN_CONFIG_ITEM_TITLE)
 
     companion object {
-        val allGroups = persistentListOf<TabGroup>(
-            LayoutGroup,
-            GeneralGroup,
-            ItemGroup,
-        )
+        val allGroups by lazy {
+            persistentListOf<TabGroup>(
+                LayoutGroup,
+                GeneralGroup,
+                ItemGroup,
+            )
+        }
     }
 }

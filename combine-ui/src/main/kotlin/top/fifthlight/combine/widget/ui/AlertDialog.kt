@@ -16,9 +16,10 @@ import top.fifthlight.touchcontroller.assets.Textures
 
 @Composable
 fun AlertDialog(
+    modifier: Modifier = Modifier,
     onDismissRequest: (() -> Unit)? = null,
     title: @Composable () -> Unit = {},
-    action: @Composable RowScope.() -> Unit = {},
+    action: (@Composable RowScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -26,17 +27,20 @@ fun AlertDialog(
             modifier = Modifier
                 .padding(8)
                 .border(Textures.WIDGET_BACKGROUND_BACKGROUND_GRAY)
-                .consumePress(),
+                .consumePress()
+                .then(modifier),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8)
         ) {
             title()
             content()
-            Row(
-                modifier = Modifier.alignment(Alignment.Right),
-                horizontalArrangement = Arrangement.spacedBy(8),
-            ) {
-                action()
+            action?.let {
+                Row(
+                    modifier = Modifier.alignment(Alignment.Right),
+                    horizontalArrangement = Arrangement.spacedBy(8),
+                ) {
+                    action()
+                }
             }
         }
     }

@@ -1,9 +1,8 @@
 package top.fifthlight.touchcontroller.ui.component
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.navigator.LocalNavigator
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.persistentListOf
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
@@ -20,10 +19,7 @@ import top.fifthlight.touchcontroller.ui.tab.TabOptions
 import top.fifthlight.touchcontroller.ui.tab.allTabs
 
 private val tabGroups by lazy {
-    buildList {
-        add(null)
-        TabGroup.allGroups.forEach(::add)
-    }.toPersistentList().map { group ->
+    (persistentListOf(null) + TabGroup.allGroups).map { group ->
         Pair(group, allTabs.filter { it.options.group == group }.sortedBy { it.options.index })
     }
 }

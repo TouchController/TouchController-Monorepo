@@ -8,12 +8,20 @@
   "touchcontroller.screen.config": "触摸设置…",
   "touchcontroller.screen.config.title": "触摸设置",
 
-  "touchcontroller.screen.config.reset.title": "重置",
+  "touchcontroller.screen.config.reset": "重置",
+  "touchcontroller.screen.config.undo": "撤销",
+  "touchcontroller.screen.config.cancel": "取消",
 
   "touchcontroller.screen.config.unsaved_warning.title": "警告",
   "touchcontroller.screen.config.unsaved_warning.message": "你有未保存的更改。真的要退出吗？所有未保存的更改都将丢失！",
-  "touchcontroller.screen.config.unsaved_warning.yes.title": "是",
-  "touchcontroller.screen.config.unsaved_warning.no.title": "否",
+  "touchcontroller.screen.config.unsaved_warning.yes": "是",
+  "touchcontroller.screen.config.unsaved_warning.no": "否",
+
+  "touchcontroller.screen.config.reset.title": "你想要重置哪些内容？",
+  "touchcontroller.screen.config.reset.current_tab": "当前标签页",
+  "touchcontroller.screen.config.reset.layout_settings": "布局设置",
+  "touchcontroller.screen.config.reset.all_settings": "所有设置",
+  "touchcontroller.screen.config.reset.cancel": "取消",
 
   "touchcontroller.screen.config.about.title": "关于",
   "touchcontroller.screen.config.about.authors.title": "作者：",

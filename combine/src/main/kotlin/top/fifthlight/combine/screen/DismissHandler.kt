@@ -1,10 +1,8 @@
-package top.fifthlight.touchcontroller.ui.component
+package top.fifthlight.combine.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import top.fifthlight.combine.screen.LocalOnDismissRequestDispatcher
-import top.fifthlight.combine.screen.OnDismissHandler
 
 @Composable
 fun DismissHandler(enabled: Boolean = true, handler: () -> Unit) {

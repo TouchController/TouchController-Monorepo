@@ -8,12 +8,20 @@
   "touchcontroller.screen.config": "Touch Settings...",
   "touchcontroller.screen.config.title": "Touch Settings",
 
-  "touchcontroller.screen.config.reset.title": "Reset",
+  "touchcontroller.screen.config.reset": "Reset",
+  "touchcontroller.screen.config.undo": "Undo",
+  "touchcontroller.screen.config.cancel": "Cancel",
 
   "touchcontroller.screen.config.unsaved_warning.title": "Warning",
   "touchcontroller.screen.config.unsaved_warning.message": "You have unsaved changes. Do you really want to exit? All unsaved changed will be lost!",
-  "touchcontroller.screen.config.unsaved_warning.yes.title": "Yes",
-  "touchcontroller.screen.config.unsaved_warning.no.title": "No",
+  "touchcontroller.screen.config.unsaved_warning.yes": "Yes",
+  "touchcontroller.screen.config.unsaved_warning.no": "No",
+
+  "touchcontroller.screen.config.reset.title": "What config do you want to reset?",
+  "touchcontroller.screen.config.reset.current_tab": "Current tab",
+  "touchcontroller.screen.config.reset.layout_settings": "Layout settings",
+  "touchcontroller.screen.config.reset.all_settings": "All settings",
+  "touchcontroller.screen.config.reset.cancel": "Cancel",
 
   "touchcontroller.screen.config.about.title": "About",
   "touchcontroller.screen.config.about.authors.title": "Authors: ",
