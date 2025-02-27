@@ -11,6 +11,7 @@ plugins {
     id("com.gradleup.gr8")
     id("org.parchmentmc.librarian.forgegradle")
     id("org.spongepowered.mixin")
+    id("r8-parallel")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -263,10 +264,6 @@ gr8 {
     }
 
     replaceOutgoingJar(shadowedJar)
-}
-
-tasks.withType<Gr8Task> {
-    jvmArgs("-Xmx512M")
 }
 
 // Create a Jar task to exclude some META-INF files and module-info.class from R8 output,

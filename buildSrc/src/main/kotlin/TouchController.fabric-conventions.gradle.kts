@@ -8,6 +8,7 @@ plugins {
     java
     id("fabric-loom")
     id("com.gradleup.gr8")
+    id("r8-parallel")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -201,10 +202,6 @@ gr8 {
         r8Version("8.9.21")
         proguardFile(rootProject.file("mod/common-fabric/rules.pro"))
     }
-}
-
-tasks.withType<Gr8Task> {
-    jvmArgs("-Xmx512M")
 }
 
 tasks.remapJar {
