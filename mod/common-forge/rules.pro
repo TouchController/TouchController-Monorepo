@@ -1,7 +1,9 @@
 -dontobfuscate
--dontoptimize
 
 -dontwarn android.annotation.*
+
+-keepclassmembers class * extends net.minecraft.** { *; }
+-keepclassmembers class * implements net.minecraft.** { *; }
 
 -keep class top.fifthlight.touchcontroller.mixin.* { *; }
 -keep class top.fifthlight.touchcontroller.ForgeGuiFactoryImpl
