@@ -13,6 +13,12 @@ val targets = mapOf(
 
 val imageName: String = localProperties["image.llvm-mingw-jdk"] ?: "localhost/llvm-mingw-jdk"
 
+// Example configuration for toolbox in Fedora Sliverblue:
+// podman.command=podman-remote
+// podman.extra-args=--security-opt label=disable
+val podmanCommand: String = localProperties["podman.command"] ?: "podman"
+val podmanExtraArguments = localProperties["podman.extra-args"]?.split(" ") ?: listOf()
+
 val compileNativeTasks = targets.mapValues { (arch, target) ->
     task<Exec>("compileNative${arch.uppercaseFirstChar()}") {
         val buildCommands = listOf(
@@ -20,17 +26,18 @@ val compileNativeTasks = targets.mapValues { (arch, target) ->
             "JAVA_HOME=lib/jvm cmake -DCMAKE_TOOLCHAIN_FILE=/toolchain/$target.cmake -S . -B build/cmake/$arch",
             "cmake --build build/cmake/$arch -j",
         ).joinToString("; ")
-        commandLine(
-            "podman",
-            "run",
-            "--rm",
-            "-v",
-            ".:/work",
-            imageName,
-            "bash",
-            "-ec",
-            buildCommands,
-        )
+        commandLine(buildList {
+            add(podmanCommand)
+            add("run")
+            add("--rm")
+            addAll(podmanExtraArguments)
+            add("-v")
+            add("${projectDir.absolutePath}:/work")
+            add(imageName)
+            add("bash")
+            add("-ec")
+            add(buildCommands)
+        })
         inputs.apply {
             property("image.llvm-mingw-jdk", imageName)
             files("CMakeLists.txt")
