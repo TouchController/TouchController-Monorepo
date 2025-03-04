@@ -1,25 +1,8 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
-
 name: build
 on: [ pull_request, push ]
 
 jobs:
     build:
-        strategy:
-            matrix:
-                module: [
-                    "forge-1.12.2",
-                    "forge-1.16.5",
-                    "forge-1.20.1",
-                    "fabric-1.16.5",
-                    "fabric-1.20.1",
-                    "fabric-1.21.1",
-                    "fabric-1.21.3",
-                    "fabric-1.21.4",
-                ]
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout repository
@@ -30,6 +13,9 @@ jobs:
                     java-version: 21
                     distribution: 'temurin'
                     cache: 'gradle'
+            -   name: Build Windows llvm-image podman image
+                working-directory: proxy-windows
+                run: podman build -t llvm-mingw-jdk .
             -   name: Setup Rust
                 uses: actions-rust-lang/setup-rust-toolchain@v1
                 with:
@@ -38,21 +24,15 @@ jobs:
                 uses: gradle/actions/setup-gradle@v4
             -   name: Install cargo-ndk
                 run: cargo install --force cargo-ndk
-            -   name: Install llvm-mingw
-                run: |
-                    wget -qO ~/llvm-mingw.tar.xz https://github.com/mstorsjo/llvm-mingw/releases/download/20241217/llvm-mingw-20241217-ucrt-ubuntu-20.04-x86_64.tar.xz
-                    mkdir ~/.llvm-mingw
-                    (cd ~/.llvm-mingw && tar --strip-components=1 -xJf ~/llvm-mingw.tar.xz)
             -   name: Build
                 run: |
-                    export PATH="$HOME/.llvm-mingw/bin:$PATH"
-                    ./gradlew :mod:${{ matrix.module }}:build --no-daemon
+                    ./gradlew mod:forge-1.12.2:build mod:forge-1.16.5:build mod:forge-1.20.1:build mod:fabric-1.16.5:build mod:fabric-1.20.1:build mod:fabric-1.21.1:build mod:fabric-1.21.3:build mod:fabric-1.21.4:build --no-daemon
             -   name: Capture build artifacts
                 uses: actions/upload-artifact@v4
                 with:
-                    name: ${{ matrix.module }}
+                    name: artifacts
                     path: |
-                        mod/${{ matrix.module }}/build/libs/
-                        !mod/${{ matrix.module }}/build/libs/*-noreobf-*.jar
-                        !mod/${{ matrix.module }}/build/libs/*-slim-*.jar
-                        !mod/${{ matrix.module }}/build/libs/*-fat-*.jar
+                        mod/*/build/libs/
+                        !mod/*/build/libs/*-noreobf-*.jar
+                        !mod/*/build/libs/*-slim-*.jar
+                        !mod/*/build/libs/*-fat-*.jar

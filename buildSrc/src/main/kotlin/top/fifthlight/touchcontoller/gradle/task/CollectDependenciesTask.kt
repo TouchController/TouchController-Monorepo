@@ -1,5 +1,6 @@
-package top.fifthlight.touchcontoller.gradle
+package top.fifthlight.touchcontoller.gradle.task
 
+import groovy.json.JsonOutput
 import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
@@ -98,6 +99,6 @@ abstract class CollectDependenciesTask : DefaultTask() {
         val outputMap = mapOf(
             "dependencies" to collectedDependencies
         )
-        dependencyCache.get().asFile.writeText(groovy.json.JsonOutput.toJson(outputMap))
+        dependencyCache.get().asFile.writeText(JsonOutput.toJson(outputMap))
     }
 }

@@ -103,8 +103,8 @@ dependencies {
         shadeAndImplementation(libs.joml)
     }
 
-    shade(project(":proxy-windows"))
-    shade(project(":proxy-server-android"))
+    shadeAndImplementation(project(":proxy-windows"))
+    shadeAndImplementation(project(":proxy-server-android"))
 }
 
 tasks.processResources {

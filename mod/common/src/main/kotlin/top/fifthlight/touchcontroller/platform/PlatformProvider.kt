@@ -90,28 +90,28 @@ object PlatformProvider : KoinComponent {
 
         val info = if (systemName.startsWith("Windows")) {
             // Windows
-            val targetArch = when (systemArch) {
-                "x86_32", "x86", "i386", "i486", "i586", "i686" -> "i686-pc-windows-gnullvm"
-                "amd64", "x86_64" -> "x86_64-pc-windows-gnullvm"
-                "arm64", "aarch64" -> "aarch64-pc-windows-gnullvm"
+            val (targetTriple, target) = when (systemArch) {
+                "x86_32", "x86", "i386", "i486", "i586", "i686" -> Pair("i686-w64-mingw32", "i686")
+                "amd64", "x86_64" -> Pair("x86_64-w64-mingw32", "x86_64")
+                "arm64", "aarch64" -> Pair("aarch64-w64-mingw32", "aarch64")
                 else -> null
             } ?: run {
                 logger.warn("Unsupported Windows arch")
                 return null
             }
-            logger.info("Target arch: $targetArch")
+            logger.info("Target arch: $targetTriple")
 
             NativeLibraryInfo(
-                modContainerPath = "$targetArch/proxy_windows.dll",
-                debugPath = Paths.get("..", "..", "..", "target", targetArch, "release", "proxy_windows.dll"),
-                extractPrefix = "proxy_windows",
+                modContainerPath = "$targetTriple/libproxy_windows.dll",
+                debugPath = Paths.get("..", "..", "..", "proxy-windows", "build", "cmake", target, "libproxy_windows.dll"),
+                extractPrefix = "libproxy_windows",
                 extractSuffix = ".dll",
                 readOnlySetter = ::windowsReadOnlySetter,
                 removeAfterLoaded = false,
                 platformFactory = ::Win32Platform
             )
-        } else if (systemName.startsWith("Linux")) {
-            if (isAndroid) {
+        } else if (systemName.startsWith("Linux") || systemName.contains("Android", ignoreCase = true)) {
+            if (isAndroid || systemName.contains("Android", ignoreCase = true)) {
                 logger.info("Android detected")
 
                 val socketName = System.getenv("TOUCH_CONTROLLER_PROXY_SOCKET")?.takeIf { it.isNotEmpty() }

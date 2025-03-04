@@ -5,11 +5,7 @@ import java.util.*
 
 version = "0.0.1"
 
-val localProperties = Properties().apply {
-    try {
-        rootProject.file("local.properties").reader().use(::load)
-    } catch (_: FileNotFoundException) {}
-}
+val localProperties: Map<String, String> by rootProject.ext
 
 val androidSdkDir by lazy {
     val path = localProperties["sdk.dir"]?.toString()?.takeIf { it.isNotEmpty() }

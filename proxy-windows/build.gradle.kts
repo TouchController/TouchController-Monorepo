@@ -1,43 +1,66 @@
-import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
+group = "top.fifthlight.touchcontroller"
 version = "0.0.1"
 
+val localProperties: Map<String, String> by rootProject.ext
+
 val targets = mapOf(
-    "i686" to "i686-pc-windows-gnullvm",
-    "x86_64" to "x86_64-pc-windows-gnullvm",
-    "aarch64" to "aarch64-pc-windows-gnullvm",
+    "i686" to "i686-w64-mingw32",
+    "x86_64" to "x86_64-w64-mingw32",
+    "aarch64" to "aarch64-w64-mingw32",
 )
 
-val compileRustTasks = targets.map { (arch, target) ->
-    task<Exec>("compileRust${arch.capitalized()}") {
-        commandLine("cargo", "build", "--target=$target", "--release")
+val imageName: String = localProperties["image.llvm-mingw-jdk"] ?: "localhost/llvm-mingw-jdk"
+
+val compileNativeTasks = targets.mapValues { (arch, target) ->
+    task<Exec>("compileNative${arch.uppercaseFirstChar()}") {
+        val buildCommands = listOf(
+            "cd /work",
+            "JAVA_HOME=lib/jvm cmake -DCMAKE_TOOLCHAIN_FILE=/toolchain/$target.cmake -S . -B build/cmake/$arch",
+            "cmake --build build/cmake/$arch -j",
+        ).joinToString("; ")
+        commandLine(
+            "podman",
+            "run",
+            "--rm",
+            "-v",
+            ".:/work",
+            imageName,
+            "bash",
+            "-ec",
+            buildCommands,
+        )
         inputs.apply {
-            files("Cargo.toml", "Cargo.lock")
+            property("image.llvm-mingw-jdk", imageName)
+            files("CMakeLists.txt")
             dir("src")
-            files("../proxy-protocol/Cargo.toml", "../proxy-protocol/Cargo.lock")
-            dir("../proxy-protocol/src")
         }
-        outputs.file("../target/$target/release/proxy_windows.dll")
+        outputs.file("build/cmake/$arch/libproxy_windows.dll")
     }
 }
 
-val compileRustTask = task("compileRust") {
-    dependsOn(compileRustTasks)
+val compileNativeTask = task("compileNative") {
+    dependsOn(compileNativeTasks)
 }
 
 val compileTask = task("compile") {
-    dependsOn(compileRustTask)
+    dependsOn(compileNativeTask)
 }
 
 val assembleTask = task<Jar>("assemble") {
     archiveFileName = "TouchController-Proxy-Windows.jar"
     destinationDirectory = layout.buildDirectory.dir("lib")
-    targets.values.forEach { target ->
-        from("../target/$target/release/proxy_windows.dll") {
+    targets.forEach { (arch, target) ->
+        from(compileNativeTasks[arch]!!.outputs) {
             into(target)
         }
     }
     dependsOn(compileTask)
+}
+
+task<Delete>("clean") {
+    delete(layout.buildDirectory)
 }
 
 task("build") {

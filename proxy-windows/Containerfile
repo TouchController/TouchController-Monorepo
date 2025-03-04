@@ -1,0 +1,21 @@
+FROM alpine:latest AS jdk
+RUN apk add unzip aria2
+RUN mkdir -p /opt/jdk-zips /opt/jdks; \
+    echo -e "https://api.adoptium.net/v3/binary/latest/17/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk\n out=jdk-17-x86_64.zip\n\
+https://api.adoptium.net/v3/binary/latest/17/ga/windows/x32/jdk/hotspot/normal/eclipse?project=jdk\n out=jdk-17-i686.zip\n\
+https://api.adoptium.net/v3/binary/latest/21/ga/windows/aarch64/jdk/hotspot/normal/eclipse?project=jdk\n out=jdk-17-aarch64.zip" | aria2c -q -x 16 -s 16 -d /opt/jdk-zips -i -
+RUN unzip -q /opt/jdk-zips/jdk-17-x86_64.zip -d /opt/jdks/jdk-17-x86_64 && \
+    mv /opt/jdks/jdk-17-x86_64/jdk-*/* /opt/jdks/jdk-17-x86_64/ && \
+    rmdir /opt/jdks/jdk-17-x86_64/jdk-*; \
+    unzip -q /opt/jdk-zips/jdk-17-i686.zip -d /opt/jdks/jdk-17-i686 && \
+    mv /opt/jdks/jdk-17-i686/jdk-*/* /opt/jdks/jdk-17-i686/ && \
+    rmdir /opt/jdks/jdk-17-i686/jdk-*; \ 
+    unzip -q /opt/jdk-zips/jdk-17-aarch64.zip -d /opt/jdks/jdk-17-aarch64 && \
+    mv /opt/jdks/jdk-17-aarch64/jdk-*/* /opt/jdks/jdk-17-aarch64/ && \
+    rmdir /opt/jdks/jdk-17-aarch64/jdk-*
+
+FROM docker.io/mstorsjo/llvm-mingw:latest
+COPY --from=jdk /opt/jdks/jdk-17-x86_64 /opt/llvm-mingw/x86_64-w64-mingw32/lib/jvm/
+COPY --from=jdk /opt/jdks/jdk-17-i686 /opt/llvm-mingw/i686-w64-mingw32/lib/jvm/
+COPY --from=jdk /opt/jdks/jdk-17-aarch64 /opt/llvm-mingw/aarch64-w64-mingw32/lib/jvm/
+COPY toolchain/* /toolchain/

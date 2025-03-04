@@ -1,3 +1,7 @@
+import java.io.FileNotFoundException
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm).apply(false)
     alias(libs.plugins.jetbrains.kotlin.serialization).apply(false)
@@ -6,6 +10,12 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android).apply(false)
     alias(libs.plugins.maven.publish).apply(false)
     alias(libs.plugins.compose.compiler).apply(false)
+}
+
+project.ext["localProperties"] = Properties().apply {
+    try {
+        rootProject.file("local.properties").reader().use(::load)
+    } catch (_: FileNotFoundException) {}
 }
 
 subprojects {

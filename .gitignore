@@ -47,3 +47,8 @@ replay_*.log
 # rust
 
 /target
+
+# visual studio
+
+.vs
+out

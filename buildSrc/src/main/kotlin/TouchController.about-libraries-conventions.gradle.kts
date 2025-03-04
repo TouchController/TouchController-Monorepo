@@ -1,6 +1,6 @@
 import com.mikepenz.aboutlibraries.plugin.AboutLibrariesCollectorTask
 import com.mikepenz.aboutlibraries.plugin.AboutLibrariesTask
-import top.fifthlight.touchcontoller.gradle.CollectDependenciesTask
+import top.fifthlight.touchcontoller.gradle.task.CollectDependenciesTask
 import java.util.regex.Pattern
 
 plugins {
