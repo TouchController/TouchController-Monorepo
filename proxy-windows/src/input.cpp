@@ -105,8 +105,8 @@ void handle_touch_event(CWPSTRUCT* msg) {
         throw EventError("ClientToScreen failed");
     }
 
-    const float scaled_origin_left = static_cast<float>(origin.x);
-    const float scaled_origin_top = static_cast<float>(origin.y);
+    const float scaled_origin_left = static_cast<float>(origin.x) * 100;
+    const float scaled_origin_top = static_cast<float>(origin.y) * 100;
     const float scaled_client_width =
         static_cast<float>(client_rect.right - client_rect.left) * 100;
     const float scaled_client_height =
