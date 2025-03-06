@@ -19,6 +19,11 @@ dependencies {
     implementation(project(":proxy-client"))
     implementation(project(":proxy-server"))
 
+    implementation(project(":proxy-windows"))
+    implementation(project(":proxy-linux"))
+    implementation(project(":proxy-server-android"))
+
+    api(libs.compose.runtime)
     api(project(":combine"))
     api(project(":combine-ui"))
 

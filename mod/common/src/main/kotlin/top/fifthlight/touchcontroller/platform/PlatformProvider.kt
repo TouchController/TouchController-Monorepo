@@ -1,11 +1,16 @@
 package top.fifthlight.touchcontroller.platform
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
+import top.fifthlight.touchcontroller.gal.GlfwPlatform
 import top.fifthlight.touchcontroller.gal.NativeLibraryPathGetter
+import top.fifthlight.touchcontroller.gal.PlatformWindowProvider
 import top.fifthlight.touchcontroller.platform.android.AndroidPlatform
 import top.fifthlight.touchcontroller.platform.proxy.ProxyPlatform
+import top.fifthlight.touchcontroller.platform.wayland.WaylandPlatform
 import top.fifthlight.touchcontroller.platform.win32.Win32Platform
 import top.fifthlight.touchcontroller.proxy.server.localhostLauncherSocketProxyServer
 import java.io.IOException
@@ -21,7 +26,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.fileAttributesView
 import kotlin.io.path.outputStream
 
-object PlatformProvider : KoinComponent {
+class PlatformProvider : KoinComponent {
     private val nativeLibraryPathGetter: NativeLibraryPathGetter by inject()
 
     private val logger = LoggerFactory.getLogger(PlatformProvider::class.java)
@@ -57,7 +62,7 @@ object PlatformProvider : KoinComponent {
         val extractSuffix: String,
         val readOnlySetter: (Path) -> Unit = {},
         val removeAfterLoaded: Boolean,
-        val platformFactory: () -> Platform
+        val platformFactory: () -> Platform,
     )
 
     private fun windowsReadOnlySetter(path: Path) {
@@ -76,80 +81,143 @@ object PlatformProvider : KoinComponent {
         )
     }
 
-    private fun load(): Platform? {
-        val socketPort = System.getenv("TOUCH_CONTROLLER_PROXY")?.toIntOrNull()
-        if (socketPort != null) {
-            logger.warn("TOUCH_CONTROLLER_PROXY set, use legacy UDP transport")
-            val proxy = localhostLauncherSocketProxyServer(socketPort) ?: return null
-            return ProxyPlatform(proxy)
-        }
-
+    private fun probeNativeLibraryInfo(windowProvider: PlatformWindowProvider): NativeLibraryInfo? {
         val systemName = System.getProperty("os.name")
         val systemArch = System.getProperty("os.arch")
         logger.info("System name: $systemName, system arch: $systemArch")
 
-        val info = if (systemName.startsWith("Windows")) {
-            // Windows
-            val (targetTriple, target) = when (systemArch) {
-                "x86_32", "x86", "i386", "i486", "i586", "i686" -> Pair("i686-w64-mingw32", "i686")
-                "amd64", "x86_64" -> Pair("x86_64-w64-mingw32", "x86_64")
-                "arm64", "aarch64" -> Pair("aarch64-w64-mingw32", "aarch64")
+        if ((systemName.startsWith("Linux") && isAndroid) || systemName.contains("Android", ignoreCase = true)) {
+            logger.info("Android detected")
+
+            val socketName = System.getenv("TOUCH_CONTROLLER_PROXY_SOCKET")?.takeIf { it.isNotEmpty() }
+            if (socketName == null) {
+                logger.info("No TOUCH_CONTROLLER_PROXY_SOCKET environment set, TouchController will not be loaded")
+                return null
+            }
+
+            val targetArch = when (systemArch) {
+                "x86_32", "x86", "i386", "i486", "i586", "i686" -> "i686-linux-android"
+                "amd64", "x86_64" -> "x86_64-linux-android"
+                "armeabi", "armeabi-v7a", "armhf", "arm", "armel" -> "armv7-linux-androideabi"
+                "arm64", "aarch64" -> "aarch64-linux-android"
                 else -> null
             } ?: run {
-                logger.warn("Unsupported Windows arch")
+                logger.warn("Unsupported Android arch")
                 return null
             }
-            logger.info("Target arch: $targetTriple")
 
-            NativeLibraryInfo(
-                modContainerPath = "$targetTriple/libproxy_windows.dll",
-                debugPath = Paths.get("..", "..", "..", "proxy-windows", "build", "cmake", target, "libproxy_windows.dll"),
-                extractPrefix = "libproxy_windows",
-                extractSuffix = ".dll",
-                readOnlySetter = ::windowsReadOnlySetter,
-                removeAfterLoaded = false,
-                platformFactory = ::Win32Platform
+            return NativeLibraryInfo(
+                modContainerPath = "$targetArch/libproxy_server_android.so",
+                debugPath = null,
+                extractPrefix = "libproxy_server_android",
+                extractSuffix = ".so",
+                readOnlySetter = ::posixReadOnlySetter,
+                removeAfterLoaded = true,
+                platformFactory = { AndroidPlatform(socketName) },
             )
-        } else if (systemName.startsWith("Linux") || systemName.contains("Android", ignoreCase = true)) {
-            if (isAndroid || systemName.contains("Android", ignoreCase = true)) {
-                logger.info("Android detected")
+        }
 
-                val socketName = System.getenv("TOUCH_CONTROLLER_PROXY_SOCKET")?.takeIf { it.isNotEmpty() }
-                if (socketName == null) {
-                    logger.info("No TOUCH_CONTROLLER_PROXY_SOCKET environment set, TouchController will not be loaded")
-                    return null
-                }
-
-                val targetArch = when (systemArch) {
-                    "x86_32", "x86", "i386", "i486", "i586", "i686" -> "i686-linux-android"
-                    "amd64", "x86_64" -> "x86_64-linux-android"
-                    "armeabi", "armeabi-v7a", "armhf", "arm", "armel" -> "armv7-linux-androideabi"
-                    "arm64", "aarch64" -> "aarch64-linux-android"
+        val platform = windowProvider.platform
+        when (platform) {
+            is GlfwPlatform.Win32 -> {
+                val (targetTriple, target) = when (systemArch) {
+                    "x86_32", "x86", "i386", "i486", "i586", "i686" -> Pair("i686-w64-mingw32", "i686")
+                    "amd64", "x86_64" -> Pair("x86_64-w64-mingw32", "x86_64")
+                    "arm64", "aarch64" -> Pair("aarch64-w64-mingw32", "aarch64")
                     else -> null
                 } ?: run {
-                    logger.warn("Unsupported Android arch")
+                    logger.warn("Unsupported Windows arch: $systemArch")
                     return null
                 }
+                logger.info("Target arch: $targetTriple")
 
-                NativeLibraryInfo(
-                    modContainerPath = "$targetArch/libproxy_server_android.so",
-                    debugPath = null,
-                    extractPrefix = "libproxy_server_android",
+                return NativeLibraryInfo(
+                    modContainerPath = "$targetTriple/libproxy_windows.dll",
+                    debugPath = Paths.get(
+                        "..",
+                        "..",
+                        "..",
+                        "proxy-windows",
+                        "build",
+                        "cmake",
+                        target,
+                        "libproxy_windows.dll"
+                    ),
+                    extractPrefix = "libproxy_windows",
+                    extractSuffix = ".dll",
+                    readOnlySetter = ::windowsReadOnlySetter,
+                    removeAfterLoaded = false,
+                    platformFactory = { Win32Platform(platform.nativeWindow) },
+                )
+            }
+
+            is GlfwPlatform.Wayland, GlfwPlatform.X11 -> {
+                val (archPrefix, archSuffix) = when (systemArch) {
+                    "x86_32", "x86", "i386", "i486", "i586", "i686" -> Pair("i386", "")
+                    "amd64", "x86_64" -> Pair("x86_64", "")
+                    "armv8", "arm64", "aarch64" -> Pair("aarch64", "")
+                    "arm", "armhf", "armel", "armv7" -> Pair("arm", "eabihf")
+                    else -> null
+                } ?: run {
+                    logger.warn("Unsupported Linux arch: $systemArch")
+                    return null
+                }
+                val platformName = when (platform) {
+                    is GlfwPlatform.Wayland -> "wayland"
+                    is GlfwPlatform.X11 -> logger.warn("X11 is not supported for now")
+                    else -> throw AssertionError()
+                }
+                // TODO: detect musl, and use musl libraries
+                val targetTriple = "$archPrefix-linux-gnu$archSuffix"
+                logger.info("Target triple: $targetTriple")
+
+                return NativeLibraryInfo(
+                    modContainerPath = "$targetTriple/libproxy_linux_$platformName.so",
+                    debugPath = Paths.get(
+                        "..",
+                        "..",
+                        "..",
+                        "proxy-linux",
+                        "build",
+                        "cmake",
+                        archPrefix,
+                        "libproxy_linux_$platformName.so"
+                    ),
+                    extractPrefix = "libproxy_linux_$platformName",
                     extractSuffix = ".so",
                     readOnlySetter = ::posixReadOnlySetter,
-                    removeAfterLoaded = true,
+                    removeAfterLoaded = false,
                     platformFactory = {
-                        AndroidPlatform(socketName)
-                    }
+                        when (platform) {
+                            is GlfwPlatform.Wayland -> WaylandPlatform(platform.nativeWindow)
+                            else -> throw AssertionError()
+                        }
+                    },
                 )
-            } else {
-                logger.warn("Linux is not supported for now!")
+            }
+
+            GlfwPlatform.Cocoa -> {
+                logger.warn("macOS is not supported for now")
                 return null
             }
-        } else {
-            logger.warn("Unsupported system: $systemName")
-            return null
+
+            GlfwPlatform.Unknown -> {
+                logger.warn("Unsupported system: $systemName")
+                return null
+            }
         }
+    }
+
+    private fun loadPlatform(windowProvider: PlatformWindowProvider): Platform? {
+        val socketPort = System.getenv("TOUCH_CONTROLLER_PROXY")?.toIntOrNull()
+        if (socketPort != null) {
+            logger.warn("TOUCH_CONTROLLER_PROXY set, use legacy UDP transport")
+            val proxy = localhostLauncherSocketProxyServer(socketPort) ?: return null
+            @OptIn(DelicateCoroutinesApi::class)
+            return ProxyPlatform(GlobalScope, proxy)
+        }
+
+        val info = probeNativeLibraryInfo(windowProvider) ?: return null
 
         logger.info("Native library info:")
         logger.info("path: ${info.modContainerPath}")
@@ -188,10 +256,20 @@ object PlatformProvider : KoinComponent {
             destinationFile.deleteIfExists()
         }
 
-        return info.platformFactory()
+        val platform = info.platformFactory.invoke()
+        platform.resize(windowProvider.windowWidth, windowProvider.windowHeight)
+        return platform
     }
 
-    val platform by lazy {
-        load()
+    private var platformLoaded = false
+    var platform: Platform? = null
+        private set
+
+    fun load(windowProvider: PlatformWindowProvider) {
+        if (platformLoaded) {
+            return
+        }
+        this@PlatformProvider.platform = loadPlatform(windowProvider)
+        platformLoaded = true
     }
 }

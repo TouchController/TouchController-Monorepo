@@ -8,10 +8,9 @@ import java.nio.ByteBuffer
 
 class AndroidPlatform(name: String) : Platform {
     private val logger = LoggerFactory.getLogger(AndroidPlatform::class.java)
-
     private val handle = Transport.new(name)
-
     private val readBuffer = ByteArray(128)
+
     override fun pollEvent(): ProxyMessage? {
         val receivedLength = Transport.receive(handle, readBuffer)
         val length = receivedLength.takeIf { it > 0 } ?: return null

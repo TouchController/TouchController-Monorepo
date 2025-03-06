@@ -14,7 +14,9 @@ object GameConfigEditorImpl : GameConfigEditor {
 
     operator fun <T> OptionInstance<T>.getValue(thisRef: Any?, property: KProperty<*>): T = this.get()
     operator fun <T> OptionInstance<T>.setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        this.set(value)
+        if (value != null) {
+            this.set(value)
+        }
     }
 
     private class EditorImpl(val options: Options) : GameConfigEditor.Editor {

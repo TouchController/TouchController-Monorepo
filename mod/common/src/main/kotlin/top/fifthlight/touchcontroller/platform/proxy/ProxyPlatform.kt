@@ -6,8 +6,8 @@ import top.fifthlight.touchcontroller.platform.Platform
 import top.fifthlight.touchcontroller.proxy.message.ProxyMessage
 import top.fifthlight.touchcontroller.proxy.server.LauncherSocketProxyServer
 
-class ProxyPlatform(private val proxy: LauncherSocketProxyServer) : Platform {
-    override fun init(scope: CoroutineScope) {
+class ProxyPlatform(scope: CoroutineScope, private val proxy: LauncherSocketProxyServer) : Platform {
+    init {
         scope.launch {
             proxy.start()
         }
@@ -16,6 +16,6 @@ class ProxyPlatform(private val proxy: LauncherSocketProxyServer) : Platform {
     override fun pollEvent(): ProxyMessage? = proxy.receive()
 
     override fun sendEvent(message: ProxyMessage) {
-        // UDP backend don't support vibration for now
+        // UDP backend don't support sending message
     }
 }

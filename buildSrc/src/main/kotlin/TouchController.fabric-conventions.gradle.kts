@@ -1,4 +1,3 @@
-import com.gradleup.gr8.Gr8Task
 import org.gradle.accessors.dm.LibrariesForLibs
 import top.fifthlight.touchcontoller.gradle.MinecraftVersion
 
@@ -32,6 +31,9 @@ val bridgeSlf4j: String by extra.properties
 val bridgeSlf4jBool = bridgeSlf4j.toBoolean()
 val excludeR8: String by extra.properties
 val minecraftVersion = MinecraftVersion(gameVersion)
+
+val localProperties: Map<String, String> by rootProject.ext
+val minecraftVmArgs = localProperties["minecraft.vm-args"]?.toString()?.split(":") ?: listOf()
 
 version = "$modVersion+fabric-$gameVersion"
 group = "top.fifthlight.touchcontroller"
@@ -113,9 +115,12 @@ dependencies {
     if (minecraftVersion < MinecraftVersion(1, 19, 3)) {
         shadeAndImplementation(libs.joml)
     }
+}
 
-    shadeAndImplementation(project(":proxy-windows"))
-    shadeAndImplementation(project(":proxy-server-android"))
+loom {
+    runs.configureEach {
+        vmArgs.addAll(minecraftVmArgs)
+    }
 }
 
 tasks.processResources {

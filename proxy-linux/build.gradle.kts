@@ -8,12 +8,13 @@ version = "0.0.1"
 val localProperties: Map<String, String> by rootProject.ext
 
 val targets = mapOf(
-    "i686" to "i686-w64-mingw32",
-    "x86_64" to "x86_64-w64-mingw32",
-    "aarch64" to "aarch64-w64-mingw32",
+    "i386" to "i386-linux-gnu",
+    "x86_64" to "x86_64-linux-gnu",
+    "arm" to "arm-linux-gnueabihf",
+    "aarch64" to "aarch64-linux-gnu",
 )
 
-val imageName: String = localProperties["image.llvm-mingw-jdk"] ?: "localhost/llvm-mingw-jdk"
+val imageName: String = localProperties["image.linux-gnu"] ?: "localhost/touchcontroller-linux:latest"
 
 // Example configuration for toolbox in Fedora Sliverblue:
 // podman.command=podman-remote
@@ -28,7 +29,7 @@ val projectRelativePath = projectAbsolutePath.relativeTo(rootProjectAbsolutePath
 val compileNativeTasks = targets.mapValues { (arch, target) ->
     task<Exec>("compileNative${arch.uppercaseFirstChar()}") {
         val buildCommands = listOf(
-            "JAVA_HOME=lib/jvm cmake -DCMAKE_TOOLCHAIN_FILE=/toolchain/$target.cmake -S . -B build/cmake/$arch",
+            "cmake -DCMAKE_TOOLCHAIN_FILE=/toolchain/$target.cmake -S . -B build/cmake/$arch",
             "cmake --build build/cmake/$arch --config Release --parallel ${Runtime.getRuntime().availableProcessors()}",
         ).joinToString("; ")
         commandLine(buildList {
@@ -46,11 +47,13 @@ val compileNativeTasks = targets.mapValues { (arch, target) ->
             add(buildCommands)
         })
         inputs.apply {
-            property("image.llvm-mingw-jdk", imageName)
+            property("image.linux-gnu", imageName)
+            property("podman.command", podmanCommand)
+            property("podman.extra-args", podmanExtraArguments)
             files("CMakeLists.txt")
             dir("src")
         }
-        outputs.file("build/cmake/$arch/libproxy_windows.dll")
+        outputs.file("build/cmake/$arch/libproxy_linux_wayland.so")
     }
 }
 
@@ -63,7 +66,7 @@ val compileTask = task("compile") {
 }
 
 val assembleTask = task<Jar>("assemble") {
-    archiveFileName = "TouchController-Proxy-Windows.jar"
+    archiveFileName = "TouchController-Proxy-Linux.jar"
     destinationDirectory = layout.buildDirectory.dir("lib")
     targets.forEach { (arch, target) ->
         from(compileNativeTasks[arch]!!.outputs) {

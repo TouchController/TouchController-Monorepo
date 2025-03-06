@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.platform.win32
+package top.fifthlight.touchcontroller.platform.wayland
 
 import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.gal.NativeWindow
@@ -7,12 +7,14 @@ import top.fifthlight.touchcontroller.proxy.message.MessageDecodeException
 import top.fifthlight.touchcontroller.proxy.message.ProxyMessage
 import java.nio.ByteBuffer
 
-class Win32Platform(window: NativeWindow.Win32) : Platform {
-    private val logger = LoggerFactory.getLogger(Win32Platform::class.java)
+class WaylandPlatform(window: NativeWindow.Wayland) : Platform {
+    private val logger = LoggerFactory.getLogger(WaylandPlatform::class.java)
 
     init {
-        Interface.init(window.handle)
+        Interface.init(window.displayPointer, window.surfacePointer)
     }
+
+    override fun resize(width: Int, height: Int) = Interface.resize(width, height)
 
     private val readBuffer = ByteArray(128)
     override fun pollEvent(): ProxyMessage? {
@@ -32,6 +34,6 @@ class Win32Platform(window: NativeWindow.Win32) : Platform {
     }
 
     override fun sendEvent(message: ProxyMessage) {
-        // Win32 don't support vibration for now
+        // TODO not support for now
     }
 }

@@ -15,7 +15,7 @@ import top.fifthlight.touchcontroller.layout.DrawQueue
 import top.fifthlight.touchcontroller.layout.Hud
 import top.fifthlight.touchcontroller.model.ControllerHudModel
 import top.fifthlight.touchcontroller.model.TouchStateModel
-import top.fifthlight.touchcontroller.platform.PlatformHolder
+import top.fifthlight.touchcontroller.platform.PlatformProvider
 import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage
 import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage
 import top.fifthlight.touchcontroller.proxy.message.RemovePointerMessage
@@ -28,23 +28,32 @@ object RenderEvents : KoinComponent {
     private val controllerHudModel: ControllerHudModel by inject()
     private val touchStateModel: TouchStateModel by inject()
     private val playerHandleFactory: PlayerHandleFactory by inject()
-    private val platformHolder: PlatformHolder by inject()
+    private val platformProvider: PlatformProvider by inject()
     private val gameStateProvider: GameStateProvider by inject()
     private val keyBindingHandler: KeyBindingHandler by inject()
+    private var prevWidth = 0
+    private var prevHeight = 0
 
     fun onRenderStart() {
         keyBindingHandler.renderTick()
 
         if (controllerHudModel.status.vibrate) {
-            platformHolder.platform?.sendEvent(VibrateMessage(VibrateMessage.Kind.BLOCK_BROKEN))
+            platformProvider.platform?.sendEvent(VibrateMessage(VibrateMessage.Kind.BLOCK_BROKEN))
             controllerHudModel.status.vibrate = false
         }
 
         val gameState = gameStateProvider.currentState()
         if (gameState.inGame && !gameState.inGui) {
-            val platform = platformHolder.platform
+            val platform = platformProvider.platform
             if (platform != null) {
                 while (true) {
+                    val width = WindowEvents.windowWidth
+                    val height = WindowEvents.windowHeight
+                    if (width != prevWidth || height != prevHeight) {
+                        prevWidth = width
+                        prevHeight = height
+                        platform.resize(width, height)
+                    }
                     val message = platform.pollEvent() ?: break
                     when (message) {
                         is AddPointerMessage -> {

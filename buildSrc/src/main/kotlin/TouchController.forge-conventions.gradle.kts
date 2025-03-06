@@ -1,4 +1,3 @@
-import com.gradleup.gr8.Gr8Task
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.spongepowered.asm.gradle.plugins.MixinExtension.AddMixinsToJarTask
 import top.fifthlight.touchcontoller.gradle.MinecraftVersion
@@ -166,9 +165,6 @@ dependencies {
     if (minecraftVersion < MinecraftVersion(1, 19, 3)) {
         shadeAndImplementation(libs.joml)
     }
-
-    shade(project(":proxy-windows"))
-    shade(project(":proxy-server-android"))
 
     if (useMixinBool) {
         annotationProcessor("org.spongepowered:mixin:0.8.5:processor")

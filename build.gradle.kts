@@ -1,6 +1,5 @@
 import java.io.FileNotFoundException
-import java.util.Properties
-import kotlin.apply
+import java.util.*
 
 plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm).apply(false)

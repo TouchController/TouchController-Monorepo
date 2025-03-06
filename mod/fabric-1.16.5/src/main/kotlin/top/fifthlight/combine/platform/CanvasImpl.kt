@@ -333,7 +333,12 @@ class CanvasImpl(
             offset = absoluteArea.offset * scaleFactor,
             size = absoluteArea.size * scaleFactor,
         )
-        RenderSystem.enableScissor(rect.left, client.window.height - rect.bottom, rect.size.width, rect.size.height)
+        RenderSystem.enableScissor(
+            rect.left,
+            client.window.framebufferHeight - rect.bottom,
+            rect.size.width,
+            rect.size.height
+        )
         clipStack.add(rect)
     }
 

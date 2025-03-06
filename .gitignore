@@ -48,6 +48,11 @@ replay_*.log
 
 /target
 
+# c/cpp
+
+compile_commands.json
+.cache
+
 # visual studio
 
 .vs

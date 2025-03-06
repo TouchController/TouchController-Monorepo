@@ -1,0 +1,4 @@
+BasedOnStyle: Google
+IndentWidth: 4
+BreakBeforeBraces: Attach
+UseTab: Never
