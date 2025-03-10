@@ -135,6 +135,10 @@ loom {
     runs.configureEach {
         vmArgs.addAll(minecraftVmArgs)
     }
+
+    mixin {
+        useLegacyMixinAp = false
+    }
 }
 
 tasks.processResources {

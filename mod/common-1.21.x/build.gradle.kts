@@ -15,6 +15,7 @@ minecraftStub {
 
 dependencies {
     compileOnly(project(":mod:common"))
+    compileOnly(project(":mod:common-lwjgl3"))
     compileOnly(project(":combine"))
     compileOnly(libs.joml)
 }

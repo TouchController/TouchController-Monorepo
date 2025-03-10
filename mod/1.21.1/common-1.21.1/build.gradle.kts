@@ -14,5 +14,5 @@ dependencies {
     compileOnly(project(":mod:common"))
     compileOnly(project(":combine"))
     implementation(project(":mod:common-lwjgl3"))
-    api(project(":mod:common-1.21.x"))
+    api(project(":mod:common-1.21-1.21.1"))
 }

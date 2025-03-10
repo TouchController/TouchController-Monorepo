@@ -189,20 +189,17 @@ abstract class GenerateStubTask : DefaultTask() {
         val cacheFile = cacheDir.resolve(outputName)
 
         if (cacheFile.exists()) {
-            if (checksum != null && !checkSha1(cacheFile, checksum)) {
-                logger.info("Bad checksum for file $cacheFile, trigger re-downloading")
-                cacheFile.deleteExisting()
-            } else {
-                return cacheFile
-            }
+            return cacheFile
         }
 
         logger.info("Downloading $uri")
+        val downloadTemp = cacheFile.parent.resolve(cacheFile.name + "-cache")
         uri.toURL().openStream().use { input ->
             cacheFile.parent.createDirectories()
-            cacheFile.outputStream().use { output ->
+            downloadTemp.outputStream().use { output ->
                 input.transferTo(output)
             }
+            downloadTemp.moveTo(cacheFile)
         }
 
         if (checksum != null && !checkSha1(cacheFile, checksum)) {

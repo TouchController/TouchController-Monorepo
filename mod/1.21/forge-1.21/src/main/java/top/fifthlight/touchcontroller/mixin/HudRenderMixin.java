@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.fifthlight.combine.platform_1_21.CanvasImpl;
+import top.fifthlight.combine.platform_1_21_1_21_1.CanvasImpl;
 import top.fifthlight.touchcontroller.common.event.RenderEvents;
 
 @Mixin(Gui.class)

@@ -8,21 +8,32 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.math.min
 
 data class ClassMap(
     val classes: ConcurrentHashMap<String, ClassItem> = ConcurrentHashMap(),
-    var minClassVersion: AtomicInteger = AtomicInteger(Int.MAX_VALUE),
+    val cleanLock: Lock = ReentrantLock(),
+    val removedClasses: MutableSet<String> = mutableSetOf(),
     var visitCount: AtomicInteger = AtomicInteger(0),
 ) {
     data class ClassInfo(
+        var version: Int,
         val name: String,
         var access: Int,
-        val superClass: String?,
+        var superClass: String?,
         var interfaces: Set<String>,
         var signature: String? = null,
     ) {
+        companion object {
+            private const val OBJECT_NAME = "java/lang/Object"
+        }
+
         val isInterface: Boolean
             get() = (access and Opcodes.ACC_INTERFACE) != 0
+        val isRecord: Boolean
+            get() = (access and Opcodes.ACC_RECORD) != 0
+        val isFinal: Boolean
+            get() = (access and Opcodes.ACC_FINAL) != 0
 
         init {
             if (!isInterface) {
@@ -33,17 +44,30 @@ data class ClassMap(
         }
 
         fun isCompatible(other: ClassInfo): Boolean {
-            if (this.superClass != other.superClass) {
+            if (this.isRecord != other.isRecord) {
+                if (!other.isRecord && other.superClass != OBJECT_NAME) {
+                    return false
+                }
+                if (!this.isRecord && this.superClass != OBJECT_NAME) {
+                    return false
+                }
+            } else if (this.superClass != other.superClass) {
                 return false
             }
-            if (this.access != other.access) {
-                return false
-            }
-            return true
+            val accessMask = (Opcodes.ACC_RECORD or Opcodes.ACC_FINAL).inv()
+            return (this.access and accessMask) == (other.access and accessMask)
         }
 
         fun mergeFrom(from: ClassInfo) {
+            if (isRecord != from.isRecord) {
+                access = access and Opcodes.ACC_RECORD.inv()
+                superClass = OBJECT_NAME
+            }
+            if (isFinal != from.isFinal) {
+                access = access and Opcodes.ACC_FINAL.inv()
+            }
             interfaces = interfaces.intersect(from.interfaces)
+            version = min(version, from.version)
             if (signature != from.signature) {
                 this.signature = null
             }
@@ -101,14 +125,22 @@ data class ClassMap(
         }
     }
 
+    data class InnerClassItem(
+        val name: String,
+        val outerName: String,
+        val innerName: String,
+        val access: Int,
+    )
+
     data class ClassItem(
         val info: ClassInfo,
         val methods: MutableMap<MethodIdentifier, MethodItem> = mutableMapOf(),
         val fields: MutableMap<String, FieldItem> = mutableMapOf(),
         val lock: Lock = ReentrantLock(),
+        val innerClasses: MutableMap<String, InnerClassItem> = mutableMapOf(),
         var visitCount: Int = 1,
     ) {
-        fun write(visitor: ClassVisitor, classVersion: Int) {
+        fun write(visitor: ClassVisitor, classVersion: Int, removedClasses: Set<String>) {
             visitor.visit(
                 classVersion,
                 info.access,
@@ -117,6 +149,15 @@ data class ClassMap(
                 info.superClass,
                 info.interfaces.toTypedArray()
             )
+            for ((name, innerClass) in innerClasses) {
+                if (removedClasses.contains(name)) {
+                    continue
+                }
+                if (removedClasses.contains(innerClass.outerName)) {
+                    continue
+                }
+                visitor.visitInnerClass(innerClass.name, innerClass.outerName, innerClass.innerName, innerClass.access)
+            }
             for ((name, field) in fields) {
                 visitor.visitField(field.access, name, field.type, field.signature, field.staticValue)
             }
@@ -147,15 +188,18 @@ data class ClassMap(
     }
 
     fun cleanUnvisitedItems() {
-        val visitCount = this.visitCount.get()
-        classes.values.removeIf { clazz ->
-            clazz.lock.withLock {
-                if (clazz.visitCount < visitCount) {
-                    return@withLock true
+        this.cleanLock.withLock lockLabel@{
+            val visitCount = this.visitCount.get()
+            classes.values.removeIf { clazz ->
+                clazz.lock.withLock {
+                    if (clazz.visitCount < visitCount) {
+                        removedClasses.add(clazz.info.name)
+                        return@withLock true
+                    }
+                    clazz.methods.values.removeAll { method -> method.visitCount < visitCount }
+                    clazz.fields.values.removeAll { field -> field.visitCount < visitCount }
+                    false
                 }
-                clazz.methods.values.removeAll { method -> method.visitCount < visitCount }
-                clazz.fields.values.removeAll { field -> field.visitCount < visitCount }
-                false
             }
         }
     }

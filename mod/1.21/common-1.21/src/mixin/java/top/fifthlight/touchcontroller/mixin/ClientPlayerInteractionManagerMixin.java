@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.fifthlight.combine.platform_1_21.ItemFactoryImplKt;
+import top.fifthlight.combine.platform_1_21_1_21_1.ItemFactoryImplKt;
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder;
 import top.fifthlight.touchcontroller.common.helper.CrosshairTargetHelper;
 import top.fifthlight.touchcontroller.helper.GameModeWithBreakingProgress;

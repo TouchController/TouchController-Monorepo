@@ -18,17 +18,12 @@ import org.koin.logger.slf4jLogger
 import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.buildinfo.BuildInfo
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
-import top.fifthlight.touchcontroller.common.di.appModule
-import top.fifthlight.touchcontroller.common.event.BlockBreakEvents
-import top.fifthlight.touchcontroller.common.event.ConnectionEvents
-import top.fifthlight.touchcontroller.common.event.RenderEvents
-import top.fifthlight.touchcontroller.common.event.TickEvents
-import top.fifthlight.touchcontroller.common.event.WindowEvents
-import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
+import top.fifthlight.touchcontroller.common.event.*
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
-import top.fifthlight.touchcontroller.common_1_21_3.platformModule
+import top.fifthlight.touchcontroller.common_1_21_3.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
+import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
 
 @Mod(BuildInfo.MOD_ID)
 class TouchController(
@@ -48,8 +43,7 @@ class TouchController(
             slf4jLogger()
             modules(
                 loaderModule,
-                platformModule,
-                appModule,
+                versionModule,
             )
         }
 

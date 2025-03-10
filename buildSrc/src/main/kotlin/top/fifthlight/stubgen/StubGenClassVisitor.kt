@@ -5,7 +5,6 @@ import org.objectweb.asm.FieldVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import kotlin.concurrent.withLock
-import kotlin.math.min
 
 class StubGenClassVisitor(
     private val classMap: ClassMap,
@@ -23,13 +22,19 @@ class StubGenClassVisitor(
         if (name == "module-info") {
             return
         }
-        classMap.minClassVersion.accumulateAndGet(version, ::min)
+        if (name == "package-info") {
+            return
+        }
+        if (access and Opcodes.ACC_PRIVATE != 0) {
+            return
+        }
         val classInfo = ClassMap.ClassInfo(
             name = name,
             access = access,
             superClass = superName,
             interfaces = interfaces?.toMutableSet() ?: mutableSetOf(),
             signature = signature,
+            version = version,
         )
         classItem = classMap.classes.compute(name) { _, existingItem ->
             if (existingItem == null) {
@@ -38,7 +43,6 @@ class StubGenClassVisitor(
                 existingItem.lock.withLock {
                     if (existingItem.info.isCompatible(classInfo)) {
                         existingItem.info.mergeFrom(classInfo)
-                        existingItem.visitCount++
                         existingItem
                     } else {
                         null
@@ -48,6 +52,30 @@ class StubGenClassVisitor(
         }
     }
 
+    override fun visitInnerClass(name: String, outerName: String?, innerName: String?, access: Int) {
+        if (outerName == null || innerName == null) {
+            return
+        }
+        if (access and Opcodes.ACC_PRIVATE != 0) {
+            return
+        }
+        classItem?.let { classItem ->
+            val innerClassItem = ClassMap.InnerClassItem(
+                name = name,
+                outerName = outerName,
+                innerName = innerName,
+                access = access,
+            )
+            classItem.lock.withLock {
+                classItem.innerClasses[name] = innerClassItem
+            }
+        }
+    }
+
+    override fun visitOuterClass(owner: String, name: String?, descriptor: String?) {
+        classItem = null
+    }
+
     override fun visitField(
         access: Int,
         name: String,
@@ -55,6 +83,9 @@ class StubGenClassVisitor(
         signature: String?,
         value: Any?,
     ): FieldVisitor? {
+        if (access and Opcodes.ACC_PRIVATE != 0) {
+            return null
+        }
         classItem?.let { classItem ->
             val fieldItem = ClassMap.FieldItem(
                 type = descriptor,
@@ -86,6 +117,9 @@ class StubGenClassVisitor(
         signature: String?,
         exceptions: Array<out String>?,
     ): MethodVisitor? {
+        if (access and Opcodes.ACC_PRIVATE != 0) {
+            return null
+        }
         classItem?.let { classItem ->
             val methodIdentifier = ClassMap.MethodIdentifier(
                 name = name,
@@ -110,5 +144,13 @@ class StubGenClassVisitor(
             }
         }
         return null
+    }
+
+    override fun visitEnd() {
+        classItem?.let { classItem ->
+            classItem.lock.withLock {
+                classItem.visitCount++
+            }
+        }
     }
 }

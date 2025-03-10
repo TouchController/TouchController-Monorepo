@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.fifthlight.touchcontroller.common_1_21.event.KeyboardInputEvents;
+import top.fifthlight.touchcontroller.common_1_21_1_21_1.event.KeyboardInputEvents;
 
 @Mixin(KeyboardInput.class)
 public abstract class KeyboardInputMixin {

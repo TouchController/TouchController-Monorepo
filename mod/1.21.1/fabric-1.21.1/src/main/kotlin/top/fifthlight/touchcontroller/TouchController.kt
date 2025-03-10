@@ -13,18 +13,13 @@ import org.koin.core.component.get
 import org.koin.core.context.startKoin
 import org.koin.logger.slf4jLogger
 import org.slf4j.LoggerFactory
-import top.fifthlight.combine.platform_1_21_1.CanvasImpl
+import top.fifthlight.combine.platform_1_21_1_21_1.CanvasImpl
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
-import top.fifthlight.touchcontroller.common.di.appModule
-import top.fifthlight.touchcontroller.common.event.BlockBreakEvents
-import top.fifthlight.touchcontroller.common.event.ConnectionEvents
-import top.fifthlight.touchcontroller.common.event.RenderEvents
-import top.fifthlight.touchcontroller.common.event.TickEvents
-import top.fifthlight.touchcontroller.common.event.WindowEvents
-import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
+import top.fifthlight.touchcontroller.common.event.*
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
-import top.fifthlight.touchcontroller.common_1_21_1.platformModule
+import top.fifthlight.touchcontroller.common_1_21_1.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
+import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback as FabricHudRenderCallback
 
 class TouchController : ClientModInitializer, KoinComponent {
@@ -37,8 +32,7 @@ class TouchController : ClientModInitializer, KoinComponent {
             slf4jLogger()
             modules(
                 loaderModule,
-                platformModule,
-                appModule,
+                versionModule,
             )
         }
 

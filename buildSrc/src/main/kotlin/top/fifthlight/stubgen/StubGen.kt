@@ -27,6 +27,9 @@ object StubGen {
                         if (entry.name.equals("module-info.class", ignoreCase = true)) {
                             continue
                         }
+                        if (entry.name.equals("package-info.class", ignoreCase = true)) {
+                            continue
+                        }
                         if (!entry.name.endsWith(".class")) {
                             continue
                         }
@@ -50,7 +53,11 @@ object StubGen {
             classMap.classes.entries.parallelStream()
                 .map { (name, clazz) ->
                     val writer = ClassWriter(Opcodes.ASM9)
-                    clazz.write(writer, classMap.minClassVersion.get())
+                    clazz.write(
+                        visitor = writer,
+                        classVersion = clazz.info.version,
+                        removedClasses = classMap.removedClasses,
+                    )
                     Pair(name, writer.toByteArray())
                 }
                 .forEach { (name, clazz) ->
