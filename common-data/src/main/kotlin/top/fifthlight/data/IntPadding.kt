@@ -27,6 +27,9 @@ data class IntPadding(
     val height: Int
         get() = top + bottom
 
+    val leftTopOffset: IntOffset
+        get() = IntOffset(left, top)
+
     val size: IntSize
         get() = IntSize(width, height)
 

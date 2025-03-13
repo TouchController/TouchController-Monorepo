@@ -85,28 +85,41 @@ data class CustomWidget(
     override val properties
         get() = _properties
 
-    private fun ButtonTexture.getSize(): Pair<IntSize, IntSize> {
+    private fun ButtonTexture.getSize(): Pair<IntSize, IntOffset> {
         fun measureCenterText() = centerText?.takeIf { it.isNotEmpty() }?.let(textMeasurer::measure) ?: IntSize.ZERO
         return when (val texture = this) {
             is ButtonTexture.Empty -> {
                 val textSize = measureCenterText()
-                Pair(textSize + texture.extraPadding, textSize)
+                Pair(
+                    textSize + texture.extraPadding,
+                    texture.extraPadding.leftTopOffset,
+                )
             }
 
             is ButtonTexture.Fill -> {
                 val textSize = measureCenterText()
-                Pair(textSize + texture.extraPadding + texture.borderWidth * 2, textSize)
+                Pair(
+                    textSize + texture.extraPadding + texture.borderWidth * 2,
+                    texture.extraPadding.leftTopOffset + texture.borderWidth,
+                )
             }
 
-            is ButtonTexture.Fixed -> Pair(
-                (texture.texture.texture.size.toSize() * texture.scale).toIntSize(),
-                IntSize.ZERO
-            )
+            is ButtonTexture.Fixed -> {
+                val textSize = measureCenterText()
+                val buttonSize = (texture.texture.texture.size.toSize() * texture.scale).toIntSize()
+                Pair(
+                    buttonSize,
+                    buttonSize - textSize,
+                )
+            }
 
             is ButtonTexture.NinePatch -> {
                 val ninePatch = texture.texture.texture
                 val textSize = measureCenterText()
-                Pair(textSize + ninePatch.padding + texture.extraPadding, textSize)
+                Pair(
+                    textSize + ninePatch.padding + texture.extraPadding,
+                    ninePatch.padding.leftTopOffset + texture.extraPadding.leftTopOffset,
+                )
             }
         }
     }
@@ -142,11 +155,11 @@ data class CustomWidget(
         when (buttonTexture) {
             is ButtonTexture.Empty -> {
                 val renderText = centerText?.takeIf { it.isNotEmpty() }
-                val (textureSize, textSize) = buttonTexture.getSize()
+                val (textureSize, textOffset) = buttonTexture.getSize()
                 renderText?.let { text ->
                     drawQueue.enqueue { canvas ->
                         canvas.drawText(
-                            offset = (textureSize - textSize) / 2,
+                            offset = textOffset,
                             text = text,
                             color = textColor,
                         )
@@ -156,7 +169,7 @@ data class CustomWidget(
 
             is ButtonTexture.Fill -> {
                 val renderText = centerText?.takeIf { it.isNotEmpty() }
-                val (textureSize, textSize) = buttonTexture.getSize()
+                val (textureSize, textOffset) = buttonTexture.getSize()
                 drawQueue.enqueue { canvas ->
                     canvas.fillRect(
                         size = textureSize,
@@ -169,7 +182,7 @@ data class CustomWidget(
                     )
                     renderText?.let { text ->
                         canvas.drawText(
-                            offset = (textureSize - textSize) / 2,
+                            offset = textOffset,
                             text = text,
                             color = textColor,
                         )
@@ -178,15 +191,13 @@ data class CustomWidget(
             }
 
             is ButtonTexture.Fixed -> {
-                val texture = buttonTexture.texture.texture
                 val renderText = centerText?.takeIf { it.isNotEmpty() }
-                val textureSize = (texture.size.toSize() * buttonTexture.scale).toIntSize()
-                val textSize = renderText?.let(textMeasurer::measure) ?: IntSize.ZERO
-                Texture(texture = texture, tint = tint)
+                val (_, textOffset) = buttonTexture.getSize()
+                Texture(texture = buttonTexture.texture.texture, tint = tint)
                 renderText?.let { text ->
                     drawQueue.enqueue { canvas ->
                         canvas.drawText(
-                            offset = (textureSize - textSize) / 2,
+                            offset = textOffset / 2,
                             text = text,
                             color = textColor,
                         )
@@ -196,8 +207,7 @@ data class CustomWidget(
 
             is ButtonTexture.NinePatch -> {
                 val renderText = centerText?.takeIf { it.isNotEmpty() }
-                val (textureSize, textSize) = buttonTexture.getSize()
-
+                val (textureSize, textOffset) = buttonTexture.getSize()
                 drawQueue.enqueue { canvas ->
                     canvas.drawNinePatchTexture(
                         texture = buttonTexture.texture.texture,
@@ -209,7 +219,7 @@ data class CustomWidget(
                     )
                     renderText?.let { text ->
                         canvas.drawText(
-                            offset = (textureSize - textSize) / 2,
+                            offset = textOffset,
                             text = text,
                             color = textColor,
                         )

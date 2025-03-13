@@ -13,6 +13,8 @@ import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.common.config.ConfigDirectoryProvider
+import java.io.IOException
+import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 import kotlin.uuid.Uuid
 import kotlin.uuid.toJavaUuid
@@ -86,23 +88,32 @@ class PresetManager : KoinComponent {
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    fun savePreset(uuid: Uuid, preset: LayoutPreset) {
+    fun savePreset(uuid: Uuid, preset: LayoutPreset, create: Boolean = true) {
         logger.info("Saving TouchController preset ${preset.name}($uuid)")
         presetDir.createDirectories()
-        getPresetFile(uuid).outputStream().use { json.encodeToStream(preset, it) }
-        var addedPresets = false
-        val newPresets = _presets.updateAndGet {
-            if (it.containsKey(uuid)) {
-                addedPresets = false
-                val index = it.orderedEntries.indexOfFirst { (id, _) -> id == uuid }
-                PresetsContainer(it.orderedEntries.set(index, Pair(uuid, preset)))
-            } else {
-                addedPresets = true
-                PresetsContainer(it.orderedEntries + (uuid to preset))
+        try {
+            getPresetFile(uuid).outputStream(
+                *if (create) {
+                    arrayOf(StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE, StandardOpenOption.CREATE)
+                } else {
+                    arrayOf(StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+                }
+            ).use { json.encodeToStream(preset, it) }
+            var addedPresets = false
+            val newPresets = _presets.updateAndGet {
+                if (it.containsKey(uuid)) {
+                    addedPresets = false
+                    val index = it.orderedEntries.indexOfFirst { (id, _) -> id == uuid }
+                    PresetsContainer(it.orderedEntries.set(index, Pair(uuid, preset)))
+                } else {
+                    addedPresets = true
+                    PresetsContainer(it.orderedEntries + (uuid to preset))
+                }
             }
-        }
-        if (addedPresets) {
-            saveOrder(newPresets.order)
+            if (addedPresets) {
+                saveOrder(newPresets.order)
+            }
+        } catch (_: IOException) {
         }
     }
 
