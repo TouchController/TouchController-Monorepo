@@ -184,6 +184,7 @@ object Colors {
     val ALTERNATE_WHITE = Color(0xFFBABABAu)
     val SECONDARY_WHITE = Color(0xFF8E8E8Eu)
     val TRANSPARENT_WHITE = Color(0x88FFFFFFu)
+    val TRANSPARENT_BLACK = Color(0x88000000u)
     val BLACK = Color(0xFF000000u)
     val GRAY = Color(0xFF808080u)
     val LIGHT_GRAY = Color(0xFFA0A0A0u)

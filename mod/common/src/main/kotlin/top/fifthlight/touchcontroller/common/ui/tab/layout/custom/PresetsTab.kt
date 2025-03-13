@@ -174,6 +174,7 @@ object PresetsTab: CustomTab() {
             }
 
             is PresetsTabState.Delete -> AlertDialog(
+                onDismissRequest = { tabModel.clearState() },
                 action = {
                     WarningButton(
                         onClick = {

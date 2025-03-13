@@ -127,6 +127,7 @@ object WidgetsTab : CustomTab() {
 
         when (val dialogState = tabState.dialogState) {
             is WidgetsTabState.DialogState.ChangeNewWidgetParams -> AlertDialog(
+                onDismissRequest = { tabModel.closeDialog() },
                 action = {
                     GuideButton(
                         onClick = {

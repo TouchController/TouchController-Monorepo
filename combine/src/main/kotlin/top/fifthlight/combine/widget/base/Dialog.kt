@@ -10,6 +10,7 @@ import top.fifthlight.combine.widget.base.layout.BoxScope
 
 @Composable
 fun Dialog(
+    modifier: Modifier = Modifier,
     onDismissRequest: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -20,7 +21,9 @@ fun Dialog(
         onDismissRequest = onDismissRequest
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .then(modifier),
             alignment = Alignment.Center,
         ) {
             content()

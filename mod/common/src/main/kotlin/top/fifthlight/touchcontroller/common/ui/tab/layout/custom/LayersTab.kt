@@ -180,6 +180,7 @@ object LayersTab: CustomTab() {
             }
 
             is LayersTabState.Delete -> AlertDialog(
+                onDismissRequest = { tabModel.clearState() },
                 action = {
                     WarningButton(
                         onClick = {
