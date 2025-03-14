@@ -34,7 +34,8 @@ fun Modifier.draggable(
         interactionSource = interactionSource,
         dragState = dragState,
         onDrag = { relative, _ -> onDrag(relative) },
-        onRelease = { _, _ -> }
+        onRelease = { _, _ -> },
+        onCancel = { _, _ -> },
     ))
 
 @Composable
@@ -47,7 +48,8 @@ fun Modifier.draggable(
         interactionSource = interactionSource,
         dragState = dragState,
         onDrag = onDrag,
-        onRelease = { _, _ -> }
+        onRelease = { _, _ -> },
+        onCancel = { _, _ -> },
     )
 )
 
@@ -57,12 +59,14 @@ fun Modifier.draggable(
     dragState: DragState = remember { DragState() },
     onDrag: Placeable.(relative: Offset, absolute: Offset) -> Unit,
     onRelease: Placeable.(relative: Offset, absolute: Offset) -> Unit,
+    onCancel: Placeable.(relative: Offset, absolute: Offset) -> Unit = onRelease,
 ) = then(
     DraggableModifierNode(
         interactionSource = interactionSource,
         dragState = dragState,
         onDrag = onDrag,
         onRelease = onRelease,
+        onCancel = onCancel,
     )
 )
 
@@ -71,6 +75,7 @@ private data class DraggableModifierNode(
     val dragState: DragState,
     val onDrag: Placeable.(relative: Offset, absolute: Offset) -> Unit,
     val onRelease: Placeable.(relative: Offset, absolute: Offset) -> Unit,
+    val onCancel: Placeable.(relative: Offset, absolute: Offset) -> Unit,
 ) : Modifier.Node<DraggableModifierNode>, PointerInputModifierNode {
 
     override fun onPointerEvent(
@@ -107,6 +112,13 @@ private data class DraggableModifierNode(
             PointerEventType.Release -> {
                 if (dragState.pressed == true) {
                     onRelease(node, Offset.ZERO, absolutePosition)
+                }
+                dragState.pressed = false
+            }
+
+            PointerEventType.Cancel -> {
+                if (dragState.pressed == true) {
+                    onCancel(node, Offset.ZERO, absolutePosition)
                 }
                 dragState.pressed = false
             }

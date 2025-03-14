@@ -90,6 +90,11 @@
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.texture_set": "新控件默认贴图风格",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.save": "保存",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.cancel": "取消",
+  "touchcontroller.screen.custom_control_layout.widgets.widget_preset.rename": "重命名",
+  "touchcontroller.screen.custom_control_layout.widgets.widget_preset.delete": "删除",
+  "touchcontroller.screen.custom_control_layout.widgets.edit_widget_preset.title": "编辑控件预设",
+  "touchcontroller.screen.custom_control_layout.widgets.edit_widget_preset.save": "保存",
+  "touchcontroller.screen.custom_control_layout.widgets.edit_widget_preset.cancel": "取消",
   
   "touchcontroller.screen.custom_control_layout.layers": "图层",
   "touchcontroller.screen.custom_control_layout.layers.move_up": "上移",

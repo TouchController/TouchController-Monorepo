@@ -1,11 +1,12 @@
 package top.fifthlight.touchcontroller.common.ui.state
 
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import top.fifthlight.touchcontroller.assets.TextureSet
-import top.fifthlight.touchcontroller.common.control.ControllerWidget
+import top.fifthlight.touchcontroller.common.control.*
 
 data class WidgetsTabState(
-    val listContent: ListContent = ListContent(),
+    val listContent: ListContent,
     val tabState: TabState = TabState(),
 ) {
     data class TabState(
@@ -33,6 +34,12 @@ data class WidgetsTabState(
                 textureSet = textureSet,
             )
         }
+
+        data class RenameWidgetPresetItem(
+            val index: Int,
+            val widget: ControllerWidget,
+            val name: ControllerWidget.Name = widget.name,
+        ) : DialogState()
     }
 
     enum class ListState {
@@ -40,8 +47,36 @@ data class WidgetsTabState(
         CUSTOM
     }
 
-    data class ListContent(
-        val heroes: PersistentList<ControllerWidget>? = null,
-        val widgets: PersistentList<ControllerWidget>? = null,
-    )
+    sealed class ListContent {
+        data object BuiltIn : ListContent() {
+            val heroes: PersistentList<ControllerWidget> = persistentListOf<ControllerWidget>(
+                DPad(),
+                Joystick()
+            )
+            val widgets: PersistentList<ControllerWidget> = persistentListOf<ControllerWidget>(
+                AscendButton(),
+                DescendButton(),
+                BoatButton(),
+                ChatButton(),
+                DescendButton(),
+                ForwardButton(),
+                HideHudButton(),
+                InventoryButton(),
+                JumpButton(),
+                PanoramaButton(),
+                PauseButton(),
+                PerspectiveSwitchButton(),
+                PlayerListButton(),
+                ScreenshotButton(),
+                SneakButton(),
+                SprintButton(),
+                UseButton(),
+                CustomWidget(),
+            )
+        }
+
+        data class Custom(
+            val widgets: PersistentList<ControllerWidget>,
+        ) : ListContent()
+    }
 }

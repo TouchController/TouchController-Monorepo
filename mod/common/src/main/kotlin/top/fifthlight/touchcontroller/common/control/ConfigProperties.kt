@@ -167,7 +167,7 @@ class EnumProperty<Config : ControllerWidget, T>(
                 dropDownContent = {
                     val value = getValue(widgetConfig)
                     val selectedIndex = items.indexOfFirst { it.first == value }
-                    SelectItemList(
+                    DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = items,
                         textProvider = Pair<T, Text>::second,
@@ -550,7 +550,7 @@ class ButtonTextureProperty<Config : ControllerWidget>(
                 expanded = expanded,
                 onExpandedChanged = { expanded = it },
                 dropDownContent = {
-                    SelectItemList(
+                    DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = ButtonTexture.Type.entries,
                         textProvider = { textFactory.of(it.nameId) },
@@ -657,7 +657,7 @@ class ButtonActiveTextureProperty<Config : ControllerWidget>(
                 expanded = expanded,
                 onExpandedChanged = { expanded = it },
                 dropDownContent = {
-                    SelectItemList(
+                    DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = ButtonActiveTexture.Type.entries,
                         textProvider = { textFactory.of(it.nameId) },

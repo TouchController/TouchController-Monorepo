@@ -1,41 +1,13 @@
 package top.fifthlight.touchcontroller.common.ui.model
 
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import org.koin.core.component.inject
 import top.fifthlight.touchcontroller.common.config.widget.WidgetPresetManager
-import top.fifthlight.touchcontroller.common.control.*
+import top.fifthlight.touchcontroller.common.control.ControllerWidget
 import top.fifthlight.touchcontroller.common.ext.combineStates
 import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState
 import top.fifthlight.touchcontroller.common.ui.state.WidgetsTabState.ListContent
-
-private val builtInWidgets = ListContent(
-    heroes = persistentListOf<ControllerWidget>(
-        DPad(),
-        Joystick()
-    ),
-    widgets = persistentListOf<ControllerWidget>(
-        AscendButton(),
-        DescendButton(),
-        BoatButton(),
-        ChatButton(),
-        DescendButton(),
-        ForwardButton(),
-        HideHudButton(),
-        InventoryButton(),
-        JumpButton(),
-        PanoramaButton(),
-        PauseButton(),
-        PerspectiveSwitchButton(),
-        PlayerListButton(),
-        ScreenshotButton(),
-        SneakButton(),
-        SprintButton(),
-        UseButton(),
-        CustomWidget(),
-    )
-)
 
 class WidgetsTabModel(
     private val screenModel: CustomControlLayoutTabModel
@@ -45,8 +17,8 @@ class WidgetsTabModel(
     val uiState = combineStates(tabState, widgetPresetManager.presets) { tabState, presets ->
         WidgetsTabState(
             listContent = when (tabState.listState) {
-                WidgetsTabState.ListState.BUILTIN -> builtInWidgets
-                WidgetsTabState.ListState.CUSTOM -> ListContent(widgets = presets)
+                WidgetsTabState.ListState.BUILTIN -> ListContent.BuiltIn
+                WidgetsTabState.ListState.CUSTOM -> ListContent.Custom(widgets = presets)
             },
             tabState = tabState,
         )
@@ -80,6 +52,27 @@ class WidgetsTabModel(
         }
     }
 
+    fun openRenameWidgetPresetItemDialog(index: Int, widget: ControllerWidget) {
+        tabState.getAndUpdate {
+            it.copy(
+                dialogState = WidgetsTabState.DialogState.RenameWidgetPresetItem(
+                    index = index,
+                    widget = widget,
+                )
+            )
+        }
+    }
+
+    fun updateRenameWidgetPresetItemDialog(newName: String) {
+        tabState.getAndUpdate {
+            var params = it.dialogState
+            if (params is WidgetsTabState.DialogState.RenameWidgetPresetItem) {
+                params = params.copy(name = ControllerWidget.Name.Literal(newName))
+            }
+            it.copy(dialogState = params)
+        }
+    }
+
     fun closeDialog() {
         tabState.getAndUpdate {
             it.copy(dialogState = WidgetsTabState.DialogState.Empty)
@@ -90,5 +83,16 @@ class WidgetsTabModel(
         tabState.getAndUpdate {
             it.copy(newWidgetParams = params)
         }
+    }
+
+    fun renameWidgetPresetItem(index: Int, newName: ControllerWidget.Name) {
+        val presets = widgetPresetManager.presets.value
+        val widget = presets[index].cloneBase(name = newName)
+        widgetPresetManager.save(presets.set(index, widget))
+    }
+
+    fun deleteWidgetPresetItem(index: Int) {
+        val presets = widgetPresetManager.presets.value
+        widgetPresetManager.save(presets.removeAt(index))
     }
 }

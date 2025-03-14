@@ -43,7 +43,7 @@ private fun LayerConditionPanel(
                 dropDownContent = {
                     val selectedIndex = LayerConditionValue.allValues.indexOf(value[key])
                     val textFactory = LocalTextFactory.current
-                    SelectItemList(
+                    DropdownItemList(
                         modifier = Modifier.verticalScroll(),
                         items = LayerConditionValue.allValues,
                         textProvider = { textFactory.of(it.text()) },

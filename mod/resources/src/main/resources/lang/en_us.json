@@ -90,6 +90,11 @@
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.texture_set": "Default texture set for new widgets",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.save": "Save",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.cancel": "Cancel",
+  "touchcontroller.screen.custom_control_layout.widgets.widget_preset.rename": "Rename",
+  "touchcontroller.screen.custom_control_layout.widgets.widget_preset.delete": "Delete",
+  "touchcontroller.screen.custom_control_layout.widgets.edit_widget_preset.title": "Edit widget preset",
+  "touchcontroller.screen.custom_control_layout.widgets.edit_widget_preset.save": "Save",
+  "touchcontroller.screen.custom_control_layout.widgets.edit_widget_preset.cancel": "Cancel",
   
   "touchcontroller.screen.custom_control_layout.layers": "Layers",
   "touchcontroller.screen.custom_control_layout.layers.move_up": "Move up",

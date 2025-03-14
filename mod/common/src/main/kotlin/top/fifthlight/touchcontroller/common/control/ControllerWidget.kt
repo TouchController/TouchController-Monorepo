@@ -43,13 +43,18 @@ sealed class ControllerWidget {
         @SerialName("literal")
         data class Literal(val string: String) : Name()
 
-        fun getString(textFactory: TextFactory) = when (this) {
+        fun getText(textFactory: TextFactory) = when (this) {
             is Translatable -> textFactory.of(identifier)
             is Literal -> textFactory.literal(string)
         }
 
         @Composable
-        fun getString() = getString(LocalTextFactory.current)
+        fun getText() = getText(LocalTextFactory.current)
+
+        fun asString(textFactory: TextFactory) = getText(textFactory).string
+
+        @Composable
+        fun asString() = getText().string
     }
 
     interface Property<Config : ControllerWidget, Value> {

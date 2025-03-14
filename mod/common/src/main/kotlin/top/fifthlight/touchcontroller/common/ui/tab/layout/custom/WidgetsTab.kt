@@ -2,24 +2,24 @@ package top.fifthlight.touchcontroller.common.ui.tab.layout.custom
 
 import androidx.compose.runtime.*
 import cafe.adriel.voyager.koin.koinScreenModel
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.core.parameter.parametersOf
 import top.fifthlight.combine.data.LocalTextFactory
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.layout.Layout
+import top.fifthlight.combine.layout.offset
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.ParentDataModifierNode
-import top.fifthlight.combine.modifier.placement.fillMaxSize
-import top.fifthlight.combine.modifier.placement.fillMaxWidth
-import top.fifthlight.combine.modifier.placement.padding
-import top.fifthlight.combine.modifier.placement.size
+import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.*
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntPadding
+import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.TextureSet
@@ -112,6 +112,157 @@ private fun WidgetsLayout(
     )
 }
 
+@Composable
+private fun TwoItemRow(
+    modifier: Modifier = Modifier,
+    rightWidth: Int,
+    space: Int,
+    content: @Composable () -> Unit,
+) {
+    Layout(
+        modifier = modifier,
+        measurePolicy = { measurables, constraints ->
+            require(measurables.size == 2) { "TwoItemRow must contain two items" }
+
+            val (left, right) = measurables
+            val leftPlaceable = left.measure(
+                constraints
+                    .offset(-rightWidth - space, 0)
+                    .copy(minHeight = rightWidth, maxHeight = rightWidth)
+            )
+            val rightPlaceable = right.measure(
+                constraints.copy(
+                    minWidth = rightWidth,
+                    maxWidth = rightWidth,
+                    minHeight = leftPlaceable.height,
+                    maxHeight = leftPlaceable.height,
+                )
+            )
+
+            layout(leftPlaceable.width + rightPlaceable.width, leftPlaceable.height) {
+                leftPlaceable.placeAt(0, 0)
+                rightPlaceable.placeAt(leftPlaceable.width + space, 0)
+            }
+        },
+        content = content,
+    )
+}
+
+@Composable
+private fun WidgetButton(
+    modifier: Modifier = Modifier,
+    widget: ControllerWidget,
+    widgetIconSize: IntSize,
+    onClicked: () -> Unit,
+) {
+    ListButton(
+        modifier = modifier,
+        padding = IntPadding(left = 4, right = 4),
+        onClick = onClicked,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4),
+        ) {
+            ScaledControllerWidget(
+                modifier = Modifier.size(widgetIconSize),
+                widget = widget,
+            )
+            Text(
+                modifier = Modifier.weight(1f),
+                text = widget.name.getText()
+            )
+        }
+    }
+}
+
+@Composable
+private fun BuiltInWidgetList(
+    modifier: Modifier = Modifier,
+    listContent: WidgetsTabState.ListContent.BuiltIn,
+    onWidgetSelected: (ControllerWidget) -> Unit,
+) {
+    WidgetsLayout(modifier) {
+        for (widget in listContent.heroes) {
+            WidgetButton(
+                modifier = Modifier.widgetType(ControllerWidgetType.HERO),
+                widget = widget,
+                widgetIconSize = IntSize(32),
+                onClicked = { onWidgetSelected(widget) },
+            )
+        }
+        for (widget in listContent.widgets) {
+            WidgetButton(
+                modifier = Modifier
+                    .widgetType(ControllerWidgetType.NORMAL)
+                    .fillMaxWidth(),
+                widget = widget,
+                widgetIconSize = IntSize(16),
+                onClicked = { onWidgetSelected(widget) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun CustomWidgetList(
+    modifier: Modifier = Modifier,
+    listContent: WidgetsTabState.ListContent.Custom,
+    onWidgetSelected: (ControllerWidget) -> Unit,
+    onWidgetRenamed: (Int, ControllerWidget) -> Unit,
+    onWidgetDeleted: (Int) -> Unit,
+) {
+    WidgetsLayout(modifier) {
+        for ((index, widget) in listContent.widgets.withIndex()) {
+            TwoItemRow(
+                modifier = Modifier
+                    .widgetType(ControllerWidgetType.NORMAL)
+                    .fillMaxWidth(),
+                rightWidth = 24,
+                space = 4,
+            ) {
+                WidgetButton(
+                    widget = widget,
+                    widgetIconSize = IntSize(16),
+                    onClicked = { onWidgetSelected(widget) },
+                )
+
+                var popupOpened by remember { mutableStateOf(false) }
+                var anchor by remember { mutableStateOf(IntRect.ZERO) }
+                ListButton(
+                    modifier = Modifier.anchor { anchor = it },
+                    onClick = {
+                        popupOpened = true
+                    },
+                ) {
+                    Icon(Textures.ICON_MENU)
+                }
+
+                if (popupOpened) {
+                    DropDownMenu(
+                        anchor = anchor,
+                        onDismissRequest = {
+                            popupOpened = false
+                        }
+                    ) {
+                        DropdownItemList(
+                            modifier = Modifier.verticalScroll(),
+                            items = persistentListOf(
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_RENAME)) {
+                                    onWidgetRenamed(index, widget)
+                                },
+                                Pair(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_WIDGET_PRESET_DELETE)) {
+                                    onWidgetDeleted(index)
+                                },
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 object WidgetsTab : CustomTab() {
     @Composable
     override fun Icon() {
@@ -176,7 +327,7 @@ object WidgetsTab : CustomTab() {
                             onExpandedChanged = { expanded = it },
                             dropDownContent = {
                                 val textFactory = LocalTextFactory.current
-                                SelectItemList(
+                                DropdownItemList(
                                     modifier = Modifier.verticalScroll(),
                                     items = TextureSet.TextureSetKey.entries,
                                     textProvider = { textFactory.of(it.nameText) },
@@ -193,6 +344,36 @@ object WidgetsTab : CustomTab() {
                         }
                     }
                 }
+            }
+
+            is WidgetsTabState.DialogState.RenameWidgetPresetItem -> AlertDialog(
+                onDismissRequest = { tabModel.closeDialog() },
+                title = {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_TITLE))
+                },
+                action = {
+                    GuideButton(
+                        onClick = {
+                            tabModel.renameWidgetPresetItem(dialogState.index, dialogState.name)
+                            tabModel.closeDialog()
+                        },
+                    ) {
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_SAVE))
+                    }
+                    Button(
+                        onClick = {
+                            tabModel.closeDialog()
+                        },
+                    ) {
+                        Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_WIDGETS_EDIT_WIDGET_PRESET_CANCEL))
+                    }
+                }
+            ) {
+                EditText(
+                    modifier = Modifier.fillMaxWidth(.5f),
+                    value = dialogState.name.asString(),
+                    onValueChanged = tabModel::updateRenameWidgetPresetItemDialog
+                )
             }
 
             WidgetsTabState.DialogState.Empty -> Unit
@@ -253,62 +434,28 @@ object WidgetsTab : CustomTab() {
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(4),
                 ) {
-                    @Composable
-                    fun WidgetButton(
-                        modifier: Modifier = Modifier,
-                        widget: ControllerWidget,
-                        widgetIconSize: IntSize,
-                    ) {
-                        ListButton(
-                            modifier = modifier,
-                            padding = IntPadding(left = 4, right = 4),
-                            onClick = {
-                                val newWidget = widget.cloneBase(
-                                    opacity = tabState.tabState.newWidgetParams.opacity,
-                                )
-                                val index = screenModel.newWidget(newWidget)
-                                screenModel.selectWidget(index)
-                            },
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4),
-                            ) {
-                                ScaledControllerWidget(
-                                    modifier = Modifier.size(widgetIconSize),
-                                    widget = widget,
-                                )
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    text = widget.name.getString()
-                                )
-                            }
-                        }
+                    fun addWidget(widget: ControllerWidget) {
+                        val newWidget = widget.cloneBase(
+                            opacity = tabState.tabState.newWidgetParams.opacity,
+                        )
+                        val index = screenModel.newWidget(newWidget)
+                        screenModel.selectWidget(index)
                     }
 
-                    WidgetsLayout(Modifier.fillMaxWidth()) {
-                        val listContent = tabState.listContent
-                        listContent.heroes?.let { heroes ->
-                            for (widget in heroes) {
-                                WidgetButton(
-                                    modifier = Modifier.widgetType(ControllerWidgetType.HERO),
-                                    widget = widget,
-                                    widgetIconSize = IntSize(32)
-                                )
-                            }
-                        }
+                    when (val listContent = tabState.listContent) {
+                        is WidgetsTabState.ListContent.BuiltIn -> BuiltInWidgetList(
+                            modifier = Modifier.fillMaxWidth(),
+                            listContent = listContent,
+                            onWidgetSelected = ::addWidget,
+                        )
 
-                        listContent.widgets?.let { widgets ->
-                            for (widget in widgets) {
-                                WidgetButton(
-                                    modifier = Modifier
-                                        .widgetType(ControllerWidgetType.NORMAL)
-                                        .fillMaxWidth(),
-                                    widget = widget,
-                                    widgetIconSize = IntSize(16),
-                                )
-                            }
-                        }
+                        is WidgetsTabState.ListContent.Custom -> CustomWidgetList(
+                            modifier = Modifier.fillMaxWidth(),
+                            listContent = listContent,
+                            onWidgetSelected = ::addWidget,
+                            onWidgetRenamed = tabModel::openRenameWidgetPresetItemDialog,
+                            onWidgetDeleted = tabModel::deleteWidgetPresetItem,
+                        )
                     }
                 }
             }

@@ -375,7 +375,7 @@ object ManageControlPresetsTab : Tab() {
                                     val selectedIndex =
                                         BuiltinPresetKey.SprintButtonLocation.entries.indexOf(presetKey.sprintButtonLocation)
                                     val textFactory = LocalTextFactory.current
-                                    SelectItemList(
+                                    DropdownItemList(
                                         modifier = Modifier.verticalScroll(),
                                         items = BuiltinPresetKey.SprintButtonLocation.entries,
                                         textProvider = { textFactory.of(it.nameId) },
