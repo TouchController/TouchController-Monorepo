@@ -24,7 +24,7 @@ import kotlin.uuid.Uuid
 data class Joystick(
     val textureSet: TextureSet.TextureSetKey = TextureSet.TextureSetKey.NEW,
     val size: Float = 1.5f,
-    val stickSize: Float = 1.5f,
+    val stickSize: Float = 1f,
     val triggerSprint: Boolean = false,
     val increaseOpacityWhenActive: Boolean = true,
     override val id: Uuid = fastRandomUuid(),
