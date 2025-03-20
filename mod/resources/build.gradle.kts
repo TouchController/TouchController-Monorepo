@@ -20,6 +20,7 @@ fun getBuildInfo(): Map<String, String> {
         "modLicense",
         "modAuthors",
         "modContributors",
+        "modState",
     )
     return propertyNames.associate { Pair(it, properties[it] as String) }
 }

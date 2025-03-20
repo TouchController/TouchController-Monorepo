@@ -58,6 +58,7 @@ compile_commands.json
 .vs
 out
 
-# bundle tar
+# release
 
 bundle
+release

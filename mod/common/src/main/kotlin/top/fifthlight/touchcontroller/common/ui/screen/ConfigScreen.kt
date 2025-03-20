@@ -39,6 +39,25 @@ private fun ConfigScreen() {
         }
     }
 
+    val uiState by screenModel.uiState.collectAsState()
+    if (uiState.developmentWarningDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                screenModel.closeDevelopmentDialog()
+            },
+            title = {
+                Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_TITLE))
+            },
+            action = {
+                GuideButton(onClick = { screenModel.closeDevelopmentDialog() }) {
+                    Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_OK))
+                }
+            },
+        ) {
+            Text(Text.translatable(Texts.WARNING_DEVELOPMENT_VERSION_MESSAGE))
+        }
+    }
+
     val tabGroups = remember {
         val allTabs = Tab.Companion.getAllTabs(screenModel)
         (persistentListOf(null) + TabGroup.Companion.allGroups).map { group ->

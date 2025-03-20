@@ -32,6 +32,12 @@ class ConfigScreenModel : TouchControllerScreenModel() {
         }
     }
 
+    fun closeDevelopmentDialog() {
+        _uiState.getAndUpdate {
+            it.copy(developmentWarningDialog = false)
+        }
+    }
+
     fun resetConfig() {
         _uiState.getAndUpdate {
             it.copy(config = GlobalConfig.default(defaultItemListProvider))

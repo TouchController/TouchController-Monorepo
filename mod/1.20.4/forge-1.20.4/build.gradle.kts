@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm)
     id("TouchController.toolchain-conventions")
     id("TouchController.forge-conventions")
-    id("TouchController.modrinth-conventions")
     id("TouchController.about-libraries-conventions")
 }
 

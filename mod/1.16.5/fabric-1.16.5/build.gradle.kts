@@ -4,6 +4,5 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("TouchController.toolchain-conventions")
     id("TouchController.fabric-conventions")
-    id("TouchController.modrinth-conventions")
     id("TouchController.about-libraries-conventions")
 }

@@ -2,6 +2,9 @@
   "touchcontroller.warning.proxy_not_connected": "警告：代理未连接。TouchController 将被禁用。",
   "touchcontroller.warning.legacy_udp_proxy_used": "警告：检测到正在使用过时的 UDP 代理协议。你目前仍然可以使用 TouchController，但是建议更新你的启动器以获得新功能。",
   "touchcontroller.warning.take_panorama_unsupported": "当前游戏版本不支持截取全景图。",
+  "touchcontroller.warning.development_version.title": "警告",
+  "touchcontroller.warning.development_version.message": "你正在使用 TouchController 的开发版，将有可能会遇到严重 bug 或者是没有完善的功能！如果遇到了问题，可以在 Github 上进行汇报。",
+  "touchcontroller.warning.development_version.ok": "我知道了",
 
   "touchcontroller.back": "< %s",
 
