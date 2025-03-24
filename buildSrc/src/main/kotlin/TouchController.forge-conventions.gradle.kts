@@ -93,10 +93,8 @@ mixin {
     config("${modId}.mixins.json")
 }
 
-if (!useMixinBool) {
-    tasks.withType<AddMixinsToJarTask> {
-        enabled = false
-    }
+tasks.withType<AddMixinsToJarTask> {
+    enabled = false
 }
 
 configurations.create("shadow")
@@ -270,6 +268,7 @@ val gr8JarTask = tasks.register<Jar>("gr8Jar") {
             }
         }
     }
+    mixinRefmapFile?.let { from(it) }
 }
 
 tasks.getByName("gr8Gr8ShadowedJar") {
@@ -278,6 +277,8 @@ tasks.getByName("gr8Gr8ShadowedJar") {
 
 val mixinMappingFile =
     layout.buildDirectory.file("mixinMapping/mappings.tsrg").takeIf { remapOutputBool && useMixinBool }
+val mixinRefmapFile =
+    layout.buildDirectory.file("mixinMapping/mixins.$modId.refmap.json").takeIf { remapOutputBool && useMixinBool }
 tasks.compileJava {
     inputs.properties("remapOutput" to remapOutputBool)
     mixinMappingFile?.let {
@@ -285,6 +286,13 @@ tasks.compileJava {
         doLast {
             val mappingFile = mixinMappingFile.get().asFile.also { it.parentFile.mkdirs() }
             layout.buildDirectory.file("tmp/compileJava/compileJava-mappings.tsrg").get().asFile.copyTo(mappingFile)
+        }
+    }
+    mixinRefmapFile?.let {
+        outputs.files(mixinRefmapFile)
+        doLast {
+            val refmapFile = mixinRefmapFile.get().asFile.also { it.parentFile.mkdirs() }
+            layout.buildDirectory.file("tmp/compileJava/compileJava-refmap.json").get().asFile.copyTo(refmapFile)
         }
     }
 }
