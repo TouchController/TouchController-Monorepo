@@ -202,7 +202,7 @@ data class BuiltinLayers private constructor(
             ),
             widgets.descendSwimming.copy(
                 align = Align.RIGHT_BOTTOM,
-                offset = IntOffset(42, 18),
+                offset = IntOffset(22, 102),
             )
         ),
         joystick = persistentListOf(
@@ -210,14 +210,14 @@ data class BuiltinLayers private constructor(
                 align = Align.LEFT_BOTTOM,
                 offset = IntOffset(29, 32),
             ),
-            widgets.jump.copy(
+            widgets.ascendSwimming.copy(
                 align = Align.RIGHT_BOTTOM,
                 offset = IntOffset(22, 165),
             ),
-            widgets.sneak.copy(
+            widgets.descendSwimming.copy(
                 align = Align.RIGHT_BOTTOM,
                 offset = IntOffset(22, 102),
-            ),
+            )
         ),
     )
 

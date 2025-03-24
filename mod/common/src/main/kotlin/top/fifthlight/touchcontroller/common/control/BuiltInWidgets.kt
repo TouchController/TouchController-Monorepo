@@ -74,7 +74,7 @@ data class BuiltInWidgets private constructor(
         texture = fixed(TextureSet.TextureKey.Jump),
         activeTexture = fixed(TextureSet.TextureKey.JumpActive),
         grayOnClassic = true,
-        swipeTrigger = false,
+        swipeTrigger = true,
         action = ButtonTrigger(
             press = key(DefaultKeyBindingType.JUMP),
         ),
