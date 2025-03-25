@@ -18,9 +18,9 @@ body:
                     required: true
                 -   label: 我已将 TouchController 模组更新到最新版本
                     required: true
-                -   label: 如果是在手机上，我使用的是最新版本的支持 TouchController 的安卓启动器；如果是在电脑或者其它平台上，我使用的是 Windows 系统
+                -   label: 我已阅读：《[TouchController 游玩须知](https://wiki.touchcontroller.fifthlight.top/%E7%8E%A9%E5%AE%B6%E6%89%8B%E5%86%8C/%E6%B8%B8%E7%8E%A9%E9%A1%BB%E7%9F%A5.html)》《[TouchController 常见问题](https://wiki.touchcontroller.fifthlight.top/%E7%8E%A9%E5%AE%B6%E6%89%8B%E5%86%8C/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98.html)》《[如何给 TouchController 报告 bug](https://wiki.touchcontroller.fifthlight.top/%E7%8E%A9%E5%AE%B6%E6%89%8B%E5%86%8C/%E6%8A%A5%E5%91%8ABUG.html)》
                     required: true
-                -   label: 我已了解：如果使用未受支持的操作系统所产生的任何问题均不能在此报告（对除了 iOS 和 macOS 以外的操作系统的支持请前往报告新功能）
+                -   label: 我已知晓：任何不合规定的 issue 都有可能被直接关闭
                     required: true
     -   type: dropdown
         id: bug_os

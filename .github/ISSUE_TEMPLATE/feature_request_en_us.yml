@@ -14,11 +14,11 @@ body:
             options:
                 -   label: This feature has not been requested before (you can search [here](https://github.com/TouchController/TouchController/issues?q=is%3Aissue)).
                     required: true
-                -   label: "I am aware that: If I only have some ideas rather than new features, they need to be submitted in the [Discussions](https://github.com/TouchController/TouchController/discussions/new?category=%E6%83%B3%E6%B3%95)."
-                    required: true
                 -   label: This feature is not in [Pull Requests](https://github.com/TouchController/TouchController/pulls)
                     required: true
                 -   label: This feature has not been added in the latest version of the TouchController mod.
+                    required: true
+                -   label: "I am aware that: If I only have some ideas rather than new features, they need to be submitted in the [Discussions](https://github.com/TouchController/TouchController/discussions/new?category=%E6%83%B3%E6%B3%95)."
                     required: true
     -   type: input
         id: feature_summary
