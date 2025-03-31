@@ -143,6 +143,8 @@ object CrosshairRendererImpl : CrosshairRenderer {
 
     override fun renderOuter(canvas: Canvas, config: TouchRingConfig) {
         val drawContext = (canvas as CanvasImpl).drawContext
+        drawContext.flush()
+
         val matrix = drawContext.pose().last().pose()
         val (vertexBuffer, indexCount) = buildOuter(config)
         val indexBuffer = outerIndexBuffer.getBuffer(indexCount)
