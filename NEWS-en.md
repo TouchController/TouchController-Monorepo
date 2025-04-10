@@ -1,5 +1,11 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta03
+
+- Fixed crash with ImmediatelyFast on 1.21.5
+- Fixed problem with chest boat
+- Fixed problem when renaming preset
+
 ## 0.2.1-beta02
 
 - Added support for 1.21.5
