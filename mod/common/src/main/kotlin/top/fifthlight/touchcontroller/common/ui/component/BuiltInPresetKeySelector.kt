@@ -328,6 +328,22 @@ fun BuiltInPresetKeySelector(
                     SelectIcon(expanded = expanded)
                 }
             }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = Text.translatable(Texts.SCREEN_MANAGE_CONTROL_PRESET_USE_VANILLA_CHAT),
+                )
+                Switch(
+                    value = value.useVanillaChat,
+                    onValueChanged = {
+                        onValueChanged(value.copy(useVanillaChat = it))
+                    },
+                )
+            }
         }
     }
 }

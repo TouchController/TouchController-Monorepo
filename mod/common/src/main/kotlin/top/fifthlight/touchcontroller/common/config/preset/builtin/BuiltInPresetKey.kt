@@ -24,6 +24,8 @@ data class BuiltInPresetKey(
     val opacity: Float = .6f,
     @SerialName("scale")
     val scale: Float = 1f,
+    @SerialName("useVanillaChat")
+    val useVanillaChat: Boolean = false,
 ) {
     @Serializable
     sealed class ControlStyle {
@@ -81,7 +83,11 @@ data class BuiltInPresetKey(
                 disableTouchGesture = controlStyle is ControlStyle.SplitControls && controlStyle.buttonInteraction,
             ),
             layout = controllerLayoutOf(
-                layers.controlLayer,
+                if (useVanillaChat) {
+                    layers.vanillaChatControlLayer
+                } else {
+                    layers.controlLayer
+                },
                 layers.interactionLayer.takeIf { controlStyle is ControlStyle.SplitControls && controlStyle.buttonInteraction },
                 layers.normalLayer.getByKey(this) + sprintButton,
                 layers.swimmingLayer.getByKey(this),

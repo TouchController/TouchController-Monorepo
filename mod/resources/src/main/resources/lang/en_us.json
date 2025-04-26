@@ -73,6 +73,7 @@
   "touchcontroller.screen.manage_control_preset.sprint.none": "None",
   "touchcontroller.screen.manage_control_preset.sprint.right_top": "Right-top edge",
   "touchcontroller.screen.manage_control_preset.sprint.right": "Right side",
+  "touchcontroller.screen.manage_control_preset.use_vanilla_chat": "Use vanilla chat screen",
 
   "touchcontroller.screen.config.layout.custom_control_layout": "Custom control layout",
   "touchcontroller.screen.custom_control_layout.title": "Custom layout",

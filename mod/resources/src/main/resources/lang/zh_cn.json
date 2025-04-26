@@ -73,6 +73,7 @@
   "touchcontroller.screen.manage_control_preset.sprint.none": "无",
   "touchcontroller.screen.manage_control_preset.sprint.right_top": "右上角",
   "touchcontroller.screen.manage_control_preset.sprint.right": "右侧",
+  "touchcontroller.screen.manage_control_preset.use_vanilla_chat": "使用原版聊天界面",
 
   "touchcontroller.screen.config.layout.custom_control_layout": "自定义控件布局",
   "touchcontroller.screen.custom_control_layout.title": "自定义布局",

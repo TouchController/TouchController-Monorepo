@@ -71,6 +71,22 @@ data class BuiltinLayers private constructor(
         )
     )
 
+    val vanillaChatControlLayer = LayoutLayer(
+        name = "Control",
+        condition = layoutLayerConditionOf(),
+        widgets = persistentListOf(
+            widgets.pause.copy(
+                align = Align.CENTER_TOP,
+                offset = IntOffset(-9, 0),
+            ),
+            widgets.vanillaChat.copy(
+                align = Align.CENTER_TOP,
+                offset = IntOffset(9, 0),
+            ),
+            widgets.inventory,
+        )
+    )
+
     val interactionLayer = LayoutLayer(
         name = "Interaction",
         condition = layoutLayerConditionOf(),

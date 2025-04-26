@@ -318,6 +318,18 @@ data class BuiltInWidgets private constructor(
         align = Align.CENTER_TOP,
     )
 
+    val vanillaChat = customWidget(
+        texture = fixed(TextureSet.TextureKey.Chat, scale = 1f),
+        activeTexture = fixed(TextureSet.TextureKey.ChatActive, scale = 1f),
+        grayOnClassic = true,
+        swipeTrigger = false,
+        action = ButtonTrigger(
+            down = WidgetTriggerAction.Game.VanillaChatScreen,
+        ),
+        name = Texts.WIDGET_CHAT_BUTTON_NAME,
+        align = Align.CENTER_TOP,
+    )
+
     val pause = customWidget(
         texture = fixed(TextureSet.TextureKey.Pause, scale = 1f),
         activeTexture = fixed(TextureSet.TextureKey.PauseActive, scale = 1f),
