@@ -15,7 +15,6 @@
 }
 
 -keeppackagenames top.fifthlight.touchcontroller.**
--keeppackagenames top.fifthlight.combine.**
 -repackageclasses top.fifthlight.touchcontroller.relocated
 
 -allowaccessmodification

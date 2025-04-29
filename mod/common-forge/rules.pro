@@ -21,7 +21,6 @@
 -keep class top.fifthlight.touchcontroller.platform.android.Transport { *; }
 
 -keeppackagenames top.fifthlight.touchcontroller.**
--keeppackagenames top.fifthlight.combine.**
 -repackageclasses top.fifthlight.touchcontroller.relocated
 
 -allowaccessmodification
