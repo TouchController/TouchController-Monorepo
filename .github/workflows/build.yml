@@ -1,5 +1,7 @@
 name: build
 on: [ pull_request, push ]
+env:
+    MAX_R8_TASKS: 1
 
 jobs:
     build:
