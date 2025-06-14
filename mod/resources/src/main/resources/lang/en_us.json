@@ -371,6 +371,7 @@
   "touchcontroller.widget.custom_button.normal_texture": "Normal texture",
   "touchcontroller.widget.custom_button.active_texture": "Active texture",
   "touchcontroller.widget.custom_button.swipe_trigger": "Swipe trigger",
+  "touchcontroller.widget.custom_button.grab_trigger": "Grab trigger",
 
   "touchcontroller.widget.key_binding.unknown": "Unknown",
   "touchcontroller.widget.key_binding.empty": "Empty",

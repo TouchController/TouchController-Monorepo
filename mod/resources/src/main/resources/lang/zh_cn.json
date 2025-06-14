@@ -371,6 +371,7 @@
   "touchcontroller.widget.custom_button.normal_texture": "正常贴图",
   "touchcontroller.widget.custom_button.active_texture": "激活贴图",
   "touchcontroller.widget.custom_button.swipe_trigger": "滑动触发",
+  "touchcontroller.widget.custom_button.grab_trigger": "捕获触发",
 
   "touchcontroller.widget.key_binding.unknown": "未知",
   "touchcontroller.widget.key_binding.empty": "空",

@@ -52,6 +52,7 @@ fun Context.SwipeButton(
 
 fun Context.Button(
     id: Uuid,
+    grabTrigger: Boolean = false,
     content: Context.(clicked: Boolean) -> Unit,
 ): ButtonResult {
     var newPointer = false
@@ -68,7 +69,7 @@ fun Context.Button(
             }
 
             is PointerState.Button -> {
-                if (pointer.inRect(size) && state.id == id) {
+                if ((grabTrigger || pointer.inRect(size)) && state.id == id) {
                     clicked = true
                 }
             }

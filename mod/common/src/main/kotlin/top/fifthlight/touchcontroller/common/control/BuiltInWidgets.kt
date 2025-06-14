@@ -41,6 +41,7 @@ data class BuiltInWidgets private constructor(
         activeTexture: ButtonTexture?,
         grayOnClassic: Boolean,
         swipeTrigger: Boolean = false,
+        grabTrigger: Boolean = false,
         action: ButtonTrigger = ButtonTrigger(),
         name: Identifier,
         align: Align,
@@ -53,6 +54,7 @@ data class BuiltInWidgets private constructor(
             activeTexture?.let(ButtonActiveTexture::Texture) ?: ButtonActiveTexture.Same
         },
         swipeTrigger = swipeTrigger,
+        grabTrigger = grabTrigger,
         action = action,
         name = ControllerWidget.Name.Translatable(name),
         align = align,
@@ -271,6 +273,7 @@ data class BuiltInWidgets private constructor(
         activeTexture = fixed(TextureSet.TextureKey.AttackActive),
         grayOnClassic = true,
         swipeTrigger = false,
+        grabTrigger = true,
         action = ButtonTrigger(
             press = key(DefaultKeyBindingType.ATTACK),
         ),

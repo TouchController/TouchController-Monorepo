@@ -29,6 +29,7 @@ data class CustomWidget(
     val centerText: String? = "",
     val textColor: Color = Colors.BLACK,
     val swipeTrigger: Boolean = false,
+    val grabTrigger: Boolean = false,
     val action: ButtonTrigger = ButtonTrigger(),
     override val id: Uuid = fastRandomUuid(),
     override val name: Name = Name.Translatable(Texts.WIDGET_CUSTOM_BUTTON_NAME),
@@ -50,6 +51,13 @@ data class CustomWidget(
                     config.copy(swipeTrigger = value)
                 },
                 name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_SWIPE_TRIGGER),
+            ),
+            BooleanProperty(
+                getValue = { it.grabTrigger },
+                setValue = { config, value ->
+                    config.copy(grabTrigger = value)
+                },
+                name = textFactory.of(Texts.WIDGET_CUSTOM_BUTTON_GRAB_TRIGGER),
             ),
             StringProperty(
                 getValue = { it.centerText ?: "" },
@@ -239,7 +247,10 @@ data class CustomWidget(
                 ButtonContent(clicked)
             }
         } else {
-            context.Button(id) { clicked ->
+            context.Button(
+                id = id,
+                grabTrigger = grabTrigger,
+            ) { clicked ->
                 ButtonContent(clicked)
             }
         }
