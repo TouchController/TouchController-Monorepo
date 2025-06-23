@@ -44,7 +44,7 @@ private data class VerticalScrollNode(
         return when (event.type) {
             PointerEventType.Scroll -> {
                 val scrollDelta = if (reverse) -event.scrollDelta.y else event.scrollDelta.y
-                scrollState.updateProgress((scrollState.progress.value - scrollDelta * 12).toInt())
+                scrollState.updateProgress((scrollState.progress.value - scrollDelta * 12).toInt(), animateOverscroll = true)
                 true
             }
 
@@ -52,12 +52,14 @@ private data class VerticalScrollNode(
                 scrollState.initialPointerPosition = event.position
                 scrollState.startPointerPosition = null
                 scrollState.scrolling = false
+                scrollState.stopAnimation()
                 false
             }
 
             PointerEventType.Cancel, PointerEventType.Release -> {
                 scrollState.initialPointerPosition = null
                 scrollState.startPointerPosition = null
+                scrollState.updateProgress(scrollState.progress.value, animateOverscroll = true)
                 if (scrollState.scrolling) {
                     scrollState.scrolling = false
                     true
@@ -118,10 +120,10 @@ private data class VerticalScrollNode(
         scrollState.viewportHeight = viewportHeight
 
         val maxScrollOffset = (placeable.height - viewportHeight).coerceAtLeast(0)
-        val currentProgress = scrollState.progress.value
-        if (currentProgress > maxScrollOffset) {
+        val actualProgress = scrollState.actualProgress.value
+        if (actualProgress > maxScrollOffset) {
             scrollState.updateProgress(maxScrollOffset)
-        } else if (currentProgress < 0) {
+        } else if (actualProgress < 0) {
             scrollState.updateProgress(0)
         }
 
