@@ -30,6 +30,8 @@ val excludeR8: String by extra.properties
 val useMojangMap: String by extra.properties
 val useMojangMapBool = useMojangMap.toBoolean()
 val minecraftVersion = MinecraftVersion(gameVersion)
+val useAccessWidener: String by extra.properties
+val useAccessWidenerBool = useAccessWidener.toBoolean()
 
 val localProperties: Map<String, String> by rootProject.ext
 val minecraftVmArgs = localProperties["minecraft.vm-args"]?.toString()?.split(":") ?: listOf()
@@ -139,6 +141,10 @@ loom {
     mixin {
         useLegacyMixinAp = false
     }
+
+    if (useAccessWidenerBool) {
+        accessWidenerPath.set(file("../common-$gameVersion/src/main/resources/touchcontroller.accesswidener"))
+    }
 }
 
 tasks.processResources {
@@ -155,7 +161,7 @@ tasks.processResources {
         "fabric"
     }
 
-    val properties = mapOf(
+    val properties = mutableMapOf(
         "mod_id" to modId,
         "mod_version_full" to version,
         "mod_name" to modName,
@@ -174,6 +180,12 @@ tasks.processResources {
         "fabric_api_name" to fabricApiName,
         "fabric_api_version" to fabricApiVersion,
     )
+
+    properties += if (useAccessWidenerBool) {
+        "access_widener_entry" to """, "accessWidener": "touchcontroller.accesswidener""""
+    } else {
+        "access_widener_entry" to ""
+    }
 
     inputs.properties(properties)
 
@@ -196,6 +208,10 @@ tasks.processResources {
         }
     }) {
         exclude("META-INF/MANIFEST.MF")
+    }
+
+    if (useAccessWidenerBool) {
+        from(file("../common-$gameVersion/src/main/resources/touchcontroller.accesswidener"))
     }
 }
 

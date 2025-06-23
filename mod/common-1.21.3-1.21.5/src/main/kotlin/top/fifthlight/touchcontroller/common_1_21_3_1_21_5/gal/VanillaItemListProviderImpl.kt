@@ -12,6 +12,7 @@ import top.fifthlight.combine.platform_1_21_3_1_21_5.toCombine
 import top.fifthlight.combine.platform_1_21_x.TextImpl
 import top.fifthlight.touchcontroller.common.gal.PlayerHandle
 import top.fifthlight.touchcontroller.common.gal.VanillaItemListProvider
+import top.fifthlight.touchcontroller.common_1_21_x.gal.AbstractPlayerHandleImpl
 import kotlin.jvm.optionals.getOrNull
 
 object VanillaItemListProviderImpl : VanillaItemListProvider {

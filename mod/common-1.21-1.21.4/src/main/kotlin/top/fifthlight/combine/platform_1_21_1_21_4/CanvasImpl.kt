@@ -2,7 +2,7 @@ package top.fifthlight.combine.platform_1_21_1_21_4
 
 import net.minecraft.client.gui.GuiGraphics
 import org.joml.Quaternionf
-import top.fifthlight.combine.platform_1_21_x.AbstractCanvasImpl
+import top.fifthlight.combine.platform_1_21_1_21_5.AbstractCanvasImpl
 
 abstract class AbstractCanvasImpl(
     drawContext: GuiGraphics,

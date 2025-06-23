@@ -10,8 +10,8 @@ import top.fifthlight.combine.paint.TextMeasurer
 import top.fifthlight.combine.platform_1_21_1_21_1.CanvasImpl
 import top.fifthlight.combine.platform_1_21_1_21_1.DataComponentTypeFactoryImpl
 import top.fifthlight.combine.platform_1_21_1_21_1.ItemFactoryImpl
-import top.fifthlight.combine.platform_1_21_x.ScreenFactoryImpl
-import top.fifthlight.combine.platform_1_21_x.SoundManagerImpl
+import top.fifthlight.combine.platform_1_21_1_21_5.ScreenFactoryImpl
+import top.fifthlight.combine.platform_1_21_1_21_5.SoundManagerImpl
 import top.fifthlight.combine.platform_1_21_x.TextFactoryImpl
 import top.fifthlight.combine.platform_1_21_x.TextMeasurerImpl
 import top.fifthlight.combine.screen.ScreenFactory
@@ -22,6 +22,7 @@ import top.fifthlight.touchcontroller.common_1_21_1_21_1.gal.CrosshairRendererIm
 import top.fifthlight.touchcontroller.common_1_21_1_21_1.gal.DefaultItemListProviderImpl
 import top.fifthlight.touchcontroller.common_1_21_1_21_1.gal.PlayerHandleFactoryImpl
 import top.fifthlight.touchcontroller.common_1_21_1_21_1.gal.VanillaItemListProviderImpl
+import top.fifthlight.touchcontroller.common_1_21_1_21_5.gal.GameActionImpl
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.*
 

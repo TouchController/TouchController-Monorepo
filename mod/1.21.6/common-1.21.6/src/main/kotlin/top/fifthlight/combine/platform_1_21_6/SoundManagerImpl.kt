@@ -1,4 +1,4 @@
-package top.fifthlight.combine.platform_1_21_x
+package top.fifthlight.combine.platform_1_21_6
 
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager

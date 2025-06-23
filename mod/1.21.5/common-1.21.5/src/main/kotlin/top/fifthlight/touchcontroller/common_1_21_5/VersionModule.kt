@@ -7,11 +7,11 @@ import top.fifthlight.combine.data.ItemFactory
 import top.fifthlight.combine.data.TextFactory
 import top.fifthlight.combine.paint.Canvas
 import top.fifthlight.combine.paint.TextMeasurer
+import top.fifthlight.combine.platform_1_21_1_21_5.ScreenFactoryImpl
+import top.fifthlight.combine.platform_1_21_1_21_5.SoundManagerImpl
 import top.fifthlight.combine.platform_1_21_3_1_21_5.DataComponentTypeFactoryImpl
 import top.fifthlight.combine.platform_1_21_3_1_21_5.ItemFactoryImpl
 import top.fifthlight.combine.platform_1_21_5.CanvasImpl
-import top.fifthlight.combine.platform_1_21_x.ScreenFactoryImpl
-import top.fifthlight.combine.platform_1_21_x.SoundManagerImpl
 import top.fifthlight.combine.platform_1_21_x.TextFactoryImpl
 import top.fifthlight.combine.platform_1_21_x.TextMeasurerImpl
 import top.fifthlight.combine.screen.ScreenFactory
@@ -19,10 +19,11 @@ import top.fifthlight.combine.sound.SoundManager
 import top.fifthlight.touchcontroller.common.config.GameConfigEditor
 import top.fifthlight.touchcontroller.common.di.appModule
 import top.fifthlight.touchcontroller.common.gal.*
+import top.fifthlight.touchcontroller.common_1_21_1_21_5.gal.GameActionImpl
 import top.fifthlight.touchcontroller.common_1_21_3_1_21_5.gal.DefaultItemListProviderImpl
 import top.fifthlight.touchcontroller.common_1_21_3_1_21_5.gal.VanillaItemListProviderImpl
-import top.fifthlight.touchcontroller.common_1_21_5.event.gal.CrosshairRendererImpl
-import top.fifthlight.touchcontroller.common_1_21_5.event.gal.PlayerHandleFactoryImpl
+import top.fifthlight.touchcontroller.common_1_21_5.gal.CrosshairRendererImpl
+import top.fifthlight.touchcontroller.common_1_21_5.gal.PlayerHandleFactoryImpl
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.*
 

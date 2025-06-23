@@ -11,7 +11,7 @@ group = "top.fifthlight.touchcontroller"
 version = modVersion
 
 minecraftStub {
-    versions("1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5")
+    versions("1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6")
 }
 
 dependencies {

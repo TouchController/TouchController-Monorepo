@@ -23,11 +23,11 @@ fun Context.Crosshair() {
     val config = config.touchRing
     drawQueue.enqueue { canvas ->
         canvas.withTranslate(status.position * windowScaledSize) {
-            crosshairRenderer.renderOuter(canvas, config)
             if (status.breakPercent > 0f) {
                 val progress = status.breakPercent * (1f - config.initialProgress) + config.initialProgress
                 crosshairRenderer.renderInner(canvas, config, progress)
             }
+            crosshairRenderer.renderOuter(canvas, config)
         }
     }
 }

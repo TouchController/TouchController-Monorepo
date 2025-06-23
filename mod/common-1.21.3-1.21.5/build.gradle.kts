@@ -18,5 +18,5 @@ dependencies {
     compileOnly(project(":mod:common"))
     compileOnly(project(":combine"))
     compileOnly(libs.joml)
-    api(project(":mod:common-1.21.x"))
+    api(project(":mod:common-1.21-1.21.5"))
 }

@@ -1,4 +1,4 @@
-package top.fifthlight.touchcontroller.common_1_21_5.event.gal
+package top.fifthlight.touchcontroller.common_1_21_5.gal
 
 import com.mojang.blaze3d.buffers.BufferType
 import com.mojang.blaze3d.buffers.BufferUsage

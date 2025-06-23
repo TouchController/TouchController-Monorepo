@@ -38,4 +38,5 @@
     "java": ">=${java_version}",
     "${fabric_api_name}": ">=${fabric_api_version}"
   }
+  ${access_widener_entry}
 }

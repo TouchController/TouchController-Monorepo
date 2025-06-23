@@ -1,6 +1,5 @@
 package top.fifthlight.touchcontroller.common_1_21_3_1_21_5.gal
 
-import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.animal.Pig
@@ -13,72 +12,17 @@ import top.fifthlight.combine.data.ItemStack
 import top.fifthlight.combine.platform_1_21_3_1_21_5.ItemStackImpl
 import top.fifthlight.combine.platform_1_21_3_1_21_5.toCombine
 import top.fifthlight.touchcontroller.common.config.ItemList
-import top.fifthlight.touchcontroller.common.gal.PlayerHandle
 import top.fifthlight.touchcontroller.common.gal.RidingEntityType
-import top.fifthlight.touchcontroller.helper.SyncableGameMode
+import top.fifthlight.touchcontroller.common_1_21_x.gal.AbstractPlayerHandleImpl as UpperAbstractPlayerHandleImpl
 
 abstract class AbstractPlayerHandleImpl(
-    val inner: LocalPlayer,
-) : PlayerHandle {
-    private val client: Minecraft
-        get() = Minecraft.getInstance()
-
+    inner: LocalPlayer,
+) : UpperAbstractPlayerHandleImpl(inner) {
     override fun hasItemsOnHand(list: ItemList): Boolean = InteractionHand.entries.any { hand ->
         inner.getItemInHand(hand).toCombine().item in list
     }
 
-    override fun changeLookDirection(deltaYaw: Double, deltaPitch: Double) {
-        // Magic value 0.15 from net.minecraft.entity.Entity.turn
-        inner.turn(deltaYaw / 0.15, deltaPitch / 0.15)
-    }
-
-    override fun dropSlot(index: Int) {
-        if (index == currentSelectedSlot) {
-            inner.drop(true)
-            return
-        }
-
-        val originalSlot = currentSelectedSlot
-        val interactionManagerAccessor = client.gameMode as SyncableGameMode
-
-        // Can it trigger anti-cheat?
-        currentSelectedSlot = index
-        interactionManagerAccessor.`touchcontroller$callSyncSelectedSlot`()
-
-        inner.drop(true)
-
-        currentSelectedSlot = originalSlot
-        interactionManagerAccessor.`touchcontroller$callSyncSelectedSlot`()
-    }
-
     override fun getInventorySlot(index: Int): ItemStack = ItemStackImpl(inner.inventory.getItem(index))
-
-    override val isUsingItem: Boolean
-        get() = inner.isUsingItem
-
-    override val onGround: Boolean
-        get() = inner.onGround()
-
-    override var isFlying: Boolean
-        get() = inner.abilities.flying
-        set(value) {
-            inner.abilities.flying = value
-        }
-
-    override val isSubmergedInWater: Boolean
-        get() = inner.isUnderWater
-
-    override val isTouchingWater: Boolean
-        get() = inner.isInWater
-
-    override var isSprinting: Boolean
-        get() = inner.isSprinting
-        set(value) {
-            inner.isSprinting = value
-        }
-
-    override val isSneaking: Boolean
-        get() = inner.isSteppingCarefully
 
     override val ridingEntityType: RidingEntityType?
         get() = when (inner.vehicle) {
@@ -92,7 +36,4 @@ abstract class AbstractPlayerHandleImpl(
             is Strider -> RidingEntityType.STRIDER
             else -> RidingEntityType.OTHER
         }
-
-    override val canFly: Boolean
-        get() = inner.abilities.mayfly
 }

@@ -10,6 +10,8 @@ val libs = the<LibrariesForLibs>()
 
 val modVersion: String by extra.properties
 val gameVersion: String by extra.properties
+val useAccessWidener: String by extra.properties
+val useAccessWidenerBool = useAccessWidener.toBoolean()
 val parchmentVersion = extra.properties["parchmentVersion"]?.toString()
 val minecraftVersion = MinecraftVersion(gameVersion)
 
@@ -37,5 +39,7 @@ dependencies {
 }
 
 loom {
-    remapConfigurations
+    if (useAccessWidenerBool) {
+        accessWidenerPath.set(file("src/main/resources/touchcontroller.accesswidener"))
+    }
 }

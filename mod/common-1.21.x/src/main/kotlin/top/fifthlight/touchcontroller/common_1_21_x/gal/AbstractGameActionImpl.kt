@@ -7,8 +7,8 @@ import top.fifthlight.combine.platform_1_21_x.toMinecraft
 import top.fifthlight.touchcontroller.common.gal.GameAction
 import top.fifthlight.touchcontroller.helper.ChatScreenOpenable
 
-object GameActionImpl : GameAction {
-    private val client = Minecraft.getInstance()
+abstract class AbstractGameActionImpl : GameAction {
+    protected val client: Minecraft = Minecraft.getInstance()
 
     override fun openChatScreen() {
         (client as ChatScreenOpenable).`touchcontroller$openChatScreen`("")
@@ -36,18 +36,6 @@ object GameActionImpl : GameAction {
             client.gameDirectory,
             client.mainRenderTarget,
         ) { message ->
-            this.client.execute {
-                this.client.gui.chat.addMessage(message)
-            }
-        }
-    }
-
-    override fun takePanorama() {
-        client.grabPanoramixScreenshot(
-            client.gameDirectory,
-            client.window.width,
-            client.window.width,
-        ).let { message ->
             this.client.execute {
                 this.client.gui.chat.addMessage(message)
             }

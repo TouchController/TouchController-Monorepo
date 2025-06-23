@@ -1,11 +1,15 @@
-package top.fifthlight.touchcontroller.common_1_21_5.event.gal
+package top.fifthlight.touchcontroller.common_1_21_5.gal
 
 import kotlinx.collections.immutable.toPersistentList
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
+import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Inventory
+import top.fifthlight.combine.data.ItemStack
+import top.fifthlight.combine.platform_1_21_3_1_21_5.ItemStackImpl
 import top.fifthlight.combine.platform_1_21_3_1_21_5.toCombine
+import top.fifthlight.touchcontroller.common.config.ItemList
 import top.fifthlight.touchcontroller.common.gal.PlayerHandle
 import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory
 import top.fifthlight.touchcontroller.common.gal.PlayerInventory

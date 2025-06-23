@@ -32,13 +32,13 @@ import top.fifthlight.combine.screen.LocalScreenFactory
 import top.fifthlight.combine.screen.OnDismissRequestDispatcher
 import top.fifthlight.combine.screen.ScreenFactory
 import top.fifthlight.combine.sound.LocalSoundManager
+import top.fifthlight.combine.sound.SoundManager
 import top.fifthlight.combine.util.CloseHandler
 import top.fifthlight.combine.util.LocalCloseHandler
 import top.fifthlight.data.IntSize
 import top.fifthlight.data.Offset
 import top.fifthlight.touchcontroller.common.gal.GameDispatcher
 import kotlin.coroutines.CoroutineContext
-import top.fifthlight.combine.data.Text as CombineText
 
 val LocalScreen = staticCompositionLocalOf<Screen> { error("No screen in context") }
 
@@ -48,16 +48,17 @@ private class ScreenCloseHandler(private val screen: Screen) : CloseHandler {
     }
 }
 
-private class CombineScreen(
+abstract class AbstractCombineScreen(
     title: Component,
     private val renderBackground: Boolean,
     private val parent: Screen?,
 ) : Screen(title), CoroutineScope, KoinComponent {
-    private val client = Minecraft.getInstance()
+    protected val client = Minecraft.getInstance()
     private var initialized = false
     private val dispatcher: GameDispatcher by inject()
-    private val soundManager = SoundManagerImpl(client.soundManager)
-    private val closeHandler = ScreenCloseHandler(this@CombineScreen)
+    protected abstract val soundManager: SoundManager
+    protected abstract val screenFactory: ScreenFactory
+    private val closeHandler = ScreenCloseHandler(this@AbstractCombineScreen)
     private val dismissDispatcher = OnDismissRequestDispatcher()
 
     private val owner = CombineOwner(dispatcher = dispatcher, textMeasurer = TextMeasurerImpl)
@@ -75,7 +76,7 @@ private class CombineScreen(
                     LocalTextFactory provides TextFactoryImpl,
                     LocalDataComponentTypeFactory provides get(),
                     LocalClipboard provides ClipboardHandlerImpl,
-                    LocalScreenFactory provides ScreenFactoryImpl,
+                    LocalScreenFactory provides screenFactory,
                     LocalOnDismissRequestDispatcher provides dismissDispatcher,
                 ) {
                     content()
@@ -221,34 +222,5 @@ private class CombineScreen(
     override fun onClose() {
         owner.close()
         client?.setScreen(parent)
-    }
-}
-
-object ScreenFactoryImpl : ScreenFactory {
-    override fun openScreen(
-        renderBackground: Boolean,
-        title: CombineText,
-        content: @Composable () -> Unit
-    ) {
-        val client = Minecraft.getInstance()
-        val screen = getScreen(client.screen, renderBackground, title, content)
-        client.setScreen(screen as Screen)
-    }
-
-    override fun getScreen(
-        parent: Any?,
-        renderBackground: Boolean,
-        title: CombineText,
-        content: @Composable () -> Unit
-    ): Any {
-        val screen = CombineScreen(
-            title.toMinecraft(),
-            renderBackground = renderBackground,
-            parent?.let { it as Screen }
-        )
-        screen.setContent {
-            content()
-        }
-        return screen
     }
 }
