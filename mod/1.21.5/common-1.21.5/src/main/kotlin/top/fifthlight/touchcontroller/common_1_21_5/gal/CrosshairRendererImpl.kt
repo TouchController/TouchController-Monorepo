@@ -166,6 +166,8 @@ object CrosshairRendererImpl : CrosshairRenderer {
 
     override fun renderInner(canvas: Canvas, config: TouchRingConfig, progress: Float) {
         val drawContext = (canvas as CanvasImpl).drawContext
+        drawContext.flush()
+
         val (vertexBuffer, indexCount) = buildInner()
         val indexBuffer = innerIndexBuffer.getBuffer(indexCount)
 
