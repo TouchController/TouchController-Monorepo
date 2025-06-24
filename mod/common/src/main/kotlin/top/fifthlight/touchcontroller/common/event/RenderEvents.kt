@@ -104,7 +104,7 @@ object RenderEvents : KoinComponent {
             }
         }
 
-        if (!gameState.inGame || gameState.inGui) {
+        if (!gameState.inGame) {
             return
         }
         val player = playerHandleFactory.getPlayerHandle() ?: return

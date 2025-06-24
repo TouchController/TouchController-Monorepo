@@ -19,7 +19,6 @@ import top.fifthlight.touchcontroller.common_1_21_6.helper.GuiElementUtil
 import kotlin.math.ceil
 import top.fifthlight.combine.data.Text as CombineText
 
-
 class CanvasImpl(
     drawContext: GuiGraphics,
 ) : AbstractCanvasImpl(drawContext) {

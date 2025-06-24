@@ -71,7 +71,8 @@ public abstract class InGameHudMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V",
-                    ordinal = 2
+                    ordinal = 1,
+                    shift = At.Shift.AFTER
             )
     )
     private void renderHotbar(GuiGraphics context, DeltaTracker deltaTracker, CallbackInfo ci) {
