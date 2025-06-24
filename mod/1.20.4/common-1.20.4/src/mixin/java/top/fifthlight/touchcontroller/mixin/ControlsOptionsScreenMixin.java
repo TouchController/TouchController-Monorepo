@@ -2,6 +2,7 @@ package top.fifthlight.touchcontroller.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.controls.ControlsScreen;
 import net.minecraft.network.chat.Component;
@@ -23,6 +24,8 @@ public abstract class ControlsOptionsScreenMixin extends Screen {
         var client = Minecraft.getInstance();
         var screen = (ControlsScreen) (Object) this;
 
+        var lastActionButton = (LayoutElement) screen.children().get(screen.children().size() - 2);
+
         var doneButton = (Button) screen.children().get(screen.children().size() - 1);
         doneButton.setPosition(doneButton.getX(), doneButton.getY() + 24);
 
@@ -38,7 +41,7 @@ public abstract class ControlsOptionsScreenMixin extends Screen {
                                 text,
                                 btn -> client.setScreen((Screen) ConfigScreenKt.getConfigScreen(screen))
                         )
-                        .bounds(screen.width / 2 - 155, screen.height / 6 + 60, 150, 20)
+                        .bounds(screen.width / 2 - 155, lastActionButton.getY() + 24, 150, 20)
                         .build()
         );
     }
