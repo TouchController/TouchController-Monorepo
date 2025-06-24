@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <cstring>
 
 #ifdef WIN32
 #include <winsock2.h>
