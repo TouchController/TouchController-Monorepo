@@ -1,5 +1,12 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta07
+
+- Fixed overlapping of touch settings buttons with other mods in 1.20.1
+- Added auto-show/hide feature for custom layout sidebar
+- Added grid background for item grids
+- Added basic support of for Wayland touch keyboard
+
 ## 0.2.1-beta06
 
 - Added options for D-Pad to show backwards-left/-right buttons
