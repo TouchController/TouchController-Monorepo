@@ -10,24 +10,19 @@ import top.fifthlight.combine.input.input.TextInputState
 import top.fifthlight.combine.input.input.TextRange
 import top.fifthlight.combine.input.input.substring
 import top.fifthlight.combine.input.key.Key
-import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
 import top.fifthlight.combine.modifier.focus.FocusInteraction
 import top.fifthlight.combine.modifier.focus.focusable
 import top.fifthlight.combine.modifier.input.textInput
 import top.fifthlight.combine.modifier.key.onKeyEvent
-import top.fifthlight.combine.modifier.placement.anchor
 import top.fifthlight.combine.modifier.placement.minHeight
-import top.fifthlight.combine.modifier.placement.onPlaced
 import top.fifthlight.combine.modifier.pointer.clickable
 import top.fifthlight.combine.node.LocalInputHandler
 import top.fifthlight.combine.node.LocalTextMeasurer
 import top.fifthlight.combine.paint.Colors
 import top.fifthlight.combine.ui.style.DrawableSet
 import top.fifthlight.combine.widget.base.Canvas
-import top.fifthlight.combine.widget.base.layout.Box
-import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.data.IntOffset
 import top.fifthlight.data.IntRect
 import top.fifthlight.data.IntSize
@@ -50,7 +45,7 @@ fun EditText(
     drawableSet: DrawableSet = LocalEditTextDrawableSet.current,
     value: String,
     onValueChanged: (String) -> Unit,
-    onEnter: () -> Unit = {},
+    onEnter: (() -> Unit)? = {},
     placeholder: Text? = null,
 ) {
     val clipboard = LocalClipboard.current
@@ -133,9 +128,6 @@ fun EditText(
             }
             .focusable(interactionSource)
             .textInput { updateInputState { commitText(it) } }
-            .onPlaced { placeable ->
-                areaRect = IntRect(offset = placeable.absolutePosition, size = placeable.size)
-            }
             .onKeyEvent { event ->
                 if (!event.pressed) {
                     return@onKeyEvent
@@ -184,7 +176,11 @@ fun EditText(
                     }
 
                     Key.ENTER -> {
-                        onEnter()
+                        if (onEnter == null) {
+                            updateInputState { commitText("\n") }
+                        } else {
+                            onEnter()
+                        }
                     }
 
                     else -> {}
@@ -199,6 +195,7 @@ fun EditText(
             ) {}
         }
     ) { node ->
+        areaRect = IntRect(offset = node.absolutePosition, size = node.size)
         if (value.isEmpty() && !focused) {
             val textSize = textMeasurer.measure(value)
             val offsetY = (node.height - textSize.height) / 2
