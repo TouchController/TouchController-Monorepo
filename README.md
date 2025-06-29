@@ -185,17 +185,17 @@ podman build -t llvm-mingw-jdk proxy-windows
 
     - Groovy
     ```groovy
-    implementation 'top.fifthlight.touchcontroller:proxy-client-android:0.0.2'
+    implementation 'top.fifthlight.touchcontroller:proxy-client-android:0.0.3'
     ```
     
     - Kotlin
     ```kotlin
-    implementation("top.fifthlight.touchcontroller:proxy-client-android:0.0.2")
+    implementation("top.fifthlight.touchcontroller:proxy-client-android:0.0.3")
     ```
     
     - Gradle version catalogs
     ```toml
-    touchcontroller-proxy-client-android = { group = "top.fifthlight.touchcontroller", name = "proxy-client-android", version = "0.0.2" }
+    touchcontroller-proxy-client-android = { group = "top.fifthlight.touchcontroller", name = "proxy-client-android", version = "0.0.3" }
     ```
 
 2. 创建 MessageTransport
