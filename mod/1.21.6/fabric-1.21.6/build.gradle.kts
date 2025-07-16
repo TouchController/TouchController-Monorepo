@@ -10,6 +10,6 @@ sourceSets.main {
 }
 
 dependencies {
-    shadow(project(":mod:1.21.6:common-1.21.6"))
-    implementation(project(":mod:1.21.6:common-1.21.6"))
+    shadow(project(":mod:common-1.21.6-1.21.7"))
+    implementation(project(":mod:common-1.21.6-1.21.7"))
 }

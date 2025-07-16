@@ -1,5 +1,9 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta09
+
+- Added support for 1.21.7
+
 ## 0.2.1-beta08
 
 - Fixed support for Windows versions below 10

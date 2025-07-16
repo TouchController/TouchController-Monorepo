@@ -1,5 +1,9 @@
 # TouchController NEWS - 用户可见的更改。
 
+## 0.2.1-beta09
+
+- 添加了 1.21.7 支持
+
 ## 0.2.1-beta08
 
 - 修复 Windows 10 以下系统的支持
