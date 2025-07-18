@@ -35,6 +35,8 @@ Below are game versions and mod loaders TouchController supports:
 - 1.21.4 (Forge, NeoForge, Fabric)
 - 1.21.5 (Forge, NeoForge, Fabric)
 - 1.21.6 (Forge, NeoForge, Fabric)
+- 1.21.7 (Forge, NeoForge, Fabric)
+- 1.21.8 (Forge, NeoForge, Fabric)
 
 Support for more game versions and mod loaders is in developing currently.
 
@@ -129,6 +131,8 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 - 1.21.4 (Forge, NeoForge, Fabric)
 - 1.21.5 (Forge, NeoForge, Fabric)
 - 1.21.6 (Forge, NeoForge, Fabric)
+- 1.21.7 (Forge, NeoForge, Fabric)
+- 1.21.8 (Forge, NeoForge, Fabric)
 
 更多游戏版本、mod 加载器的支持正在开发中。
 
