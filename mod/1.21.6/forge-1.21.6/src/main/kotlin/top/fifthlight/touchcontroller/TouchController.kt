@@ -7,7 +7,6 @@ import net.minecraftforge.client.event.RenderHighlightEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.level.BlockEvent
-import net.minecraftforge.eventbus.api.listener.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent
@@ -25,7 +24,7 @@ import top.fifthlight.touchcontroller.common.event.TickEvents
 import top.fifthlight.touchcontroller.common.event.WindowEvents
 import top.fifthlight.touchcontroller.common.model.ControllerHudModel
 import top.fifthlight.touchcontroller.common.ui.screen.getConfigScreen
-import top.fifthlight.touchcontroller.common_1_21_6_1_21_7.versionModule
+import top.fifthlight.touchcontroller.common_1_21_6_1_21_8.versionModule
 import top.fifthlight.touchcontroller.common_1_21_x.GameConfigEditorImpl
 import top.fifthlight.touchcontroller.common_1_21_x.gal.PlatformWindowProviderImpl
 import java.util.function.Predicate

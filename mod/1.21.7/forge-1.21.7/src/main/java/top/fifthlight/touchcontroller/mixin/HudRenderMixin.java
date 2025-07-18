@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.fifthlight.combine.platform_1_21_6_1_21_7.CanvasImpl;
+import top.fifthlight.combine.platform_1_21_6_1_21_8.CanvasImpl;
 import top.fifthlight.touchcontroller.common.event.RenderEvents;
 
 @Mixin(Gui.class)
