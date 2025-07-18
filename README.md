@@ -11,7 +11,7 @@ Currently in early development, welcome to report for bugs or other problems you
 ## Download and install
 
 You can download the latest release of TouchController mod
-on [Modrinth](https://modrinth.com/mod/touchcontroller#download), [Github Releases](https://github.com/TouchController/TouchController/releases), [Gitee Releases](https://gitee.com/fifth_light/TouchController/releases)
+on [Modrinth](https://modrinth.com/mod/touchcontroller#download), [Github Releases](https://github.com/TouchController/TouchController/releases)
 and [MC 百科](https://www.mcmod.cn/download/17432.html).
 
 On different mod loaders, TouchController needs dependency mod as below:
@@ -105,7 +105,7 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 
 ## 下载与安装
 
-你可以在 [Modrinth](https://modrinth.com/mod/touchcontroller#download)、[Github Releases](https://github.com/TouchController/TouchController/releases) 、[Gitee 发行版](https://gitee.com/fifth_light/TouchController/releases)
+你可以在 [Modrinth](https://modrinth.com/mod/touchcontroller#download)、[Github Releases](https://github.com/TouchController/TouchController/releases)
 和 [MC 百科](https://www.mcmod.cn/download/17432.html) 上下载 TouchController 的最新发布版。
 
 根据不同的 mod 加载器，TouchController 需要如下的前置 mod：
