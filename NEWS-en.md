@@ -1,5 +1,9 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta10
+
+- Imported warning message when proxy is not connected
+
 ## 0.2.1-beta09
 
 - Added support for 1.21.7

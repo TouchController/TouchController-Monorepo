@@ -1,5 +1,9 @@
 {
   "touchcontroller.warning.proxy_not_connected": "警告：代理未连接。TouchController 将被禁用。",
+  "touchcontroller.warning.proxy_not_connected_android": "你正在使用 Android，但是启动器没有启动消息代理。如果你的启动器支持 TouchController，请启用它的相应支持；否则你应该更换支持 TouchController 的启动器。",
+  "touchcontroller.warning.proxy_not_connected_linux": "TouchController 加载失败。可能的原因有：TouchController 动态库加载失败；你使用的是 X11，而 TouchController 仅支持 Wayland。请检查游戏日志以确认详情。",
+  "touchcontroller.warning.proxy_not_connected_windows": "TouchController 加载失败。请检查游戏日志以确认详情。",
+  "touchcontroller.warning.proxy_not_connected_os_not_supported": "你正在使用不支持的操作系统：%s，目前 TouchController 只支持 Windows、Linux 和 Android。",
   "touchcontroller.warning.legacy_udp_proxy_used": "警告：检测到正在使用过时的 UDP 代理协议。你目前仍然可以使用 TouchController，但是建议更新你的启动器以获得新功能。",
   "touchcontroller.warning.take_panorama_unsupported": "当前游戏版本不支持截取全景图。",
   "touchcontroller.warning.development_version.title": "警告",

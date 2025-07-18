@@ -1,5 +1,9 @@
 {
   "touchcontroller.warning.proxy_not_connected": "Warning: No proxy connected. TouchController will be disabled.",
+  "touchcontroller.warning.proxy_not_connected_android": "You are using Android, but message proxy of the launcher is not enabled. If your launcher supports TouchController, please enable it; otherwise you should switch a launcher supports TouchController.",
+  "touchcontroller.warning.proxy_not_connected_linux": "TouchController failed to load. Possible reasons: failed to load TouchController's dynamic library; you are using X11, but TouchController only supports Wayland for now. Check game log for details.",
+  "touchcontroller.warning.proxy_not_connected_windows": "TouchController failed to load. Check game log for details.",
+  "touchcontroller.warning.proxy_not_connected_os_not_supported": "You are using not supported operation system: %s, and TouchController only support Windows, Linux and Android currently.",
   "touchcontroller.warning.legacy_udp_proxy_used": "Warning: Legacy UDP proxy protocol used. You can still use TouchController for now, but it is suggested to upgrade your launcher for more features.",
   "touchcontroller.warning.take_panorama_unsupported": "Current game version don't support taking panorama.",
   "touchcontroller.warning.development_version.title": "Warning",

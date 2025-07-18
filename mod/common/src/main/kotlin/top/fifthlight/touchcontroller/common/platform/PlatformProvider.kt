@@ -31,7 +31,7 @@ class PlatformProvider : KoinComponent {
 
     private val logger = LoggerFactory.getLogger(PlatformProvider::class.java)
 
-    private val isAndroid: Boolean by lazy {
+    val isAndroid: Boolean by lazy {
         // Detect the existence of /system/build.prop
         val path = Paths.get("/", "system", "build.prop")
         try {
@@ -86,7 +86,11 @@ class PlatformProvider : KoinComponent {
         val systemArch = System.getProperty("os.arch")
         logger.info("System name: $systemName, system arch: $systemArch")
 
-        if ((systemName.startsWith("Linux") && isAndroid) || systemName.contains("Android", ignoreCase = true)) {
+        if ((systemName.startsWith("Linux", ignoreCase = true) && isAndroid) || systemName.contains(
+                "Android",
+                ignoreCase = true
+            )
+        ) {
             logger.info("Android detected")
 
             val socketName = System.getenv("TOUCH_CONTROLLER_PROXY_SOCKET")?.takeIf { it.isNotEmpty() }
