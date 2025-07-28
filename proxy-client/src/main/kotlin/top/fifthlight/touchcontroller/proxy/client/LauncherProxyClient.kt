@@ -1,16 +1,6 @@
 package top.fifthlight.touchcontroller.proxy.client
 
-import top.fifthlight.touchcontroller.proxy.message.AddPointerMessage
-import top.fifthlight.touchcontroller.proxy.message.CapabilityMessage
-import top.fifthlight.touchcontroller.proxy.message.ClearPointerMessage
-import top.fifthlight.touchcontroller.proxy.message.FloatRect
-import top.fifthlight.touchcontroller.proxy.message.InitializeMessage
-import top.fifthlight.touchcontroller.proxy.message.InputAreaMessage
-import top.fifthlight.touchcontroller.proxy.message.InputCursorMessage
-import top.fifthlight.touchcontroller.proxy.message.InputStatusMessage
-import top.fifthlight.touchcontroller.proxy.message.KeyboardShowMessage
-import top.fifthlight.touchcontroller.proxy.message.RemovePointerMessage
-import top.fifthlight.touchcontroller.proxy.message.VibrateMessage
+import top.fifthlight.touchcontroller.proxy.message.*
 import top.fifthlight.touchcontroller.proxy.message.input.TextInputState
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -88,12 +78,15 @@ class LauncherProxyClient @JvmOverloads constructor(
                         is InputStatusMessage -> {
                             inputHandler?.updateState(message.status)
                         }
+
                         is InputCursorMessage -> {
                             inputHandler?.updateCursor(message.cursorRect)
                         }
+
                         is InputAreaMessage -> {
                             inputHandler?.updateArea(message.inputAreaRect)
                         }
+
                         is KeyboardShowMessage -> {
                             if (message.show) {
                                 keyboardShowHandler?.showKeyboard()
@@ -101,6 +94,7 @@ class LauncherProxyClient @JvmOverloads constructor(
                                 keyboardShowHandler?.hideKeyboard()
                             }
                         }
+
                         else -> {
                             // Ignore
                         }
@@ -135,6 +129,17 @@ class LauncherProxyClient @JvmOverloads constructor(
      */
     fun clearPointer() {
         messageClient.send(ClearPointerMessage)
+    }
+
+    /**
+     * 移动游戏视角。
+     *
+     * @param screenBased 是否以屏幕坐标系为基准。如果为 true，则以屏幕移动的比例来计算旋转角度（即与 addPointer 的坐标一致），否则按角度计算。
+     * @param deltaPitch 以屏幕移动的比例或者角度为单位的俯仰角增量。也就是鼠标沿 Y 轴移动的方向。
+     * @param deltaYaw 以屏幕移动的比例或者角度为单位的偏航角增量。也就是鼠标沿 X 轴移动的方向。
+     */
+    fun moveView(screenBased: Boolean, deltaPitch: Float, deltaYaw: Float) {
+        messageClient.send(MoveViewMessage(screenBased, deltaPitch, deltaYaw))
     }
 
     private fun sendCapabilities() {

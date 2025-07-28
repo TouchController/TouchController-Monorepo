@@ -13,6 +13,7 @@ import top.fifthlight.data.Offset
 import top.fifthlight.touchcontroller.common.config.GlobalConfigHolder
 import top.fifthlight.touchcontroller.common.config.LayerConditionKey
 import top.fifthlight.touchcontroller.common.gal.*
+import top.fifthlight.touchcontroller.common.helper.fixAspectRadio
 import top.fifthlight.touchcontroller.common.input.InputManager
 import top.fifthlight.touchcontroller.common.layout.Context
 import top.fifthlight.touchcontroller.common.layout.ContextInput
@@ -52,6 +53,8 @@ object RenderEvents : KoinComponent {
             controllerHudModel.status.vibrate = false
         }
 
+        val config = configHolder.config.value
+        val playerHandle = playerHandleFactory.getPlayerHandle()
         val gameState = gameStateProvider.currentState()
         val platform = platformProvider.platform
         if (platform != null) {
@@ -107,12 +110,29 @@ object RenderEvents : KoinComponent {
                         }
                     }
 
+                    is MoveViewMessage -> {
+                        playerHandle?.let {
+                            val rawDelta = Offset(
+                                x = message.deltaYaw,
+                                y = message.deltaPitch,
+                            )
+                            val offset = if (message.screenBased) {
+                                rawDelta.fixAspectRadio(window.size) * config.control.viewMovementSensitivity
+                            } else {
+                                rawDelta
+                            }
+                            playerHandle.changeLookDirection(
+                                deltaYaw = offset.x.toDouble(),
+                                deltaPitch = offset.y.toDouble(),
+                            )
+                        }
+                    }
+
                     else -> {}
                 }
             }
         }
 
-        val config = configHolder.config.value
         if (config.debug.enableTouchEmulation) {
             val mousePosition = window.mousePosition
             if (window.mouseLeftPressed && mousePosition != null) {
@@ -128,7 +148,7 @@ object RenderEvents : KoinComponent {
         if (!gameState.inGame) {
             return
         }
-        val player = playerHandleFactory.getPlayerHandle() ?: return
+        val player = playerHandle ?: return
         if (player.isFlying || player.isSubmergedInWater) {
             keyBindingHandler.getState(DefaultKeyBindingType.SNEAK).clearLock()
         }

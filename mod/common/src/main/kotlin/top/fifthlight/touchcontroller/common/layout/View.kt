@@ -1,23 +1,18 @@
 package top.fifthlight.touchcontroller.common.layout
 
 import org.koin.core.component.get
-import top.fifthlight.data.Offset
 import top.fifthlight.touchcontroller.common.ext.fastRandomUuid
 import top.fifthlight.touchcontroller.common.gal.CrosshairTarget
 import top.fifthlight.touchcontroller.common.gal.DefaultKeyBindingType
 import top.fifthlight.touchcontroller.common.gal.PlayerHandleFactory
 import top.fifthlight.touchcontroller.common.gal.ViewActionProvider
+import top.fifthlight.touchcontroller.common.helper.fixAspectRadio
 import top.fifthlight.touchcontroller.common.state.PointerState
 
 private val viewUuid = fastRandomUuid()
 
 fun Context.View() {
     val viewActionProvider: ViewActionProvider = get()
-
-    fun Offset.fixAspectRadio(): Offset = Offset(
-        x = x,
-        y = y * windowSize.height / windowSize.width
-    )
 
     val attackKeyState = keyBindingHandler.getState(DefaultKeyBindingType.ATTACK)
     val useKeyState = keyBindingHandler.getState(DefaultKeyBindingType.USE)
@@ -87,14 +82,14 @@ fun Context.View() {
         var moving = state.moving
         if (!state.moving) {
             // Move detect
-            val delta = (pointer.position - state.initialPosition).fixAspectRadio().squaredLength
+            val delta = (pointer.position - state.initialPosition).fixAspectRadio(windowSize).squaredLength
             val threshold = config.control.viewHoldDetectThreshold * 0.01f
             if (delta > threshold * threshold) {
                 moving = true
             }
         }
 
-        val movement = (pointer.position - state.lastPosition).fixAspectRadio()
+        val movement = (pointer.position - state.lastPosition).fixAspectRadio(windowSize)
         result.lookDirection = movement * config.control.viewMovementSensitivity
 
         val playerHandleFactory: PlayerHandleFactory = get()
