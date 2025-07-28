@@ -14,6 +14,7 @@ import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.common.config.ConfigDirectoryProvider
 import java.io.IOException
+import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 import kotlin.uuid.Uuid
@@ -45,7 +46,7 @@ data class PresetsContainer(
 class PresetManager : KoinComponent {
     private val logger = LoggerFactory.getLogger(PresetManager::class.java)
     private val configDirectoryProvider: ConfigDirectoryProvider = get()
-    private val presetDir = configDirectoryProvider.getConfigDirectory().resolve("preset")
+    val presetDir: Path = configDirectoryProvider.getConfigDirectory().resolve("preset")
     private val orderFile = presetDir.resolve("order.json")
     private val json: Json by inject()
     private val _presets = MutableStateFlow(PresetsContainer())

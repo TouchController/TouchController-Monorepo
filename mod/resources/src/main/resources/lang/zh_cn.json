@@ -91,6 +91,9 @@
   "touchcontroller.screen.custom_control_layout.no_preset_selected": "选择一个预设以编辑",
   "touchcontroller.screen.custom_control_layout.delete_widget": "删除控件",
   "touchcontroller.screen.custom_control_layout.paste_widget": "粘贴控件",
+  "touchcontroller.screen.custom_control_layout.presets.path": "预设路径",
+  "touchcontroller.screen.custom_control_layout.presets.path.ok": "确定",
+  "touchcontroller.screen.custom_control_layout.presets.path.get_failed": "获取预设路径失败。",
 
   "touchcontroller.screen.custom_control_layout.properties": "属性",
   "touchcontroller.screen.custom_control_layout.no_widget_selected": "选中一个控件以编辑属性",

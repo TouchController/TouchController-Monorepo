@@ -183,6 +183,9 @@
   "touchcontroller.screen.custom_control_layout.presets.delete_preset.2": " '%s' will be lost forever! (A long time!)",
   "touchcontroller.screen.custom_control_layout.presets.delete_preset.delete": "Delete",
   "touchcontroller.screen.custom_control_layout.presets.delete_preset.cancel": "Cancel",
+  "touchcontroller.screen.custom_control_layout.presets.path": "Preset path",
+  "touchcontroller.screen.custom_control_layout.presets.path.ok": "OK",
+  "touchcontroller.screen.custom_control_layout.presets.path.get_failed": "Failed to get preset path.",
 
   "touchcontroller.screen.config.layout.gui_control_layout.title": "GUI control layout",
 

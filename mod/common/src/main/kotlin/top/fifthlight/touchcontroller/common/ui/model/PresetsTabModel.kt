@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import org.koin.core.component.inject
+import org.slf4j.LoggerFactory
 import top.fifthlight.touchcontroller.common.config.preset.LayoutPreset
 import top.fifthlight.touchcontroller.common.config.preset.PresetManager
 import top.fifthlight.touchcontroller.common.ui.state.PresetsTabState
@@ -12,6 +13,10 @@ import kotlin.uuid.Uuid
 class PresetsTabModel(
     private val screenModel: CustomControlLayoutTabModel
 ): TouchControllerScreenModel() {
+    private companion object {
+        private val logger = LoggerFactory.getLogger(PresetsTabModel::class.java)
+    }
+
     private val presetManager: PresetManager by inject()
     private val _uiState = MutableStateFlow<PresetsTabState>(PresetsTabState.Empty)
     val uiState = _uiState.asStateFlow()
@@ -75,5 +80,15 @@ class PresetsTabModel(
 
     fun movePreset(uuid: Uuid, offset: Int) {
         presetManager.movePreset(uuid, offset)
+    }
+
+    fun openPresetPathDialog(uuid: Uuid) {
+        val path = try {
+            presetManager.presetDir.resolve("$uuid.json").toAbsolutePath()
+        } catch (ex: Exception) {
+            logger.error("Failed to get preset path", ex)
+            null
+        }
+        _uiState.value = PresetsTabState.Path(path?.toString())
     }
 }

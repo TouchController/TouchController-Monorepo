@@ -33,4 +33,8 @@ sealed class PresetsTabState {
     data class Delete(
         val uuid: Uuid,
     ) : PresetsTabState()
+
+    data class Path(
+        val path: String? = null,
+    ) : PresetsTabState()
 }

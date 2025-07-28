@@ -253,12 +253,46 @@ object PresetsTab : CustomTab() {
                 Text(Text.format(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DELETE_PRESET_2, presetName))
             }
         }
+        AlertDialog(
+            value = tabState,
+            valueTransformer = { tabState as? PresetsTabState.Path },
+            onDismissRequest = { tabModel.clearState() },
+            title = {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_PATH))
+            },
+            action = { state ->
+                GuideButton(
+                    onClick = {
+                        tabModel.clearState()
+                    },
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_PATH_OK))
+                }
+            }
+        ) { state ->
+            if (state.path != null) {
+                Text(Text.literal(state.path))
+            } else {
+                Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_PATH_GET_FAILED))
+            }
+        }
 
         SideBarContainer(
             sideBarAtRight = sideBarAtRight,
             tabsButton = tabsButton,
             actions = {
                 val currentPreset = uiState.selectedPreset
+                val currentPresetUuid = uiState.selectedPresetUuid
+                IconButton(
+                    onClick = {
+                        uiState.selectedPresetUuid?.let {
+                            tabModel.openPresetPathDialog(it)
+                        }
+                    },
+                    enabled = currentPresetUuid != null,
+                ) {
+                    Text(Text.literal("导"))
+                }
                 IconButton(
                     onClick = {
                         tabModel.openCreatePresetChooseDialog()
