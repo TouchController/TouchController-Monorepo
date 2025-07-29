@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import top.fifthlight.combine.data.Text
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
-import top.fifthlight.combine.modifier.drawing.background
 import top.fifthlight.combine.modifier.placement.fillMaxSize
 import top.fifthlight.combine.modifier.placement.padding
 import top.fifthlight.combine.modifier.scroll.verticalScroll
@@ -60,12 +59,6 @@ object RegularTab : Tab() {
                 description = Text.translatable(Texts.SCREEN_CONFIG_GENERAL_REGULAR_DISABLE_CURSOR_LOCK_DESCRIPTION),
                 value = globalConfig.regular.disableMouseLock,
                 onValueChanged = { update { copy(disableMouseLock = it) } }
-            )
-            SwitchPreferenceItem(
-                title = Text.translatable(Texts.SCREEN_CONFIG_GENERAL_REGULAR_DISABLE_CROSSHAIR_TITLE),
-                description = Text.translatable(Texts.SCREEN_CONFIG_GENERAL_REGULAR_DISABLE_CROSSHAIR_DESCRIPTION),
-                value = globalConfig.regular.disableCrosshair,
-                onValueChanged = { update { copy(disableCrosshair = it) } }
             )
             SwitchPreferenceItem(
                 title = Text.translatable(Texts.SCREEN_CONFIG_GENERAL_REGULAR_DISABLE_HOT_BAR_KEY_TITLE),

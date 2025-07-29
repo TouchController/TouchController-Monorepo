@@ -238,7 +238,8 @@ object RenderEvents : KoinComponent {
 
     fun shouldRenderCrosshair(): Boolean {
         val config = configHolder.config.value
-        if (!config.regular.disableCrosshair) {
+        val preset = configHolder.currentPreset.value
+        if (!preset.controlInfo.disableCrosshair) {
             return true
         }
         val player = playerHandleFactory.getPlayerHandle() ?: return false

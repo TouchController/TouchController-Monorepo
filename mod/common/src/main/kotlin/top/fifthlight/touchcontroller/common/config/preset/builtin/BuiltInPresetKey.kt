@@ -80,6 +80,7 @@ data class BuiltInPresetKey(
             name = "Built-in preset",
             controlInfo = PresetControlInfo(
                 splitControls = controlStyle is ControlStyle.SplitControls,
+                disableCrosshair = controlStyle !is ControlStyle.SplitControls,
                 disableTouchGesture = controlStyle is ControlStyle.SplitControls && controlStyle.buttonInteraction,
             ),
             layout = controllerLayoutOf(

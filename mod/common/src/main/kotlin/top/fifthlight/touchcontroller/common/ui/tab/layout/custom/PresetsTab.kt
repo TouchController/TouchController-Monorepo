@@ -143,6 +143,23 @@ object PresetsTab : CustomTab() {
                         }
                     )
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DISABLE_CROSSHAIR))
+
+                    Switch(
+                        value = state.controlInfo.disableCrosshair,
+                        onValueChanged = {
+                            tabModel.updateCreatePresetState {
+                                copy(controlInfo = controlInfo.copy(disableCrosshair = it))
+                            }
+                        }
+                    )
+                }
             }
         }
         AlertDialog(
@@ -216,6 +233,23 @@ object PresetsTab : CustomTab() {
                         onValueChanged = {
                             tabModel.updateEditPresetState {
                                 copy(controlInfo = controlInfo.copy(disableTouchGesture = it))
+                            }
+                        }
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(Text.translatable(Texts.SCREEN_CUSTOM_CONTROL_LAYOUT_PRESETS_DISABLE_CROSSHAIR))
+
+                    Switch(
+                        value = state.controlInfo.disableCrosshair,
+                        onValueChanged = {
+                            tabModel.updateCreatePresetState {
+                                copy(controlInfo = controlInfo.copy(disableCrosshair = it))
                             }
                         }
                     )

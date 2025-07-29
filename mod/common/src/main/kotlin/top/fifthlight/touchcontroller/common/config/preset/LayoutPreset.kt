@@ -44,6 +44,7 @@ value class CustomConditions(
 data class PresetControlInfo(
     val splitControls: Boolean = false,
     val disableTouchGesture: Boolean = false,
+    val disableCrosshair: Boolean = true,
     val customConditions: CustomConditions = CustomConditions(),
 )
 
