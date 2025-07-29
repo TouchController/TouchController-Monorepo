@@ -13,7 +13,6 @@ import top.fifthlight.touchcontroller.common.ui.tab.general.DebugTab
 import top.fifthlight.touchcontroller.common.ui.tab.general.RegularTab
 import top.fifthlight.touchcontroller.common.ui.tab.general.TouchRingTab
 import top.fifthlight.touchcontroller.common.ui.tab.layout.CustomControlLayoutTab
-import top.fifthlight.touchcontroller.common.ui.tab.layout.GuiControlLayoutTab
 import top.fifthlight.touchcontroller.common.ui.tab.layout.ManageControlPresetsTab
 
 typealias OnResetHandler = GlobalConfig.() -> GlobalConfig
@@ -40,7 +39,6 @@ abstract class Tab : Screen {
                 AboutTab,
                 ManageControlPresetsTab,
                 CustomControlLayoutTab,
-                GuiControlLayoutTab,
                 RegularTab,
                 ControlTab,
                 TouchRingTab,
