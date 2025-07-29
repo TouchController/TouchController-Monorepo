@@ -148,6 +148,9 @@ object RenderEvents : KoinComponent {
         if (!gameState.inGame) {
             return
         }
+        if (gameState.inGui) {
+            touchStateModel.clearPointer()
+        }
         val player = playerHandle ?: return
         if (player.isFlying || player.isSubmergedInWater) {
             keyBindingHandler.getState(DefaultKeyBindingType.SNEAK).clearLock()
