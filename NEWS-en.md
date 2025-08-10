@@ -1,5 +1,12 @@
 # TouchController NEWS - User visible changes.
 
+## 0.2.1-beta13
+
+- Fixed layout error of built-in layout screen on narrow screens
+- Added layer condition of holding items
+- Reworked UI of creating and editing layer conditions
+- Fixed the problem of disable crosshair option in layer settings
+
 ## 0.2.1-beta12
 
 - Added Handsoneprin as a contributor
