@@ -1,12 +1,18 @@
 <h1 align="center">TouchController</h1>
+
 <img src="static/logo.png" width="96" height="96" align="left" alt="TouchController icon" vspace="16" hspace="16" />
 
 A mod bringing controlling style of bedrock version to Java version.
 
 Currently in early development, welcome to report for bugs or other problems you found is welcome!
+<br clear="left">
+<div align="center">
 
 [简体中文](#chinese) | [启动器适配文档 (How to add launcher support)](#launcher-support)
-<br clear="left">
+
+[![Android CI](https://github.com/TouchController/TouchController/actions/workflows/build.yml/badge.svg)](https://github.com/TouchController/TouchController/actions) ![Downloads](https://img.shields.io/github/downloads/TouchController/TouchController/total?style=&logo=github&color=blue) [![Modrinth](https://img.shields.io/modrinth/dt/touchcontroller?style=&logo=modrinth&color=008833)](https://modrinth.com/mod/touchcontroller)  [![CurseForge](https://cf.way2muchnoise.eu/full_1198137_downloads.svg)](https://curseforge.com/minecraft/mc-mods/touchcontroller)  
+[![Issues](https://img.shields.io/github/issues/TouchController/TouchController?style=logo=github-square&color=F7E672)](https://github.com/TouchController/TouchController/issues) [![TC WIKI](https://img.shields.io/static/v1?label=TC%20WIKI&message=Online&color=F08B95)](https://wiki.touchcontroller.fifthlight.top/)  [![QQ](https://img.shields.io/badge/QQ-green?style=flat-square-square&color=C3F6FF)](https://pd.qq.com/s/hojjgf66) [![MC 百科](https://img.shields.io/badge/MC_%E7%99%BE%E7%A7%91-blue?style=&color=ae94ff)](https://www.mcmod.cn/class/17432.html) 
+</div>
 
 ## Download and install
 
@@ -104,9 +110,13 @@ Finally, you can run `./gradlew build` to compile, and built file can bu found i
 
 目前处于早期开发中，如果遇到 Bug 或者其他问题，欢迎积极报告！
 <br clear="left">
+<div align="center">
+
+[![Android CI](https://github.com/TouchController/TouchController/actions/workflows/build.yml/badge.svg)](https://github.com/TouchController/TouchController/actions) ![Downloads](https://img.shields.io/github/downloads/TouchController/TouchController/total?style=&logo=github&color=blue) [![Modrinth](https://img.shields.io/modrinth/dt/touchcontroller?style=&logo=modrinth&color=008833)](https://modrinth.com/mod/touchcontroller)  [![CurseForge](https://cf.way2muchnoise.eu/full_1198137_downloads.svg)](https://curseforge.com/minecraft/mc-mods/touchcontroller)  
+[![Issues](https://img.shields.io/github/issues/TouchController/TouchController?style=logo=github-square&color=F7E672)](https://github.com/TouchController/TouchController/issues) [![TC WIKI](https://img.shields.io/static/v1?label=TC%20WIKI&message=Online&color=F08B95)](https://wiki.touchcontroller.fifthlight.top/)  [![QQ](https://img.shields.io/badge/QQ-green?style=flat-square-square&color=C3F6FF)](https://pd.qq.com/s/hojjgf66) [![MC 百科](https://img.shields.io/badge/MC_%E7%99%BE%E7%A7%91-blue?style=&color=ae94ff)](https://www.mcmod.cn/class/17432.html) 
+</div>
 
 ## 下载与安装
-
 你可以在 [Modrinth](https://modrinth.com/mod/touchcontroller#download)、[GitHub Releases](https://github.com/TouchController/TouchController/releases)
 和 [MC 百科](https://www.mcmod.cn/download/17432.html) 上下载 TouchController 的最新发布版。
 
