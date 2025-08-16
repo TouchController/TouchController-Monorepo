@@ -34,11 +34,6 @@
   "touchcontroller.screen.config.undo": "Undo",
   "touchcontroller.screen.config.cancel": "Cancel",
 
-  "touchcontroller.screen.config.unsaved_warning.title": "Warning",
-  "touchcontroller.screen.config.unsaved_warning.message": "You have unsaved changes. Do you really want to exit? All unsaved changed will be lost!",
-  "touchcontroller.screen.config.unsaved_warning.yes": "Yes",
-  "touchcontroller.screen.config.unsaved_warning.no": "No",
-
   "touchcontroller.screen.config.reset.title": "What config do you want to reset?",
   "touchcontroller.screen.config.reset.current_tab": "Current tab",
   "touchcontroller.screen.config.reset.layout_settings": "Layout settings",
@@ -49,8 +44,6 @@
   "touchcontroller.screen.config.about.authors.title": "Authors: ",
   "touchcontroller.screen.config.about.contributors.title": "Contributors: ",
   "touchcontroller.screen.config.about.license.title": "License: ",
-  "touchcontroller.screen.config.about.show.title": "Show",
-  "touchcontroller.screen.config.about.libraries.title": "Third party libraries used",
   "touchcontroller.screen.config.about.unknown_version": "Unknown version",
   "touchcontroller.screen.config.about.loading": "Loading",
 
@@ -102,7 +95,6 @@
   "touchcontroller.screen.custom_control_layout.widgets": "Widgets",
   "touchcontroller.screen.custom_control_layout.widgets.builtin": "Builtin",
   "touchcontroller.screen.custom_control_layout.widgets.preset": "Preset",
-  "touchcontroller.screen.custom_control_layout.widgets.loading": "Loading",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.opacity": "Default opacity for new widgets: %s%%",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.texture_set": "Default texture set for new widgets",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.save": "Save",
@@ -120,9 +112,6 @@
   "touchcontroller.screen.custom_control_layout.layers.edit": "Edit",
   "touchcontroller.screen.custom_control_layout.layers.copy": "Copy",
   "touchcontroller.screen.custom_control_layout.layers.delete": "Delete",
-  "touchcontroller.screen.custom_control_layout.layers.no_preset_selected": "Select a preset to edit layers",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.count": "Condition count: %d",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.ignore": "Ignore",
   "touchcontroller.screen.custom_control_layout.layers.conditions.never": "Never",
   "touchcontroller.screen.custom_control_layout.layers.conditions.want": "Want",
   "touchcontroller.screen.custom_control_layout.layers.conditions.require": "Require",
@@ -193,8 +182,6 @@
   "touchcontroller.screen.custom_control_layout.presets.path.ok": "OK",
   "touchcontroller.screen.custom_control_layout.presets.path.get_failed": "Failed to get preset path.",
 
-  "touchcontroller.screen.config.layout.gui_control_layout.title": "GUI control layout",
-
   "touchcontroller.screen.config.general.title": "Global",
 
   "touchcontroller.screen.config.general.regular.title": "Regular",
@@ -210,10 +197,6 @@
   "touchcontroller.screen.config.general.regular.vibration.description": "Provide haptic feedback when breaking blocks. Only support on Android for now.",
   "touchcontroller.screen.config.general.regular.quick_hand_swap.title": "Quick hand swap",
   "touchcontroller.screen.config.general.regular.quick_hand_swap.description": "Swap hand on double-clicking an item slot in hot bar.",
-  "touchcontroller.screen.config.general.regular.split_controls.title": "Split controls",
-  "touchcontroller.screen.config.general.regular.split_controls.description": "Enable split controls in game to aim using the crosshair at the center of screen, instead of using touch ring.",
-  "touchcontroller.screen.config.general.regular.disable_touch_gesture.title": "Disable touch gesture",
-  "touchcontroller.screen.config.general.regular.disable_touch_gesture.description": "Disable touch gesture, so buttons should be used for attacking and interacting.",
 
   "touchcontroller.screen.config.general.control.title": "Control",
   "touchcontroller.screen.config.general.control.view_movement_sensitivity.title": "View movement sensitivity",
@@ -239,11 +222,8 @@
 
   "touchcontroller.screen.config.item.title": "Item",
   "touchcontroller.screen.config.item.usable_items.title": "Long-click to use items",
-  "touchcontroller.screen.config.item.usable_items.description": "Items can be used by long pressing the screen without selecting blocks.",
   "touchcontroller.screen.config.item.show_crosshair_items.title": "Items which show crosshair when holding",
-  "touchcontroller.screen.config.item.show_crosshair_items.description": "Items which show crosshair when holding to help you to aim",
   "touchcontroller.screen.config.item.crosshair_aiming_items.title": "Items needing aim correction",
-  "touchcontroller.screen.config.item.crosshair_aiming_items.description": "Items which aiming by crosshair when placing, such as buckets and boats. If there are problems placing items, you can try adding them to this list.",
   "touchcontroller.screen.config.item.whitelist.title": "Whitelist",
   "touchcontroller.screen.config.item.whitelist.description": "Configure by item list.",
   "touchcontroller.screen.config.item.blacklist.title": "Blacklist",
@@ -261,7 +241,6 @@
   "touchcontroller.screen.item_list.emi_items": "EMI item list",
   "touchcontroller.screen.item_list.vanilla_inventory": "Vanilla item list",
   "touchcontroller.screen.item_list.search_placeholder": "Search...",
-  "touchcontroller.screen.item_list.remove": "Remove >",
   "touchcontroller.screen.item_list.no_tab_selected": "No tab selected",
   "touchcontroller.screen.item_list.inventory.main": "Inventory",
   "touchcontroller.screen.item_list.inventory.armor": "Equipment",
@@ -274,7 +253,6 @@
 
   "touchcontroller.screen.license.title": "License",
 
-  "touchcontroller.widget.texture.type": "Texture type",
   "touchcontroller.widget.texture.type.empty": "Empty",
   "touchcontroller.widget.texture.type.fill": "Fill",
   "touchcontroller.widget.texture.type.fixed": "Fixed size texture",
@@ -320,7 +298,6 @@
   "touchcontroller.widget.general.property.anchor.bottom_center": "Bottom center",
   "touchcontroller.widget.general.property.anchor.bottom_right": "Bottom right",
   "touchcontroller.widget.general.property.opacity": "Opacity: %s",
-  "touchcontroller.widget.general.property.texture_set": "Texture set",
   "touchcontroller.texture_set.new.name": "New",
   "touchcontroller.texture_set.classic.name": "Classic",
   "touchcontroller.texture_set.new_regression.name": "New regression",
@@ -382,10 +359,6 @@
   "touchcontroller.widget.screenshot_button.name": "Screenshot button",
 
   "touchcontroller.widget.hide_hud_button.name": "Hide HUD Button",
-
-  "touchcontroller.widget.forward_button.name": "Forward button",
-  "touchcontroller.widget.forward_button.property.texture_set": "Texture set",
-  "touchcontroller.widget.forward_button.property.size": "Button size: %s%%",
 
   "touchcontroller.widget.player_list_button.name": "Player list button",
 

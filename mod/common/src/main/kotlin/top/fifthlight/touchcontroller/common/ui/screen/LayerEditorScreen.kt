@@ -150,6 +150,7 @@ class LayerEditorScreen(
                         modifier = Modifier.weight(1f),
                         value = uiState.name,
                         onValueChanged = screenModel::editName,
+                        placeholder = Text.translatable(Texts.SCREEN_LAYER_EDITOR_NAME_PLACEHOLDER),
                     )
                     Row {
                         innerNavigator?.let { innerNavigator ->

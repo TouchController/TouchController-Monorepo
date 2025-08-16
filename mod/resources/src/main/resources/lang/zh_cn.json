@@ -34,11 +34,6 @@
   "touchcontroller.screen.config.undo": "撤销",
   "touchcontroller.screen.config.cancel": "取消",
 
-  "touchcontroller.screen.config.unsaved_warning.title": "警告",
-  "touchcontroller.screen.config.unsaved_warning.message": "你有未保存的更改。真的要退出吗？所有未保存的更改都将丢失！",
-  "touchcontroller.screen.config.unsaved_warning.yes": "是",
-  "touchcontroller.screen.config.unsaved_warning.no": "否",
-
   "touchcontroller.screen.config.reset.title": "你想要重置哪些内容？",
   "touchcontroller.screen.config.reset.current_tab": "当前标签页",
   "touchcontroller.screen.config.reset.layout_settings": "布局设置",
@@ -49,8 +44,6 @@
   "touchcontroller.screen.config.about.authors.title": "作者：",
   "touchcontroller.screen.config.about.contributors.title": "贡献者：",
   "touchcontroller.screen.config.about.license.title": "许可证：",
-  "touchcontroller.screen.config.about.show.title": "显示",
-  "touchcontroller.screen.config.about.libraries.title": "使用到的第三方库",
   "touchcontroller.screen.config.about.unknown_version": "未知版本",
   "touchcontroller.screen.config.about.loading": "加载中",
 
@@ -104,7 +97,6 @@
   "touchcontroller.screen.custom_control_layout.widgets": "控件",
   "touchcontroller.screen.custom_control_layout.widgets.builtin": "内置控件",
   "touchcontroller.screen.custom_control_layout.widgets.preset": "模板控件",
-  "touchcontroller.screen.custom_control_layout.widgets.loading": "加载中",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.opacity": "新控件默认不透明度：%s%%",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.texture_set": "新控件默认贴图风格",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.save": "保存",
@@ -122,9 +114,6 @@
   "touchcontroller.screen.custom_control_layout.layers.edit": "编辑",
   "touchcontroller.screen.custom_control_layout.layers.copy": "复制",
   "touchcontroller.screen.custom_control_layout.layers.delete": "删除",
-  "touchcontroller.screen.custom_control_layout.layers.no_preset_selected": "选中一个预设以编辑图层",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.count": "条件数量：%d",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.ignore": "忽略",
   "touchcontroller.screen.custom_control_layout.layers.conditions.never": "从不",
   "touchcontroller.screen.custom_control_layout.layers.conditions.want": "要求",
   "touchcontroller.screen.custom_control_layout.layers.conditions.require": "必须",
@@ -195,8 +184,6 @@
   "touchcontroller.screen.custom_control_layout.presets.path.ok": "确定",
   "touchcontroller.screen.custom_control_layout.presets.path.get_failed": "获取预设路径失败。",
 
-  "touchcontroller.screen.config.layout.gui_control_layout.title": "GUI 控件布局",
-
   "touchcontroller.screen.config.general.title": "通用",
 
   "touchcontroller.screen.config.general.regular.title": "常规",
@@ -212,10 +199,6 @@
   "touchcontroller.screen.config.general.regular.vibration.description": "为破坏方块提供触感反馈。目前只支持 Android 平台。",
   "touchcontroller.screen.config.general.regular.quick_hand_swap.title": "快速主副手交换",
   "touchcontroller.screen.config.general.regular.quick_hand_swap.description": "双击快捷栏中的一个格子时交换主副手的物品。",
-  "touchcontroller.screen.config.general.regular.split_controls.title": "分离控制",
-  "touchcontroller.screen.config.general.regular.split_controls.description": "在游戏中启用分离控制，即使用屏幕中央的准心瞄准而不是触控圈。",
-  "touchcontroller.screen.config.general.regular.disable_touch_gesture.title": "禁用触摸手势",
-  "touchcontroller.screen.config.general.regular.disable_touch_gesture.description": "禁用触摸手势，通过按钮来攻击和交互。",
 
   "touchcontroller.screen.config.general.control.title": "控制",
   "touchcontroller.screen.config.general.control.view_movement_sensitivity.title": "视角移动灵敏度",
@@ -241,11 +224,8 @@
 
   "touchcontroller.screen.config.item.title": "物品",
   "touchcontroller.screen.config.item.usable_items.title": "可长按使用的物品",
-  "touchcontroller.screen.config.item.usable_items.description": "配置可通过长按屏幕使用的物品。",
   "touchcontroller.screen.config.item.show_crosshair_items.title": "手持时显示准心的物品",
-  "touchcontroller.screen.config.item.show_crosshair_items.description": "配置手持时显示准心的物品，以帮助你瞄准。",
   "touchcontroller.screen.config.item.crosshair_aiming_items.title": "需要修正使用方向的物品",
-  "touchcontroller.screen.config.item.crosshair_aiming_items.description": "配置需要修正使用方向的物品，例如水桶、船等物品。如果使用物品时放置位置有问题，可以尝试添加物品到此项。",
   "touchcontroller.screen.config.item.whitelist.title": "白名单",
   "touchcontroller.screen.config.item.whitelist.description": "通过物品列表来配置。",
   "touchcontroller.screen.config.item.blacklist.title": "黑名单",
@@ -263,7 +243,6 @@
   "touchcontroller.screen.item_list.emi_items": "EMI 物品表",
   "touchcontroller.screen.item_list.vanilla_inventory": "原版物品栏",
   "touchcontroller.screen.item_list.search_placeholder": "搜索…",
-  "touchcontroller.screen.item_list.remove": "移除 >",
   "touchcontroller.screen.item_list.no_tab_selected": "没有选中标签页",
   "touchcontroller.screen.item_list.inventory.main": "物品栏",
   "touchcontroller.screen.item_list.inventory.armor": "装备栏",
@@ -276,7 +255,6 @@
 
   "touchcontroller.screen.license.title": "许可证",
 
-  "touchcontroller.widget.texture.type": "贴图类型",
   "touchcontroller.widget.texture.type.empty": "无",
   "touchcontroller.widget.texture.type.fill": "填充",
   "touchcontroller.widget.texture.type.fixed": "固定贴图",
@@ -322,7 +300,6 @@
   "touchcontroller.widget.general.property.anchor.bottom_center": "中下",
   "touchcontroller.widget.general.property.anchor.bottom_right": "右下",
   "touchcontroller.widget.general.property.opacity": "不透明度: %s%%",
-  "touchcontroller.widget.general.property.texture_set": "图集",
   "touchcontroller.texture_set.new.name": "新样式",
   "touchcontroller.texture_set.classic.name": "经典",
   "touchcontroller.texture_set.new_regression.name": "新样式回归",
@@ -384,10 +361,6 @@
   "touchcontroller.widget.screenshot_button.name": "截屏按钮",
 
   "touchcontroller.widget.hide_hud_button.name": "隐藏 HUD 按钮",
-
-  "touchcontroller.widget.forward_button.name": "前进按钮",
-  "touchcontroller.widget.forward_button.property.texture_set": "图集",
-  "touchcontroller.widget.forward_button.property.size": "按键大小: %s%%",
 
   "touchcontroller.widget.player_list_button.name": "玩家列表按钮",
 

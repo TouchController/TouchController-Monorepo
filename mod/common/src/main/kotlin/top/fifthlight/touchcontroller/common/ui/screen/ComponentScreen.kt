@@ -14,13 +14,13 @@ import top.fifthlight.combine.layout.Alignment
 import top.fifthlight.combine.layout.Arrangement
 import top.fifthlight.combine.modifier.Modifier
 import top.fifthlight.combine.modifier.drawing.border
-import top.fifthlight.combine.modifier.placement.fillMaxHeight
-import top.fifthlight.combine.modifier.placement.fillMaxWidth
-import top.fifthlight.combine.modifier.placement.padding
+import top.fifthlight.combine.modifier.placement.*
 import top.fifthlight.combine.modifier.scroll.verticalScroll
 import top.fifthlight.combine.widget.base.layout.Column
 import top.fifthlight.combine.widget.base.layout.Row
 import top.fifthlight.combine.widget.ui.EditText
+import top.fifthlight.combine.widget.ui.Icon
+import top.fifthlight.combine.widget.ui.IconButton
 import top.fifthlight.combine.widget.ui.Text
 import top.fifthlight.touchcontroller.assets.Texts
 import top.fifthlight.touchcontroller.assets.Textures
@@ -57,14 +57,19 @@ class ComponentScreen(
                         .weight(1f),
                 ) {
                     for ((index, item) in items.withIndex()) {
-                        ListButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { screenModel.removeItem(index) },
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4),
+                                modifier = Modifier
+                                    .border(LocalListButtonDrawable.current.unchecked.normal)
+                                    .weight(1f)
+                                    .fillMaxHeight(),
                                 verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4),
                             ) {
                                 val items = remember(item) { item.allItems }
                                 ItemShower(items = items)
@@ -72,7 +77,13 @@ class ComponentScreen(
                                     modifier = Modifier.weight(1f),
                                     text = item.id.toString()
                                 )
-                                Text(Text.translatable(Texts.SCREEN_COMPONENT_LIST_REMOVE))
+                            }
+
+                            IconButton(
+                                modifier = Modifier.fillMaxHeight(),
+                                onClick = { screenModel.removeItem(index) },
+                            ) {
+                                Icon(Textures.ICON_DELETE)
                             }
                         }
                     }
@@ -89,7 +100,7 @@ class ComponentScreen(
 
                     EditText(
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = Text.translatable(Texts.SCREEN_ITEM_LIST_SEARCH_PLACEHOLDER),
+                        placeholder = Text.translatable(Texts.SCREEN_COMPONENT_LIST_SEARCH_PLACEHOLDER),
                         value = searchText,
                         onValueChanged = { searchText = it }
                     )

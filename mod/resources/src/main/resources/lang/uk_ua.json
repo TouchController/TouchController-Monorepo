@@ -34,11 +34,6 @@
   "touchcontroller.screen.config.undo": "Відмінити",
   "touchcontroller.screen.config.cancel": "Скасувати",
 
-  "touchcontroller.screen.config.unsaved_warning.title": "УВАГА",
-  "touchcontroller.screen.config.unsaved_warning.message": "У вас є незбережені зміни. Ви дійсно хочете вийти? Усі незбережені зміни буде втрачено!",
-  "touchcontroller.screen.config.unsaved_warning.yes": "Так",
-  "touchcontroller.screen.config.unsaved_warning.no": "Ні",
-
   "touchcontroller.screen.config.reset.title": "Які налаштування ви хочете скинути?",
   "touchcontroller.screen.config.reset.current_tab": "Поточна вкладка",
   "touchcontroller.screen.config.reset.layout_settings": "Налаштування макета",
@@ -49,8 +44,6 @@
   "touchcontroller.screen.config.about.authors.title": "Автори: ",
   "touchcontroller.screen.config.about.contributors.title": "Дописувачі: ",
   "touchcontroller.screen.config.about.license.title": "Ліцензія: ",
-  "touchcontroller.screen.config.about.show.title": "Показати",
-  "touchcontroller.screen.config.about.libraries.title": "Використані сторонні бібліотеки",
   "touchcontroller.screen.config.about.unknown_version": "Невідома версія",
   "touchcontroller.screen.config.about.loading": "Завантаження",
 
@@ -104,7 +97,6 @@
   "touchcontroller.screen.custom_control_layout.widgets": "Віджети",
   "touchcontroller.screen.custom_control_layout.widgets.builtin": "Убудований",
   "touchcontroller.screen.custom_control_layout.widgets.preset": "Попереднє налаштування",
-  "touchcontroller.screen.custom_control_layout.widgets.loading": "Завантаження",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.opacity": "Усталена непрозорість для нових віджетів: %s%%",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.texture_set": "Усталена текстура для нових віджетів.",
   "touchcontroller.screen.custom_control_layout.widgets.new_widget.save": "Зберегти",
@@ -122,9 +114,6 @@
   "touchcontroller.screen.custom_control_layout.layers.edit": "Редагувати",
   "touchcontroller.screen.custom_control_layout.layers.copy": "Копіювати",
   "touchcontroller.screen.custom_control_layout.layers.delete": "Видалити",
-  "touchcontroller.screen.custom_control_layout.layers.no_preset_selected": "Виберіть пресет для редагування шарів",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.count": "Кількість умов: %d",
-  "touchcontroller.screen.custom_control_layout.layers.conditions.ignore": "Ігнорування",
   "touchcontroller.screen.custom_control_layout.layers.conditions.never": "Нічого",
   "touchcontroller.screen.custom_control_layout.layers.conditions.want": "Бажано",
   "touchcontroller.screen.custom_control_layout.layers.conditions.require": "Потрібно",
@@ -195,8 +184,6 @@
   "touchcontroller.screen.custom_control_layout.presets.path.ok": "Добре",
   "touchcontroller.screen.custom_control_layout.presets.path.get_failed": "Не вдалося отримати заданий шлях.",
 
-  "touchcontroller.screen.config.layout.gui_control_layout.title": "Макет керування інтерфейсу",
-
   "touchcontroller.screen.config.general.title": "Глобальні",
 
   "touchcontroller.screen.config.general.regular.title": "Загальні",
@@ -212,10 +199,6 @@
   "touchcontroller.screen.config.general.regular.vibration.description": "Забезпечує тактильний зворотний зв'язок під час руйнування блоків. Наразі підтримується лише на Android.",
   "touchcontroller.screen.config.general.regular.quick_hand_swap.title": "Швидка зміна предметівміж руками",
   "touchcontroller.screen.config.general.regular.quick_hand_swap.description": "Змінює руку після подвійного натискання слоту предмета на гарячій панелі.",
-  "touchcontroller.screen.config.general.regular.split_controls.title": "Розділити керування",
-  "touchcontroller.screen.config.general.regular.split_controls.description": "Умикає розділене керування в грі, щоб прицілюватися за допомогою перехрестя в центрі екрана замість використання сенсорного кільця.",
-  "touchcontroller.screen.config.general.regular.disable_touch_gesture.title": "Вимкнути жест дотиком",
-  "touchcontroller.screen.config.general.regular.disable_touch_gesture.description": "Вимикає жест дотиком, тому кнопки слід використовувати для атаки та взаємодії.",
 
   "touchcontroller.screen.config.general.control.title": "Керування",
   "touchcontroller.screen.config.general.control.view_movement_sensitivity.title": "Переглянути чутливість до руху",
@@ -241,11 +224,8 @@
 
   "touchcontroller.screen.config.item.title": "Предмети",
   "touchcontroller.screen.config.item.usable_items.title": "Довге натискання предметами",
-  "touchcontroller.screen.config.item.usable_items.description": "Предмети можна використовувати, довго натискаючи на екран без вибору блоків.",
   "touchcontroller.screen.config.item.show_crosshair_items.title": "Тримання предметів показує перехрестя",
-  "touchcontroller.screen.config.item.show_crosshair_items.description": "Предмети, які показують перехрестя при утриманні, щоб допомогти вам прицілитися.",
   "touchcontroller.screen.config.item.crosshair_aiming_items.title": "Корекція прицілювання предметів",
-  "touchcontroller.screen.config.item.crosshair_aiming_items.description": "Предмети, які ціляться за перехрестям під час розміщення, наприклад відра та човни. Якщо є проблеми з розміщенням предметів, ви можете спробувати додати їх до цього списку.",
   "touchcontroller.screen.config.item.whitelist.title": "Білий список",
   "touchcontroller.screen.config.item.whitelist.description": "Налаштовує за списком предметів.",
   "touchcontroller.screen.config.item.blacklist.title": "Чорний список",
@@ -263,7 +243,6 @@
   "touchcontroller.screen.item_list.emi_items": "Список предметів EMI",
   "touchcontroller.screen.item_list.vanilla_inventory": "Усталений список предметів",
   "touchcontroller.screen.item_list.search_placeholder": "Пошук…",
-  "touchcontroller.screen.item_list.remove": "Видалити >",
   "touchcontroller.screen.item_list.no_tab_selected": "Вкладка не вибрана",
   "touchcontroller.screen.item_list.inventory.main": "Інвентар",
   "touchcontroller.screen.item_list.inventory.armor": "Спорядження",
@@ -276,7 +255,6 @@
 
   "touchcontroller.screen.license.title": "Ліцензія",
 
-  "touchcontroller.widget.texture.type": "Тип текстури",
   "touchcontroller.widget.texture.type.empty": "Порожня",
   "touchcontroller.widget.texture.type.fill": "Заповнена",
   "touchcontroller.widget.texture.type.fixed": "Текстура фіксованого розміру",
@@ -322,7 +300,6 @@
   "touchcontroller.widget.general.property.anchor.bottom_center": "По центру знизу",
   "touchcontroller.widget.general.property.anchor.bottom_right": "Знизу справа",
   "touchcontroller.widget.general.property.opacity": "Непрозорість: %s",
-  "touchcontroller.widget.general.property.texture_set": "Текстура",
   "touchcontroller.texture_set.new.name": "Нова",
   "touchcontroller.texture_set.classic.name": "Класична",
   "touchcontroller.texture_set.new_regression.name": "Нова регресивна",
@@ -384,10 +361,6 @@
   "touchcontroller.widget.screenshot_button.name": "Кнопка знімку екрана",
 
   "touchcontroller.widget.hide_hud_button.name": "Кнопки приховування HUD",
-
-  "touchcontroller.widget.forward_button.name": "Кнопка вперед",
-  "touchcontroller.widget.forward_button.property.texture_set": "Текстура",
-  "touchcontroller.widget.forward_button.property.size": "Розмір кнопки: %s%%",
 
   "touchcontroller.widget.player_list_button.name": "Кнопка списку гравців",
 
