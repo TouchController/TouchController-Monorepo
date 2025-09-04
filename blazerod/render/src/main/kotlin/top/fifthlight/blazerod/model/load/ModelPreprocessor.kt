@@ -597,7 +597,7 @@ class ModelPreprocessor private constructor(
             nodeId = null,
             nodeName = "Root node",
             humanoidTags = listOf(),
-            transform = scene.initialTransform,
+            transform = null,
             components = listOf(),
             childrenIndices = scene.nodes.map { loadNode(it) },
         )
