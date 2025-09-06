@@ -12,9 +12,14 @@ interface ModelFileLoader {
         EMBED_THUMBNAIL,
     }
 
+    fun initialize() = Unit
+    val available: Boolean
+        get() = true
+
     val extensions: Map<String, Set<Ability>>
     val abilities: Set<Ability>
         get() = extensions.values.flatten().toSet()
+
     val probeLength: Int?
     fun probe(buffer: ByteBuffer): Boolean
 

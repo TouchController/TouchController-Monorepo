@@ -44,7 +44,7 @@ class ModelPreprocessor private constructor(
                     SkinJointData(
                         skinIndex = index,
                         jointIndex = jointIndex,
-                        humanoidTag = skin.jointHumanoidTags[jointIndex],
+                        humanoidTag = skin.jointHumanoidTags?.getOrNull(jointIndex),
                     )
                 )
             }
@@ -481,7 +481,8 @@ class ModelPreprocessor private constructor(
                 node.components.forEach { component ->
                     when (component) {
                         is NodeComponent.MeshComponent -> {
-                            val skinIndex = model.skins.indexOf(node.skinComponent?.skin).takeIf { it >= 0 }
+                            val skin = node.meshIdToSkinMap[component.mesh.id]
+                            val skinIndex = skin?.skin?.let { skin -> model.skins.indexOf(skin) }?.takeIf { it >= 0 }
                             addAll(
                                 loadMesh(
                                     node = node,

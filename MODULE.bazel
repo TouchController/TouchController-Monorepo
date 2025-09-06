@@ -54,6 +54,16 @@ maven.install(
         "io.github.douira:glsl-transformer:2.0.1",
         "org.anarres:jcpp:1.4.14",
         "com.illposed.osc:javaosc-core:0.9",
+        "org.lwjgl:lwjgl:3.3.3",
+        "org.lwjgl:lwjgl-assimp:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-windows:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-windows-x86:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-windows-arm64:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-linux-arm32:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-linux-arm64:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-linux:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-macos:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-macos-arm64:3.3.3",
 
         # test dependencies
         "org.jetbrains.kotlin:kotlin-test-junit5:2.1.10",
@@ -72,6 +82,7 @@ maven.install(
         "https://api.modrinth.com/maven",
     ],
     lock_file = "//:maven_install.json",
+    fetch_sources = True,
 )
 use_repo(maven, "maven")
 

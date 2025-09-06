@@ -9,9 +9,23 @@ import java.util.*
 import kotlin.io.path.extension
 
 object ModelFileLoaders {
-    val loaders by lazy {
-        ServiceLoader.load(ModelFileLoader::class.java).toList()
+    private var initialized = false
+
+    @JvmStatic
+    fun initialize() = synchronized(this) {
+        if (initialized) {
+            return@synchronized
+        }
+        initialized = true
+        val allLoaders = ServiceLoader.load(ModelFileLoader::class.java)
+        loaders = allLoaders.mapNotNull {
+            it.initialize()
+            it.takeIf { it.available }
+        }
     }
+
+    lateinit var loaders: List<ModelFileLoader>
+        private set
 
     private val embedThumbnailLoaders by lazy {
         loaders.filter { ModelFileLoader.Ability.EMBED_THUMBNAIL in it.abilities }

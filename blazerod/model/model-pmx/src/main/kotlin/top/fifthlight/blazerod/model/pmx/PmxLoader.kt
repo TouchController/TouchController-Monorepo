@@ -1101,7 +1101,6 @@ class PmxLoader : ModelFileLoader {
                         id = nodeId,
                         transform = null,
                         components = buildList {
-                            add(NodeComponent.SkinComponent(skin))
                             add(
                                 NodeComponent.MeshComponent(
                                     mesh = Mesh(
@@ -1123,6 +1122,12 @@ class PmxLoader : ModelFileLoader {
                                         ),
                                         weights = null,
                                     )
+                                )
+                            )
+                            add(
+                                NodeComponent.SkinComponent(
+                                    skin = skin,
+                                    meshIds = listOf(meshId),
                                 )
                             )
                         }

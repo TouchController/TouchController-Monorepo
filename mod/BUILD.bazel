@@ -238,6 +238,7 @@ java_binary(
         ":mod_unmapped",
         ":remapped_deps",
         "//blazerod:blazerod_without_jij",
+        "//blazerod/model/model-assimp",
         "//game:remapped_client_named",
         "//game:remapped_iris",
         "//game:remapped_sodium",

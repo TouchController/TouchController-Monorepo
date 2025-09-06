@@ -26,6 +26,7 @@ import top.fifthlight.armorstand.ui.screen.ModelSwitchScreen
 import top.fifthlight.armorstand.util.RendererManager
 import top.fifthlight.armorstand.util.ThreadExecutorDispatcher
 import top.fifthlight.blazerod.event.RenderEvents
+import top.fifthlight.blazerod.model.ModelFileLoaders
 import javax.swing.SwingUtilities
 
 object ArmorStandClient : ArmorStand(), ClientModInitializer {
@@ -71,6 +72,8 @@ object ArmorStandClient : ArmorStand(), ClientModInitializer {
                 }
             }
         }
+
+        ModelFileLoaders.initialize()
 
         ConfigHolder.read()
 
