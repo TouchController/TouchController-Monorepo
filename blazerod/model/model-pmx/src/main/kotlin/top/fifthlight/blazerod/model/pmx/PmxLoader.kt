@@ -829,7 +829,7 @@ class PmxLoader : ModelFileLoader {
                     ?: throw PmxLoadException("Unknown morph type")
                 val offsetSize = buffer.getInt()
                 if (offsetSize < 1) {
-                    throw PmxLoadException("Bad morph offset size: $offsetSize")
+                    continue
                 }
                 when (morphType) {
                     PmxMorphType.VERTEX -> {
@@ -837,6 +837,11 @@ class PmxLoader : ModelFileLoader {
                         for (i in 0 until offsetSize) {
                             // Get vertex index
                             val vertexIndex = loadVertexIndex(buffer)
+
+                            // Push data into corresponding building morph target
+                            val x = buffer.getFloat() * -MMD_SCALE
+                            val y = buffer.getFloat() * MMD_SCALE
+                            val z = buffer.getFloat() * MMD_SCALE
 
                             // Lookup each material
                             for (materialIndex in materials.indices) {
@@ -851,11 +856,6 @@ class PmxLoader : ModelFileLoader {
                                     val material = materials[materialIndex]
                                     BuildingVertexMorphTarget(material.vertices)
                                 }
-
-                                // Push data into corresponding building morph target
-                                val x = buffer.getFloat() * -MMD_SCALE
-                                val y = buffer.getFloat() * MMD_SCALE
-                                val z = buffer.getFloat() * MMD_SCALE
                                 buildingTarget.setVertex(materialLocalIndex, x, y, z)
                             }
                         }
