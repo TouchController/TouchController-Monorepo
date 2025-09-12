@@ -1,5 +1,14 @@
 # ArmorStand NEWS - User visible changes.
 
+## 0.0.6
+
+- Fixed failure loading some PMX models
+- Fixed rendering of material with alpha = 0
+- Added basic loading for bedrock version models
+- Removed the option that invert head rotation
+- Fixed the problem that option "Show other players' models" actually hide your own model
+- Added armor rendering toggle
+
 ## 0.0.5
 
 - Optimized PMX model loading, improving rendering speed
