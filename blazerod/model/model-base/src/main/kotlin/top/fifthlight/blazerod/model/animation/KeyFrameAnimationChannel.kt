@@ -12,6 +12,7 @@ data class KeyFrameAnimationChannel<T : Any, D>(
     val interpolator: AnimationInterpolator<T>,
     val keyframeData: AnimationKeyFrameData<T>,
     val interpolation: AnimationInterpolation,
+    val valueSetter: (List<T>, T) -> Unit,
     val defaultValue: () -> T,
 ) : AnimationChannel<T, D> {
     init {
@@ -40,19 +41,23 @@ data class KeyFrameAnimationChannel<T : Any, D>(
     override fun getData(context: AnimationContext, state: AnimationState, result: T) {
         val time = state.getTime()
         indexer.findKeyFrames(time, indexResult)
-        if (indexResult.startFrame == indexResult.endFrame || indexResult.startTime > time || indexResult.endTime < time) {
-            keyframeData.get(indexResult.startFrame, startValues)
-            interpolator.set(startValues, result)
+        if (indexResult.startFrame == indexResult.endFrame || time < indexResult.startTime) {
+            keyframeData.get(indexResult.startFrame, startValues, post = false)
+            valueSetter(startValues, result)
+            return
+        }
+        if (indexResult.endTime < time) {
+            keyframeData.get(indexResult.endFrame, endValues, post = true)
+            valueSetter(endValues, result)
             return
         }
         val delta = (time - indexResult.startTime) / (indexResult.endTime - indexResult.startTime)
-        keyframeData.get(indexResult.startFrame, startValues)
-        keyframeData.get(indexResult.endFrame, endValues)
+        keyframeData.get(indexResult.startFrame, startValues, post = false)
+        keyframeData.get(indexResult.endFrame, endValues, post = true)
         interpolator.interpolate(
             delta = delta,
             startFrame = indexResult.startFrame,
             endFrame = indexResult.endFrame,
-            type = interpolation,
             startValue = startValues,
             endValue = endValues,
             result = result,
@@ -63,56 +68,59 @@ data class KeyFrameAnimationChannel<T : Any, D>(
 @JvmName("Vector3fKeyFrameAnimationChannel")
 fun <D> KeyFrameAnimationChannel(
     type: AnimationChannel.Type<Vector3f, D>,
-    data: D,
+    typeData: D,
     components: List<AnimationChannelComponent<*, *>> = listOf(),
     indexer: AnimationKeyFrameIndexer,
     keyframeData: AnimationKeyFrameData<Vector3f>,
     interpolation: AnimationInterpolation,
 ): KeyFrameAnimationChannel<Vector3f, D> = KeyFrameAnimationChannel(
     type = type,
-    typeData = data,
+    typeData = typeData,
     components = components,
     indexer = indexer,
-    interpolator = Vector3AnimationInterpolator,
+    interpolator = Vector3AnimationInterpolator(interpolation),
     keyframeData = keyframeData,
     interpolation = interpolation,
+    valueSetter = { values, result -> result.set(values[0]) },
     defaultValue = ::Vector3f,
 )
 
 @JvmName("QuaternionfKeyFrameAnimationChannel")
 fun <D> KeyFrameAnimationChannel(
     type: AnimationChannel.Type<Quaternionf, D>,
-    data: D,
+    typeData: D,
     components: List<AnimationChannelComponent<*, *>> = listOf(),
     indexer: AnimationKeyFrameIndexer,
     keyframeData: AnimationKeyFrameData<Quaternionf>,
     interpolation: AnimationInterpolation,
 ): KeyFrameAnimationChannel<Quaternionf, D> = KeyFrameAnimationChannel(
     type = type,
-    typeData = data,
+    typeData = typeData,
     components = components,
     indexer = indexer,
-    interpolator = QuaternionAnimationInterpolator,
+    interpolator = QuaternionAnimationInterpolator(interpolation),
     keyframeData = keyframeData,
     interpolation = interpolation,
+    valueSetter = { values, result -> result.set(values[0]) },
     defaultValue = ::Quaternionf,
 )
 
 @JvmName("FloatKeyFrameAnimationChannel")
 fun <D> KeyFrameAnimationChannel(
     type: AnimationChannel.Type<MutableFloat, D>,
-    data: D,
+    typeData: D,
     components: List<AnimationChannelComponent<*, *>> = listOf(),
     indexer: AnimationKeyFrameIndexer,
     keyframeData: AnimationKeyFrameData<MutableFloat>,
     interpolation: AnimationInterpolation,
 ): KeyFrameAnimationChannel<MutableFloat, D> = KeyFrameAnimationChannel(
     type = type,
-    typeData = data,
+    typeData = typeData,
     components = components,
     indexer = indexer,
-    interpolator = FloatAnimationInterpolator,
+    interpolator = FloatAnimationInterpolator(interpolation),
     keyframeData = keyframeData,
     interpolation = interpolation,
+    valueSetter = { values, result -> result.value = values[0].value },
     defaultValue = ::MutableFloat,
 )

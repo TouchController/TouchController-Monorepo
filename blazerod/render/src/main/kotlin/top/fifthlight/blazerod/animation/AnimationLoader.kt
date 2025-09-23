@@ -52,6 +52,33 @@ object AnimationLoader {
                     )
                 }
 
+                AnimationChannel.Type.BedrockTranslation -> {
+                    val data = channel.typeData as AnimationChannel.Type.TransformData
+                    BedrockTranslationItem(
+                        index = data.node.findTargetTransformIndex() ?: return null,
+                        transformId = data.transformId,
+                        channel = channel as AnimationChannel<Vector3f, Unit>,
+                    )
+                }
+
+                AnimationChannel.Type.BedrockScale -> {
+                    val data = channel.typeData as AnimationChannel.Type.TransformData
+                    BedrockScaleItem(
+                        index = data.node.findTargetTransformIndex() ?: return null,
+                        transformId = data.transformId,
+                        channel = channel as AnimationChannel<Vector3f, Unit>,
+                    )
+                }
+
+                AnimationChannel.Type.BedrockRotation -> {
+                    val data = channel.typeData as AnimationChannel.Type.TransformData
+                    BedrockRotationItem(
+                        index = data.node.findTargetTransformIndex() ?: return null,
+                        transformId = data.transformId,
+                        channel = channel as AnimationChannel<Quaternionf, Unit>,
+                    )
+                }
+
                 AnimationChannel.Type.Morph -> {
                     val data = channel.typeData as AnimationChannel.Type.MorphData
                     MorphItem(

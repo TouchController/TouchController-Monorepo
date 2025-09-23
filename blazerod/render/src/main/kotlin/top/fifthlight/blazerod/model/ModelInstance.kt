@@ -111,6 +111,12 @@ class ModelInstance(val scene: RenderScene) : AbstractRefCount() {
         transform.updateDecomposed(transformId, updater)
     }
 
+    fun setTransformBedrock(nodeIndex: Int, transformId: TransformId, updater: NodeTransform.Bedrock.() -> Unit) {
+        markNodeTransformDirty(scene.nodes[nodeIndex])
+        val transform = modelData.transformMaps[nodeIndex]
+        transform.updateBedrock(transformId, updater)
+    }
+
     fun setIkEnabled(index: Int, enabled: Boolean) {
         val prevEnabled = modelData.ikEnabled[index]
         modelData.ikEnabled[index] = enabled

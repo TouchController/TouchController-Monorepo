@@ -6,8 +6,10 @@ import com.google.gson.stream.JsonReader
 import org.joml.Vector2f
 import org.joml.Vector3f
 
-inline fun JsonReader.with(block: JsonReader.() -> Unit) {
+inline fun <T> JsonReader.with(block: JsonReader.() -> T) = try {
     block()
+} finally {
+    close()
 }
 
 inline fun JsonReader.obj(onEntry: JsonReader.(key: String) -> Unit) {
@@ -26,7 +28,7 @@ inline fun JsonReader.array(onEntry: JsonReader.() -> Unit) {
     endArray()
 }
 
-inline fun JsonReader.vec3(vector3f: Vector3f) = vector3f.apply {
+inline fun JsonReader.vec3(vector3f: Vector3f = Vector3f()) = vector3f.apply {
     beginArray()
     x = nextDouble().toFloat()
     y = nextDouble().toFloat()
@@ -34,7 +36,7 @@ inline fun JsonReader.vec3(vector3f: Vector3f) = vector3f.apply {
     endArray()
 }
 
-inline fun JsonReader.vec2(vector2f: Vector2f) = vector2f.apply {
+inline fun JsonReader.vec2(vector2f: Vector2f = Vector2f()) = vector2f.apply {
     beginArray()
     x = nextDouble().toFloat()
     y = nextDouble().toFloat()

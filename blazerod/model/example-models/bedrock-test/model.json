@@ -24,6 +24,9 @@
       "model": {
         "main": "models/main.json"
       },
+      "animation": {
+        "main": "animations/main.animation.json"
+      },
       "texture": [
         "textures/texture.png"
       ]

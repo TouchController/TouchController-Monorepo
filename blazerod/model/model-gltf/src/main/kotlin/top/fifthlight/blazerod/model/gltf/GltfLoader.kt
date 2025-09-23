@@ -447,7 +447,7 @@ internal class GltfLoader(
                     when (channel.target.path) {
                         GltfAnimationTarget.Path.TRANSLATION -> KeyFrameAnimationChannel(
                             type = AnimationChannel.Type.Translation,
-                            data = AnimationChannel.Type.TransformData(
+                            typeData = AnimationChannel.Type.TransformData(
                                 node = AnimationChannel.Type.NodeData(
                                     targetNode = targetNode,
                                     targetNodeName = targetNodeName,
@@ -466,7 +466,7 @@ internal class GltfLoader(
 
                         GltfAnimationTarget.Path.SCALE -> KeyFrameAnimationChannel(
                             type = AnimationChannel.Type.Scale,
-                            data = AnimationChannel.Type.TransformData(
+                            typeData = AnimationChannel.Type.TransformData(
                                 node = AnimationChannel.Type.NodeData(
                                     targetNode = targetNode,
                                     targetNodeName = targetNodeName,
@@ -485,7 +485,7 @@ internal class GltfLoader(
 
                         GltfAnimationTarget.Path.ROTATION -> KeyFrameAnimationChannel(
                             type = AnimationChannel.Type.Rotation,
-                            data = AnimationChannel.Type.TransformData(
+                            typeData = AnimationChannel.Type.TransformData(
                                 node = AnimationChannel.Type.NodeData(
                                     targetNode = targetNode,
                                     targetNodeName = targetNodeName,

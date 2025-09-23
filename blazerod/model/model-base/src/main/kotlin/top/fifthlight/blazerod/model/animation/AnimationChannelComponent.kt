@@ -6,5 +6,5 @@ interface AnimationChannelComponent<C: AnimationChannelComponent<C, T>, T: Anima
     }
 
     val type: T
-    fun onAttachToChannel(channel: AnimationChannel<*, *>)
+    fun onAttachToChannel(channel: AnimationChannel<*, *>) = Unit
 }

@@ -44,6 +44,10 @@ interface AnimationChannel<T : Any, D> : AnimationChannelComponentContainer {
         data object Scale : Type<Vector3f, TransformData>()
         data object Rotation : Type<Quaternionf, TransformData>()
 
+        data object BedrockTranslation : Type<Vector3f, TransformData>()
+        data object BedrockScale : Type<Vector3f, TransformData>()
+        data object BedrockRotation : Type<Quaternionf, TransformData>()
+
         data object Morph : Type<MutableFloat, MorphData>()
 
         data object CameraFov : Type<MutableFloat, CameraData>()

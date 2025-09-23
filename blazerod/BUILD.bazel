@@ -35,8 +35,10 @@ kt_jvm_library(
         "//:license_jar"
     ],
     exports = [
-        "//blazerod/model/model-formats",
         "//blazerod/render:render_unmapped",
+    ],
+    runtime_deps = [
+        "//blazerod/model/model-formats",
     ],
 )
 

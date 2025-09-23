@@ -66,6 +66,55 @@ sealed class AnimationChannelItem<T : Any, D>(
         }
     }
 
+    class BedrockTranslationItem(
+        private val index: Int,
+        private val transformId: TransformId,
+        channel: AnimationChannel<Vector3f, Unit>,
+    ) : AnimationChannelItem<Vector3f, Unit>(channel) {
+        init {
+            require(channel.type == AnimationChannel.Type.BedrockTranslation) { "Unmatched animation channel: want translation, but got ${channel.type}" }
+        }
+
+        override fun apply(instance: ModelInstance, context: AnimationContext, state: AnimationState) {
+            instance.setTransformBedrock(index, transformId) {
+                channel.getData(context, state, translation)
+            }
+        }
+    }
+
+    class BedrockScaleItem(
+        private val index: Int,
+        private val transformId: TransformId,
+        channel: AnimationChannel<Vector3f, Unit>,
+    ) : AnimationChannelItem<Vector3f, Unit>(channel) {
+        init {
+            require(channel.type == AnimationChannel.Type.BedrockScale) { "Unmatched animation channel: want scale, but got ${channel.type}" }
+        }
+
+        override fun apply(instance: ModelInstance, context: AnimationContext, state: AnimationState) {
+            instance.setTransformBedrock(index, transformId) {
+                channel.getData(context, state, scale)
+            }
+        }
+    }
+
+    class BedrockRotationItem(
+        private val index: Int,
+        private val transformId: TransformId,
+        channel: AnimationChannel<Quaternionf, Unit>,
+    ) : AnimationChannelItem<Quaternionf, Unit>(channel) {
+        init {
+            require(channel.type == AnimationChannel.Type.BedrockRotation) { "Unmatched animation channel: want rotation, but got ${channel.type}" }
+        }
+
+        override fun apply(instance: ModelInstance, context: AnimationContext, state: AnimationState) {
+            instance.setTransformBedrock(index, transformId) {
+                channel.getData(context, state, rotation)
+                rotation.normalize()
+            }
+        }
+    }
+
     class MorphItem(
         private val primitiveIndex: Int,
         private val targetGroupIndex: Int,

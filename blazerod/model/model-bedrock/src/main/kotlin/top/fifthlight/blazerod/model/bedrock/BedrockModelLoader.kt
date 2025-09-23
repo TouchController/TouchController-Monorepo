@@ -54,25 +54,29 @@ class BedrockModelLoader : ModelFileLoader {
     ): ModelFileLoader.LoadResult {
         val metadata = readMetadataFile(path)
 
-        val mainModelPathStr = metadata.files.player.model["main"] ?: return EMPTY_LOAD_RESULT
-        val mainModelPathPath = basePath.resolve(mainModelPathStr)
-        val mainModel = BedrockModelJsonLoader(
+        val (mainModel, mainAnimations) = BedrockModelJsonLoader(
             basePath = basePath,
             file = metadata.files.player,
-        ).load(mainModelPathPath)
+        ).load("main") ?: return EMPTY_LOAD_RESULT
 
         return ModelFileLoader.LoadResult(
             metadata = metadata.metadata?.toMetadata(),
             model = mainModel,
-            animations = listOf(),
+            animations = mainAnimations,
         )
     }
 
     override fun getMarkerFileHashes(marker: Path, directory: Path): Set<Path> {
         val metadata = readMetadataFile(marker)
         val playerModelFiles = metadata.files.player.model.values
+        val playerTextureFiles = metadata.files.player.texture.map {
+            when (it) {
+                is ModelMetadata.Files.Texture.Path -> it.path
+                is ModelMetadata.Files.Texture.Pbr -> it.normal
+            }
+        }
         val playerAnimationFiles = metadata.files.player.animation?.values ?: listOf()
-        return (playerModelFiles + playerAnimationFiles).map { directory.resolve(it) }.toSet()
+        return (playerModelFiles + playerTextureFiles + playerAnimationFiles).map { directory.resolve(it) }.toSet()
     }
 
     override fun getMetadata(path: Path, basePath: Path?): ModelFileLoader.MetadataResult {

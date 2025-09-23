@@ -183,6 +183,8 @@ merge_jij(
     deps = {
         "@maven//:com_h2database_h2": "com_h2database_h2:2.3.232",
         "@maven//:com_illposed_osc_javaosc_core": "com_illposed_osc_javaosc_core:0.9",
+        "@maven//:team_unnamed_mocha": "team_unnamed_mocha:3.0.0",
+        "@maven//:org_javassist_javassist": "org_javassist_javassist:3.30.2-GA",
         "//blazerod:blazerod_without_jij": "blazerod:=",
         "//blazerod/model/model-base": "blazerod-model-base:=",
         "//blazerod/model/model-formats": "blazerod-model-formats:=",

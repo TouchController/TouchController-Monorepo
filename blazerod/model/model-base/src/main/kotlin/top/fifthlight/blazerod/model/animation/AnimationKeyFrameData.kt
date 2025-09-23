@@ -11,7 +11,7 @@ import java.nio.ByteOrder
 interface AnimationKeyFrameData<T> {
     val frames: Int
     val elements: Int
-    fun get(index: Int, data: List<T>)
+    fun get(index: Int, data: List<T>, post: Boolean)
 
     companion object
 }
@@ -19,19 +19,27 @@ interface AnimationKeyFrameData<T> {
 class FloatListAnimationKeyFrameData<T>(
     private val values: FloatList,
     override val elements: Int,
+    val splitPrePost: Boolean = false,
     private val componentCount: Int,
     private val elementGetter: (list: FloatList, offset: Int, result: T) -> Unit,
 ) : AnimationKeyFrameData<T> {
+    private val itemSize = if (splitPrePost) 2 else 1
+    private val valueSize = itemSize * elements * componentCount
+
     init {
-        require(values.size % (elements * componentCount) == 0) {
-            "Invalid data size ${values.size} for elements $elements (requires multiple of ${elements * componentCount})"
+        require(values.size % valueSize == 0) {
+            "Invalid data size ${values.size} for elements $elements (requires multiple of $valueSize)"
         }
     }
 
-    override val frames = values.size / (elements * componentCount)
+    override val frames = values.size / valueSize
 
-    override fun get(index: Int, data: List<T>) {
-        val baseOffset = index * elements * componentCount
+    override fun get(index: Int, data: List<T>, post: Boolean) {
+        val baseOffset = index * valueSize + if (splitPrePost && post) {
+            elements * componentCount
+        } else {
+            0
+        }
         for (i in 0 until elements) {
             val offset = baseOffset + i * componentCount
             elementGetter(values, offset, data[i])
@@ -42,19 +50,29 @@ class FloatListAnimationKeyFrameData<T>(
 fun AnimationKeyFrameData.Companion.ofVector3f(
     values: FloatList,
     elements: Int,
+    splitPrePost: Boolean = false,
 ) = FloatListAnimationKeyFrameData<Vector3f>(
     values = values,
     elements = elements,
+    splitPrePost = splitPrePost,
     componentCount = 3,
-    elementGetter = { list, offset, result -> result.set(list.getFloat(offset), list.getFloat(offset + 1), list.getFloat(offset + 2)) },
+    elementGetter = { list, offset, result ->
+        result.set(
+            list.getFloat(offset),
+            list.getFloat(offset + 1),
+            list.getFloat(offset + 2)
+        )
+    },
 )
 
 fun AnimationKeyFrameData.Companion.ofQuaternionf(
     values: FloatList,
     elements: Int,
+    splitPrePost: Boolean = false,
 ) = FloatListAnimationKeyFrameData<Quaternionf>(
     values = values,
     elements = elements,
+    splitPrePost = splitPrePost,
     componentCount = 4,
     elementGetter = { list, offset, result ->
         result.set(
@@ -69,9 +87,11 @@ fun AnimationKeyFrameData.Companion.ofQuaternionf(
 fun AnimationKeyFrameData.Companion.ofFloat(
     values: FloatList,
     elements: Int,
+    splitPrePost: Boolean = false,
 ) = FloatListAnimationKeyFrameData<MutableFloat>(
     values = values,
     elements = elements,
+    splitPrePost = splitPrePost,
     componentCount = 1,
     elementGetter = { list, offset, result -> result.value = list.getFloat(offset) },
 )
@@ -103,7 +123,7 @@ class AccessorAnimationKeyFrameData<T>(
             .order(ByteOrder.LITTLE_ENDIAN)
     }
 
-    override fun get(index: Int, data: List<T>) {
+    override fun get(index: Int, data: List<T>, post: Boolean) {
         var position = index * elementStride
         for (i in 0 until elements) {
             if (isZeroFilled) {
@@ -133,8 +153,8 @@ fun <T, R> AnimationKeyFrameData<T>.map(
 
         private val tempOriginalData = List(original.elements) { defaultValue() }
 
-        override fun get(index: Int, data: List<R>) {
-            original.get(index, tempOriginalData)
+        override fun get(index: Int, data: List<R>, post: Boolean) {
+            original.get(index, tempOriginalData, post)
 
             for (i in 0 until elements) {
                 transform(tempOriginalData[i], data[i])

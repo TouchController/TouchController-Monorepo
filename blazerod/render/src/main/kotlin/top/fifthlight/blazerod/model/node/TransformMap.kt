@@ -112,7 +112,7 @@ class TransformMap(first: NodeTransform?) {
             calculateIntermediateMatrices(id)
         } else {
             // 如果 id 不脏，直接返回上一级存在的缓存矩阵。
-            for (i in (0 .. id.ordinal).reversed()) {
+            for (i in (0..id.ordinal).reversed()) {
                 intermediateMatrices[TransformId.entries[i]]?.let { return it }
             }
             throw IllegalStateException("There must be a intermediate matrix for ${TransformId.entries.first()}.")
@@ -182,6 +182,34 @@ class TransformMap(first: NodeTransform?) {
 
         updater(targetTransform) // 应用更新
         markDirty(id) // 标记为脏
+    }
+
+    /**
+     * 批量更新指定 TransformId 的 NodeTransform，并确保其为 Bedrock 类型。
+     * 如果当前存储的变换不是 Bedrock 类型，它将被转换为 Bedrock 类型。
+     * 如果该 ID 不存在，则会创建一个新的 NodeTransform.Bedrock 并插入。
+     *
+     * @param id 要更新的 TransformId。
+     * @param updater 用于修改 NodeTransform.Bedrock 的 lambda 表达式。
+     */
+    fun updateBedrock(id: TransformId, updater: NodeTransform.Bedrock.() -> Unit) {
+        val current = transforms[id]
+        val bedrock = if (current is NodeTransform.Bedrock) {
+            current
+        } else {
+            val pivot = (transforms[TransformId.ABSOLUTE] as? NodeTransform.Bedrock)?.pivot
+            val new = NodeTransform.Bedrock(
+                pivot = pivot ?: Vector3f(),
+                rotation = Quaternionf(),
+                translation = Vector3f(),
+                scale = Vector3f(1f),
+            )
+            transforms[id] = new
+            intermediateMatrices.getOrPut(id) { Matrix4f() }
+            new
+        }
+        updater(bedrock)
+        markDirty(id)
     }
 
     /**
