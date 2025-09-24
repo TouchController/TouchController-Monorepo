@@ -19,8 +19,8 @@ object BlazerodVertexFormats {
         .add("Position", VertexFormatElement.POSITION)                    // 12 12
         .add("Color", VertexFormatElement.COLOR)                          // 4  16
         .add("UV0", VertexFormatElement.UV0)                              // 8  24
-        .add("Joint", BlazerodVertexFormatElements.JOINT)                 // 4  28
-        .add("Weight", BlazerodVertexFormatElements.WEIGHT)               // 4  32
+        .add("Joint", BlazerodVertexFormatElements.JOINT)                 // 8  32
+        .add("Weight", BlazerodVertexFormatElements.WEIGHT)               // 16 48
         .build()
 
     val POSITION_COLOR_TEXTURE_NORMAL: VertexFormat = VertexFormat.builder()
@@ -36,10 +36,10 @@ object BlazerodVertexFormats {
         .add("Color", VertexFormatElement.COLOR)                          // 4  16
         .add("UV0", VertexFormatElement.UV0)                              // 8  24
         .add("Normal", VertexFormatElement.NORMAL)                        // 3  27
-        .padding(1)                                                       // 1  28
-        .add("Joint", BlazerodVertexFormatElements.JOINT)                 // 4  32
-        .add("Weight", BlazerodVertexFormatElements.WEIGHT)               // 4  36
-        .padding(12)                                                      // 12 48
+        .padding(5)                                                       // 1  32
+        .add("Joint", BlazerodVertexFormatElements.JOINT)                 // 8  40
+        .padding(8)                                                       // 8  48
+        .add("Weight", BlazerodVertexFormatElements.WEIGHT)               // 16 64
         .build()
 
     val ENTITY_PADDED: VertexFormat = VertexFormat.builder()
