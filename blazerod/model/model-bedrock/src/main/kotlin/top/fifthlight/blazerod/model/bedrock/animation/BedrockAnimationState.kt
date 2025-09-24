@@ -12,13 +12,12 @@ import top.fifthlight.blazerod.model.bedrock.molang.context.QueryContext
 import top.fifthlight.blazerod.model.bedrock.molang.context.YsmContext
 import top.fifthlight.blazerod.model.bedrock.molang.value.MolangValue
 
-
 class BedrockAnimationState(
     val context: AnimationContext,
-    duration: Float,
-    startDelay: MolangValue,
-    loopDelay: MolangValue,
-    loopMode: AnimationLoopMode,
+    val duration: Float,
+    val startDelay: MolangValue,
+    val loopDelay: MolangValue,
+    val loopMode: AnimationLoopMode,
     animTimeUpdate: BedrockAnimation.AnimationTimeUpdate,
 ) : AnimationState {
     companion object {
@@ -49,10 +48,173 @@ class BedrockAnimationState(
         }
     }
 
-    override fun updateTime(context: AnimationContext) {
-        // TODO
+    fun evalValue(context: AnimationContext, value: MolangValue) = when (value) {
+        is MolangValue.Molang -> evalExpressions(context, value.molang).toFloat()
+        is MolangValue.Plain -> value.value
     }
 
-    // TODO
-    override fun getTime() = 0f
+    // Animation state machine
+    private sealed class State {
+        abstract val startGameTick: Long
+        abstract val startDeltaTick: Float
+
+        abstract fun update(
+            context: AnimationContext,
+            state: BedrockAnimationState,
+        ): State
+
+        abstract fun getTime(
+            context: AnimationContext,
+            state: BedrockAnimationState,
+        ): Float
+
+        protected fun getDeltaTime(context: AnimationContext): Float {
+            val deltaGameTick = context.getGameTick() - startGameTick
+            val deltaDeltaTick = context.getDeltaTick() - startDeltaTick
+            return (deltaGameTick + deltaDeltaTick) * AnimationContext.SECONDS_PER_TICK
+        }
+
+        protected fun addDeltaTime(time: Float): Pair<Long, Float> {
+            val totalTicks = time / AnimationContext.SECONDS_PER_TICK
+            val deltaGameTick = totalTicks.toLong()
+            val deltaDeltaTick = totalTicks - deltaGameTick
+            var finalGameTick = startGameTick + deltaGameTick
+            var finalDeltaTick = startDeltaTick + deltaDeltaTick
+            if (finalDeltaTick > 1f) {
+                finalDeltaTick -= 1f
+                finalGameTick++
+            }
+            return Pair(finalGameTick, finalDeltaTick)
+        }
+
+        data class WaitingStartDelay(
+            override val startGameTick: Long,
+            override val startDeltaTick: Float,
+            val startDelay: Float,
+        ) : State() {
+            override fun update(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ): State {
+                val deltaTime = getDeltaTime(context)
+                return if (deltaTime >= startDelay) {
+                    val (newGameTick, newDeltaTick) = addDeltaTime(startDelay)
+                    Playing(
+                        startGameTick = newGameTick,
+                        startDeltaTick = newDeltaTick,
+                    )
+                } else {
+                    this
+                }
+            }
+
+            override fun getTime(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ) = 0f
+        }
+
+        data class Playing(
+            override val startGameTick: Long,
+            override val startDeltaTick: Float,
+        ) : State() {
+            override fun update(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ): State {
+                val deltaTime = getDeltaTime(context)
+                return if (deltaTime >= state.duration) {
+                    val (newGameTick, newDeltaTick) = addDeltaTime(state.duration)
+                    WaitingLoopDelay(
+                        startGameTick = newGameTick,
+                        startDeltaTick = newDeltaTick,
+                        loopDelay = state.evalValue(context, state.loopDelay),
+                    )
+                } else {
+                    this
+                }
+            }
+
+            override fun getTime(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ) = getDeltaTime(context)
+        }
+
+        data class WaitingLoopDelay(
+            override val startGameTick: Long,
+            override val startDeltaTick: Float,
+            val loopDelay: Float,
+        ) : State() {
+            override fun update(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ): State {
+                val deltaTime = getDeltaTime(context)
+                if (deltaTime < loopDelay) {
+                    return this
+                }
+                val (newGameTick, newDeltaTick) = addDeltaTime(state.duration)
+                return when (state.loopMode) {
+                    AnimationLoopMode.NO_LOOP -> EndOnTime(
+                        startGameTick = newGameTick,
+                        startDeltaTick = newDeltaTick,
+                        time = 0f,
+                    )
+
+                    AnimationLoopMode.LOOP -> Playing(
+                        newGameTick,
+                        newDeltaTick,
+                    )
+
+                    AnimationLoopMode.HOLD_ON_LAST_FRAME -> EndOnTime(
+                        newGameTick,
+                        newDeltaTick,
+                        time = state.duration,
+                    )
+                }
+            }
+
+            override fun getTime(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ) = state.duration
+        }
+
+        data class EndOnTime(
+            override val startGameTick: Long,
+            override val startDeltaTick: Float,
+            val time: Float,
+        ) : State() {
+            override fun update(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ) = this
+
+            override fun getTime(
+                context: AnimationContext,
+                state: BedrockAnimationState,
+            ) = time
+        }
+    }
+
+    private var state: State = State.WaitingStartDelay(
+        startGameTick = context.getGameTick(),
+        startDeltaTick = context.getDeltaTick(),
+        startDelay = evalValue(context, startDelay),
+    )
+
+    private var time = 0f
+    override fun updateTime(context: AnimationContext) {
+        while (true) {
+            val newState = state.update(context, this)
+            if (newState == state) {
+                break
+            }
+            state = newState
+        }
+        time = state.getTime(context, this)
+    }
+
+    override fun getTime() = time
 }
