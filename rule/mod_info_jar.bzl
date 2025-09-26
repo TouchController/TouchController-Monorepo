@@ -17,7 +17,6 @@ def _mod_info_jar_impl(name, visibility, fabric, neoforge, resource_strip_prefix
         mod_id = substitutions["${mod_id}"]
         if mod_id:
             substitutions = substitutions | { "${mod_id}": mod_id.replace("-", "_") }
-        print(substitutions)
         expand_template(
             name = neoforge_name,
             template = neoforge,

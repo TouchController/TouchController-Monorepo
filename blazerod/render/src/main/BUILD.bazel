@@ -20,7 +20,7 @@ kt_merge_library(
     ),
     deps = [
         "//blazerod/render/src/game:remapped_client_access_widened_named",
-        "//blazerod/model/model-formats",
+        "//blazerod/model/model-base",
         "@maven//:io_github_llamalad7_mixinextras_fabric",
         "@maven//:net_fabricmc_sponge_mixin",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import top.fifthlight.blazerod.model.NodeTransform
 import top.fifthlight.blazerod.model.TransformId
-import top.fifthlight.blazerod.model.node.TransformMap
+import top.fifthlight.blazerod.runtime.node.TransformMap
 
 class TransformMapTest {
 

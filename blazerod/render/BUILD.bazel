@@ -23,6 +23,35 @@ remap_jar(
     to_namespace = "intermediary",
 )
 
+alias(
+    name = "render_main",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/src/main",
+)
+
+alias(
+    name = "render_neoforge_unmapped",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/src/neoforge:neoforge_unmapped",
+)
+
+alias(
+    name = "render_neoforge_unmapped_merged",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/src/neoforge:neoforge_unmapped_merged",
+)
+
+remap_jar(
+    name = "render_neoforge_merged",
+    visibility = ["//visibility:public"],
+    classpath = ["//game:remapped_neoforge_named_without_deps"],
+    from_namespace = "named",
+    inputs = [":render_neoforge_unmapped_merged"],
+    mapping = "//game:merged_mojang_mapping",
+    mixin = True,
+    to_namespace = "mojang",
+)
+
 test_suite(
     name = "tests",
     tests = ["//blazerod/render/src/test:standalone_tests"],

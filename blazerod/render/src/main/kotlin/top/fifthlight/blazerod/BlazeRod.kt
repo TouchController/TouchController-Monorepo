@@ -7,6 +7,6 @@ object BlazeRod {
     const val MAX_ENABLED_MORPH_TARGETS = 32
     const val COMPUTE_LOCAL_SIZE = 64
 
-    internal lateinit var mainDispatcher: CoroutineDispatcher
+    lateinit var mainDispatcher: CoroutineDispatcher
     var debug = false
 }

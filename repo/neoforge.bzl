@@ -73,11 +73,13 @@ def _neoforge_repo_impl(rctx):
         '    name = "neoforge_userdev",',
         '    actual = "%s",' % neoforge_userdev_zip,
         ')',
+        '',
         'java_import(',
         '    name = "neoforge_universal",',
         '    jars = ["%s"],' % neoforge_universal_zip,
         '    srcjar = "%s",' % neoforge_sources_zip,
         ')',
+        '',
         'alias(',
         '    name = "neoforge_sources",',
         '    actual = "%s",' % neoforge_sources_zip,
@@ -116,6 +118,7 @@ def _neoforge_repo_impl(rctx):
         '    name = "recompile",',
         '    src = ":recompile_with_manifest",',
         ')',
+        '',
         'java_import(',
         '    name = "recompile_with_deps",',
         '    jars = [":recompile"],',
@@ -133,6 +136,7 @@ def _neoforge_repo_impl(rctx):
         '    input = ":recompile",',
         '    deps = [":neoforge_universal"],',
         ')',
+        '',
         'java_import(',
         '    name = "compiled_with_neoforge_with_deps",',
         '    jars = [":compiled_with_neoforge"],',
@@ -142,9 +146,19 @@ def _neoforge_repo_impl(rctx):
         '        %s' % neoforge_libraries,
         '    ],',
         ')',
+        '',
+        'java_library(',
+        '    name = "neoforge_deps",',
+        '    srcs = ["Dummy.java"],',
+        '    deps = [',
+        '        ":decompile_libraries",',
+        '        %s' % neoforge_libraries,
+        '    ],',
+        ')',
     ]
 
     rctx.file("BUILD.bazel", "\n".join(build_file_contents))
+    rctx.file("Dummy.java", "")
 
 _neoforge_repo = repository_rule(
     implementation = _neoforge_repo_impl,

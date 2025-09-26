@@ -1,6 +1,5 @@
 package top.fifthlight.armorstand.ui.screen
 
-import kotlinx.coroutines.flow.map
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.widget.ButtonWidget
@@ -12,10 +11,10 @@ import top.fifthlight.armorstand.config.GlobalConfig
 import top.fifthlight.armorstand.ui.component.*
 import top.fifthlight.armorstand.ui.model.RendererSelectViewModel
 import top.fifthlight.armorstand.ui.util.checkbox
-import top.fifthlight.blazerod.model.renderer.ComputeShaderTransformRenderer
-import top.fifthlight.blazerod.model.renderer.CpuTransformRenderer
-import top.fifthlight.blazerod.model.renderer.Renderer
-import top.fifthlight.blazerod.model.renderer.VertexShaderTransformRenderer
+import top.fifthlight.blazerod.runtime.renderer.ComputeShaderTransformRenderer
+import top.fifthlight.blazerod.runtime.renderer.CpuTransformRenderer
+import top.fifthlight.blazerod.runtime.renderer.Renderer
+import top.fifthlight.blazerod.runtime.renderer.VertexShaderTransformRenderer
 
 class RendererSelectScreen(parent: Screen? = null) : ArmorStandScreen<RendererSelectScreen, RendererSelectViewModel>(
     title = Text.translatable("armorstand.renderer"),

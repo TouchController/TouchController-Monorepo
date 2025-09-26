@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "armorstand",
+  "version": "${version}",
+  "name": "ArmorStand",
+  "description": "Load your models into Minecraft!",
+  "authors": [
+    "fifth_light"
+  ],
+  "contributors": [
+    "fengzhou0w0",
+    "white_elephant",
+    "azkich"
+  ],
+  "license": "${license}",
+  "icon": "assets/armorstand/icon.png",
+  "contact": {
+    "homepage": "${home_page}",
+    "sources": "${sources_page}",
+    "issues": "${issue_tracker}"
+  },
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      {
+        "value": "top.fifthlight.armorstand.ArmorStandFabricClient",
+        "adapter": "kotlin"
+      }
+    ],
+    "server": [
+      {
+        "value": "top.fifthlight.armorstand.ArmorStandFabricServer",
+        "adapter": "kotlin"
+      }
+    ],
+    "modmenu": [
+      "top.fifthlight.armorstand.ArmorStandModMenuImpl"
+    ]
+  },
+  "accessWidener": "armorstand.accesswidener",
+  "mixins": [
+    {
+      "environment": "client",
+      "config": "armorstand.mixins.client.json"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "=1.21.8",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*"
+  }
+}

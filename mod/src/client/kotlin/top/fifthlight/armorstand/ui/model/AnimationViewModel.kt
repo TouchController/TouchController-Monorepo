@@ -17,9 +17,9 @@ import top.fifthlight.blazerod.animation.AnimationItem
 import top.fifthlight.blazerod.animation.AnimationItemInstance
 import top.fifthlight.blazerod.animation.AnimationLoader
 import top.fifthlight.blazerod.animation.context.BaseAnimationContext
-import top.fifthlight.blazerod.model.ModelFileLoaders
-import top.fifthlight.blazerod.model.ModelInstance
 import top.fifthlight.blazerod.model.animation.SimpleAnimationState
+import top.fifthlight.blazerod.model.formats.ModelFileLoaders
+import top.fifthlight.blazerod.runtime.ModelInstance
 import java.lang.ref.WeakReference
 
 class AnimationViewModel(scope: CoroutineScope) : ViewModel(scope) {

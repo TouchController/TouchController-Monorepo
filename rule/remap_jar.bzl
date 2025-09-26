@@ -46,6 +46,8 @@ def _remap_jar_impl(ctx):
             args.add("--fix_package_access")
         if ctx.attr.remap_access_widener:
             args.add("--remap_access_widener")
+            if ctx.attr.access_widener_from_namespace:
+                args.add("--access_widener_from_namespace_" + ctx.attr.access_widener_from_namespace)
         if ctx.attr.remove_jar_in_jar:
             args.add("--remove_jar_in_jar")
 
@@ -135,6 +137,11 @@ remap_jar = rule(
         "remap_access_widener": attr.bool(
             default = True,
             doc = "Remap access wideners",
+        ),
+        "access_widener_from_namespace": attr.string(
+            mandatory = False,
+            default = "",
+            doc = "Map access wideners from this namespace",
         ),
         "remove_jar_in_jar": attr.bool(
             default = False,

@@ -1,9 +1,9 @@
 package top.fifthlight.blazerod.animation
 
-import top.fifthlight.blazerod.model.ModelInstance
 import top.fifthlight.blazerod.model.animation.Animation
 import top.fifthlight.blazerod.model.animation.AnimationContext
 import top.fifthlight.blazerod.model.animation.AnimationState
+import top.fifthlight.blazerod.runtime.ModelInstance
 import java.util.concurrent.ConcurrentLinkedDeque
 
 class AnimationItem(

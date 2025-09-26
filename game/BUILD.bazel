@@ -3,6 +3,7 @@ load("//rule:decompile_jar.bzl", "decompile_jar")
 load("//rule:extract_jar.bzl", "extract_jar")
 load("//rule:merge_mapping.bzl", "merge_mapping", "merge_mapping_input")
 load("//rule:remap_jar.bzl", "remap_jar")
+load("@rules_java//java:defs.bzl", "java_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -93,11 +94,20 @@ merge_mapping(
 )
 
 remap_jar(
-    name = "remapped_neoforge_named",
+    name = "remapped_neoforge_named_without_deps",
     from_namespace = "mojang",
     inputs = ["@neoforge//:compiled_with_neoforge_with_deps"],
     mapping = ":merged_mojang_mapping",
     to_namespace = "named",
+)
+
+java_library(
+    name = "remapped_neoforge_named",
+    srcs = ["Dummy.java"],
+    deps = [
+        ":remapped_neoforge_named_without_deps",
+        "@neoforge//:neoforge_deps",
+    ],
 )
 
 extract_jar(
@@ -123,13 +133,13 @@ remap_jar(
 )
 
 remap_jar(
-    name = "remapped_sodium",
+    name = "remapped_sodium_fabric",
     classpath = [
         "//game:remapped_client_intermediary",
     ],
     from_namespace = "intermediary",
     inputs = [
-        "@sodium//jar",
+        "@sodium_fabric//jar",
     ],
     mapping = "//game:merged_mapping",
     mixin = True,
@@ -139,14 +149,14 @@ remap_jar(
 )
 
 remap_jar(
-    name = "remapped_iris",
+    name = "remapped_iris_fabric",
     classpath = [
         "//game:remapped_client_intermediary",
-        "@sodium//jar",
+        "@sodium_fabric//jar",
     ],
     from_namespace = "intermediary",
     inputs = [
-        "@iris//jar",
+        "@iris_fabric//jar",
     ],
     mapping = "//game:merged_mapping",
     mixin = True,
@@ -155,12 +165,37 @@ remap_jar(
     to_namespace = "named",
 )
 
-decompile_jar(
-    name = "decompile_remapped_sodium",
-    inputs = [":remapped_sodium"],
+remap_jar(
+    name = "remapped_sodium_neoforge",
+    classpath = [
+        "@neoforge//:compiled_with_neoforge_with_deps",
+    ],
+    from_namespace = "mojang",
+    access_widener_from_namespace = "named",
+    inputs = [
+        "@sodium_neoforge//jar",
+    ],
+    mapping = ":merged_mojang_mapping",
+    mixin = True,
+    remap_transitive_deps = False,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
 )
 
-decompile_jar(
-    name = "decompile_remapped_iris",
-    inputs = [":remapped_iris"],
+remap_jar(
+    name = "remapped_iris_neoforge",
+    classpath = [
+        "@neoforge//:compiled_with_neoforge_with_deps",
+        "@sodium_neoforge//jar",
+    ],
+    from_namespace = "mojang",
+    access_widener_from_namespace = "named",
+    inputs = [
+        "@iris_neoforge//jar",
+    ],
+    mapping = ":merged_mojang_mapping",
+    mixin = True,
+    remap_transitive_deps = False,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
 )

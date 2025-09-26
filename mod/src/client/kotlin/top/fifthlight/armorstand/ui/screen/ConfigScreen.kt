@@ -1,7 +1,6 @@
 package top.fifthlight.armorstand.ui.screen
 
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.tab.TabManager
@@ -30,7 +29,7 @@ class ConfigScreen(parent: Screen? = null) : ArmorStandScreen<ConfigScreen, Conf
     title = Text.translatable("armorstand.config"),
 ) {
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if (keyCode == GLFW.GLFW_KEY_1 && hasControlDown() && ArmorStandClient.debug) {
+        if (keyCode == GLFW.GLFW_KEY_1 && hasControlDown() && ArmorStandClient.instance.debug) {
             client?.setScreen(DebugScreen(this))
             return true
         }

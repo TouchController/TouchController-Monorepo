@@ -16,8 +16,10 @@ import top.fifthlight.blazerod.animation.context.PlayerEntityAnimationContext
 import top.fifthlight.blazerod.model.*
 import top.fifthlight.blazerod.model.animation.AnimationContext
 import top.fifthlight.blazerod.model.animation.AnimationState
-import top.fifthlight.blazerod.model.resource.RenderExpression
-import top.fifthlight.blazerod.model.resource.RenderExpressionGroup
+import top.fifthlight.blazerod.runtime.ModelInstance
+import top.fifthlight.blazerod.runtime.RenderScene
+import top.fifthlight.blazerod.runtime.resource.RenderExpression
+import top.fifthlight.blazerod.runtime.resource.RenderExpressionGroup
 import java.util.*
 import kotlin.math.PI
 import kotlin.math.sin

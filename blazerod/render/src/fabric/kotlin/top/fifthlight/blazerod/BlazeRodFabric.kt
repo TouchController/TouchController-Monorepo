@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory
 import top.fifthlight.armorstand.debug.ResourceCountTrackerFrame
 import top.fifthlight.blazerod.debug.*
 import top.fifthlight.blazerod.event.RenderEvents
-import top.fifthlight.blazerod.model.resource.RenderTexture
-import top.fifthlight.blazerod.model.uniform.UniformBuffer
+import top.fifthlight.blazerod.runtime.resource.RenderTexture
+import top.fifthlight.blazerod.runtime.uniform.UniformBuffer
 import top.fifthlight.blazerod.util.ThreadExecutorDispatcher
 import top.fifthlight.blazerod.util.cleanupObjectPools
 import javax.swing.SwingUtilities

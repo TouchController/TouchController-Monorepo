@@ -21,8 +21,8 @@ jobs:
         run: |
           bazel build \
             --verbose_failures \
-            @//mod \
-            @//blazerod \
+            @//mod:mod_fabric \
+            @//blazerod:blazerod_fabric \
             @//blazerod/model/model-base \
             @//blazerod/model/model-formats \
             @//blazerod/model/model-gltf \
@@ -43,8 +43,8 @@ jobs:
         with:
           name: artifacts-bazel
           path: |
-            bazel-bin/mod/mod.jar
-            bazel-bin/blazerod/blazerod.jar
+            bazel-bin/mod/mod_fabric.jar
+            bazel-bin/blazerod/blazerod_fabric.jar
             bazel-bin/blazerod/model/model-base/model-base.jar
             bazel-bin/blazerod/model/model-formats/model-formats.jar
             bazel-bin/blazerod/model/model-gltf/model-gltf.jar

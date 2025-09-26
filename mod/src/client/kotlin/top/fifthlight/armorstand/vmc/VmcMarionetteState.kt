@@ -1,6 +1,5 @@
 package top.fifthlight.armorstand.vmc
 
-import kotlinx.atomicfu.locks.withLock
 import org.joml.Quaternionf
 import org.joml.Quaternionfc
 import org.joml.Vector3f
@@ -9,6 +8,7 @@ import top.fifthlight.blazerod.model.Expression
 import top.fifthlight.blazerod.model.HumanoidTag
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 sealed class VmcMarionetteStateView {
     abstract val rootTransform: RootTransform?

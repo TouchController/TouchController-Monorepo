@@ -1,7 +1,8 @@
 load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
-load("//rule:fabric_mod_json_jar.bzl", "fabric_mod_json_jar")
+load("//rule/fabric:mod_json_jar.bzl", "fabric_mod_json_jar")
+load("//rule/neoforge:mod_toml_jar.bzl", "neoforge_mod_toml_jar")
 load("@rules_java//java:defs.bzl", "java_library")
-load("//:properties.bzl", "blazerod_version")
+load("//:properties.bzl", "blazerod_version", "issue_tracker", "home_page", "license")
 load("//rule:merge_jar.bzl", "merge_jar")
 load("//rule/fabric:merge_jij.bzl", "fabric_merge_jij")
 
@@ -21,13 +22,28 @@ fabric_mod_json_jar(
     resource_strip_prefix = "blazerod",
 )
 
+neoforge_mod_toml_jar(
+    name = "neoforge_mod_toml",
+    src = "resources/META-INF/neoforge.mods.toml",
+    resource_strip_prefix = "blazerod",
+    substitutions = {
+        "${version}": blazerod_version,
+        "${license}": license,
+        "${home_page}": home_page,
+        "${issue_tracker}": issue_tracker,
+    },
+)
+
 kt_jvm_library(
-    name = "blazerod_without_jij",
+    name = "blazerod_fabric_without_jij",
     visibility = ["//visibility:public"],
     srcs = glob(["src/main/kotlin/**/*.kt"]),
     resources = glob(
         include = ["src/main/resources/**"],
-        exclude = ["src/main/resources/fabric.mod.json"],
+        exclude = [
+            "src/main/resources/fabric.mod.json",
+            "src/main/resources/META-INF/neoforge.mods.toml",
+        ],
     ),
     resource_strip_prefix = "blazerod/src/main/resources",
     resource_jars = [
@@ -41,10 +57,33 @@ kt_jvm_library(
     ],
 )
 
-fabric_merge_jij(
-    name = "blazerod",
+kt_jvm_library(
+    name = "blazerod_neoforge_without_jij",
     visibility = ["//visibility:public"],
-    input = ":blazerod_without_jij",
+    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    resources = glob(
+        include = ["src/main/resources/**"],
+        exclude = [
+            "src/main/resources/fabric.mod.json",
+            "src/main/resources/META-INF/neoforge.mods.toml",
+        ],
+    ),
+    resource_strip_prefix = "blazerod/src/main/resources",
+    resource_jars = [
+        ":neoforge_mod_toml",
+        "//:license_jar"
+    ],
+    exports = [
+        "//blazerod/model/model-base",
+        "//blazerod/model/model-formats",
+        "//blazerod/render:render_neoforge_unmapped",
+    ],
+)
+
+fabric_merge_jij(
+    name = "blazerod_fabric",
+    visibility = ["//visibility:public"],
+    input = ":blazerod_fabric_without_jij",
     deps = {
         "//blazerod/model/model-base": "blazerod-model-base:=",
         "//blazerod/model/model-formats": "blazerod-model-formats:=",

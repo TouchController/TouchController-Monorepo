@@ -1,191 +1,43 @@
-load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
-load("@rules_java//java:defs.bzl", "java_binary", "java_library")
-load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library", "kt_jvm_test")
+load("@rules_java//java:defs.bzl", "java_binary")
 load("//:properties.bzl", "game_version", "mod_version", "fabric_api_version_modrinth", "fabric_language_kotlin_version_modrinth")
 load("@//rule:upload_modrinth.bzl", "modrinth_dependency", "upload_modrinth")
-load("//rule:apply_access_widener.bzl", "apply_access_widener")
-load("//rule:decompile_jar.bzl", "decompile_jar")
-load("//rule:extract_access_widener.bzl", "extract_access_widener")
-load("//rule:fabric_mod_json_jar.bzl", "fabric_mod_json_jar")
 load("//rule:generate_remap_classpath.bzl", "generate_remap_classpath")
-load("//rule:merge_jar.bzl", "merge_jar")
 load("//rule/fabric:merge_jij.bzl", "fabric_merge_jij")
 load("//rule:remap_jar.bzl", "remap_jar")
-load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
 
-extract_access_widener(
-    name = "access_widener_dep_intermediary",
-    inputs = [
-        "@maven//:net_fabricmc_fabric_api_fabric_api",
-        "@maven//:com_terraformersmc_modmenu",
-    ],
+alias(
+    name = "mod_fabric_unmapped",
+    visibility = ["//visibility:public"],
+    actual = "//mod/src/fabric_client:fabric_unmapped",
+)
+
+alias(
+    name = "mod_fabric_unmapped_merged",
+    visibility = ["//visibility:public"],
+    actual = "//mod/src/fabric_client:fabric_unmapped_merged",
 )
 
 remap_jar(
-    name = "remapped_deps",
-    classpath = [
-        "//game:remapped_client_intermediary",
-    ],
-    from_namespace = "intermediary",
-    inputs = [
-        "@maven//:net_fabricmc_fabric_api_fabric_api",
-        "@maven//:com_terraformersmc_modmenu",
-        "@maven//:eu_pb4_placeholder_api",
-    ],
-    mapping = "//game:merged_mapping",
-    mixin = True,
-    remap_transitive_deps = True,
-    remove_jar_in_jar = True,
-    to_namespace = "named",
-)
-
-extract_access_widener(
-    name = "access_widener_dep_named",
-    inputs = [":remapped_deps"],
-)
-
-apply_access_widener(
-    name = "remapped_client_access_widened_named",
-    srcs = [
-        "src/main/resources/armorstand.accesswidener",
-        ":access_widener_dep_named",
-    ],
-    input = "//game:remapped_client_named",
-)
-
-decompile_jar(
-    name = "decompile_client_access_widened_named",
-    inputs = [":remapped_client_access_widened_named"],
-)
-
-apply_access_widener(
-    name = "remapped_server_access_widened_named",
-    srcs = [
-        "src/main/resources/armorstand.accesswidener",
-        ":access_widener_dep_named",
-    ],
-    input = "//game:remapped_server_named",
-)
-
-fabric_mod_json_jar(
-    name = "fabric_mod_json",
-    src = "src/main/resources/fabric.mod.json",
-    resource_strip_prefix = "mod",
-    substitutions = {
-        "${version}": mod_version,
-    },
-)
-
-kt_merge_library(
-    name = "mod_main_unmapped",
-    srcs = glob(
-        include = [
-            "src/main/kotlin/**/*.kt",
-            "src/main/java/**/*.java",
-        ],
-        allow_empty = True,
-    ),
-    resource_jars = [":fabric_mod_json"],
-    resources = glob(
-        include = ["src/main/resources/**"],
-        exclude = ["src/main/resources/fabric.mod.json"],
-    ),
-    deps = [
-        ":remapped_deps",
-        ":remapped_server_access_widened_named",
-        "//:kotlin_serialization",
-        "@maven//:net_fabricmc_fabric_language_kotlin",
-        "@maven//:net_fabricmc_fabric_loader",
-        "@minecraft//:%s_server_libraries" % game_version,
-    ],
-)
-
-remap_jar(
-    name = "mod_main",
+    name = "mod_fabric_merged",
+    visibility = ["//visibility:public"],
     classpath = ["//game:remapped_client_named"],
     from_namespace = "named",
-    inputs = [":mod_main_unmapped"],
+    inputs = [":mod_fabric_unmapped_merged"],
     mapping = "//game:merged_mapping",
     mixin = True,
     to_namespace = "intermediary",
-)
-
-kt_merge_library(
-    name = "mod_client_unmapped",
-    srcs = glob(
-        include = [
-            "src/client/kotlin/**/*.kt",
-            "src/client/java/**/*.java",
-        ],
-        allow_empty = True,
-    ),
-    module_name = "top_fifthlight_armorstand",
-    resource_jars = ["//blazerod/model/example-models:default_models"],
-    resource_strip_prefix = "mod/src/client/resources",
-    resources = glob(
-        include = ["src/client/resources/**"],
-        allow_empty = True,
-    ),
-    deps = [
-        ":mod_main_unmapped",
-        ":remapped_client_access_widened_named",
-        ":remapped_deps",
-        "//:kotlin_serialization",
-        "//blazerod:blazerod_without_jij",
-        "@maven//:com_h2database_h2",
-        "@maven//:com_illposed_osc_javaosc_core",
-        "@maven//:io_github_llamalad7_mixinextras_fabric",
-        "@maven//:net_fabricmc_fabric_language_kotlin",
-        "@maven//:net_fabricmc_fabric_loader",
-        "@maven//:net_fabricmc_sponge_mixin",
-        "@minecraft//:%s_client_libraries" % game_version,
-    ],
-)
-
-remap_jar(
-    name = "mod_client",
-    classpath = ["//game:remapped_client_named"],
-    from_namespace = "named",
-    inputs = [":mod_client_unmapped"],
-    mapping = "//game:merged_mapping",
-    mixin = True,
-    to_namespace = "intermediary",
-)
-
-merge_jar(
-    name = "mod_unmapped",
-    deps = [
-        ":mod_client_unmapped",
-        ":mod_main_unmapped",
-    ],
-    resources = {
-        "//third_party/licenses": "third_party",
-        "//:license": "",
-    },
-)
-
-merge_jar(
-    name = "mod_without_jij",
-    deps = [
-        ":mod_client",
-        ":mod_main",
-    ],
-    resources = {
-        "//third_party/licenses": "third_party",
-        "//:license": "",
-    },
 )
 
 fabric_merge_jij(
-    name = "mod",
-    input = ":mod_without_jij",
+    name = "mod_fabric",
+    input = ":mod_fabric_merged",
     visibility = ["//visibility:public"],
     deps = {
         "@maven//:com_h2database_h2": "com_h2database_h2:2.3.232",
         "@maven//:com_illposed_osc_javaosc_core": "com_illposed_osc_javaosc_core:0.9",
         "@mocha//:mocha": "team_unnamed_mocha:3.0.1",
         "@maven//:org_javassist_javassist": "org_javassist_javassist:3.30.2-GA",
-        "//blazerod:blazerod_without_jij": "blazerod:=",
+        "//blazerod:blazerod_fabric_without_jij": "blazerod:=",
         "//blazerod/model/model-base": "blazerod-model-base:=",
         "//blazerod/model/model-formats": "blazerod-model-formats:=",
         "//blazerod/model/model-gltf": "blazerod-model-formats-gltf:=",
@@ -201,7 +53,7 @@ generate_remap_classpath(
     name = "remap_classpath",
     prefix = "../../../../../../",
     deps = [
-        ":remapped_deps",
+        "//mod/src/fabric_client:remapped_deps",
         "//game:remapped_client_intermediary",
     ],
 )
@@ -246,12 +98,12 @@ java_binary(
     runtime_deps = [
         "//rule/dev_launch_wrapper",
         "@minecraft//:%s_client_libraries" % game_version,
-        ":mod_unmapped",
-        ":remapped_deps",
-        "//blazerod:blazerod_without_jij",
+        ":mod_fabric_unmapped",
+        "//mod/src/fabric_client:remapped_deps",
+        "//blazerod:blazerod_fabric_without_jij",
         "//game:remapped_client_named",
-        "//game:remapped_iris",
-        "//game:remapped_sodium",
+        "//game:remapped_iris_fabric",
+        "//game:remapped_sodium_fabric",
         "@maven//:com_h2database_h2",
         "@maven//:com_illposed_osc_javaosc_core",
         "@maven//:io_github_douira_glsl_transformer",
@@ -282,8 +134,8 @@ java_binary(
     runtime_deps = [
         "//rule/dev_launch_wrapper",
         "@minecraft//:%s_server_libraries" % game_version,
-        ":mod_unmapped",
-        ":remapped_deps",
+        ":mod_fabric_unmapped",
+        "//mod/src/fabric_client:remapped_deps",
         "//game:remapped_server_named",
         "@maven//:io_github_llamalad7_mixinextras_fabric",
         "@maven//:net_fabricmc_fabric_language_kotlin",

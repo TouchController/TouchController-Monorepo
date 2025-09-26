@@ -1,8 +1,9 @@
 package top.fifthlight.blazerod.util
 
-import kotlinx.atomicfu.atomic
 import net.minecraft.util.Identifier
 import top.fifthlight.blazerod.debug.ResourceCountTracker
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 class InvalidReferenceCountException(
     obj: Any,
@@ -20,11 +21,12 @@ abstract class AbstractRefCount : RefCount {
     final override var closed: Boolean = false
         private set
 
-    private val initializedAtomic = atomic(false)
-    private var initialized by initializedAtomic
+    private val initialized = AtomicBoolean(false)
 
-    private val referenceCountAtomic = atomic(0)
-    final override var referenceCount by referenceCountAtomic
+
+    private val referenceCountAtomic = AtomicInteger(0)
+    final override val referenceCount
+        get() = referenceCountAtomic.get()
 
     abstract val typeId: Identifier
 
@@ -35,14 +37,14 @@ abstract class AbstractRefCount : RefCount {
         if (referenceCountAtomic.getAndIncrement() < 0) {
             throw InvalidReferenceCountException(this, referenceCount)
         }
-        if (initializedAtomic.compareAndSet(expect = false, update = true)) {
+        if (initialized.compareAndSet(false, true)) {
             ResourceCountTracker.instance?.increase(typeId)
         }
     }
 
     override fun decreaseReferenceCount() {
         requireNotClosed()
-        check(initialized) { "Object $this is not initialized." }
+        check(initialized.get()) { "Object $this is not initialized." }
         val refCount = referenceCountAtomic.decrementAndGet()
         when {
             refCount < 0 -> throw InvalidReferenceCountException(this, referenceCount)
@@ -63,7 +65,7 @@ abstract class AbstractRefCount : RefCount {
     protected fun resetState() {
         require(closed) { "Object $this is not closed when resetting reference count." }
         require(referenceCount == 0) { "Object $this has reference count $referenceCount when resetting reference count." }
-        initialized = false
+        initialized.set(false)
         closed = false
     }
 

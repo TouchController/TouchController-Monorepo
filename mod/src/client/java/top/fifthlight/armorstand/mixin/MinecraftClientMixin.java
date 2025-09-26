@@ -16,7 +16,7 @@ public abstract class MinecraftClientMixin {
     )
     private boolean wrapUnlockCursor(Mouse mouse, Screen screen) {
         if (screen != null) {
-            return ScreenEvents.UNLOCK_CURSOR.invoker().onMouseUnlocked(screen);
+            return ScreenEvents.UNLOCK_CURSOR.getInvoker().onMouseUnlocked(screen);
         }
         return true;
     }

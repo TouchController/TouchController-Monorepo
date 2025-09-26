@@ -19,6 +19,6 @@ public abstract class MouseMixin {
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Mouse;isCursorLocked()Z"))
     public boolean isCursorLocked(Mouse instance, Operation<Boolean> original) {
         var screen = client.currentScreen;
-        return original.call(instance) && ScreenEvents.MOVE_VIEW.invoker().onViewMoved(screen);
+        return original.call(instance) && ScreenEvents.MOVE_VIEW.getInvoker().onViewMoved(screen);
     }
 }

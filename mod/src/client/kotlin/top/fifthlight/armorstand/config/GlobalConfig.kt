@@ -9,12 +9,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
-import net.fabricmc.loader.api.FabricLoader
 import org.slf4j.LoggerFactory
-import top.fifthlight.blazerod.model.renderer.ComputeShaderTransformRenderer
-import top.fifthlight.blazerod.model.renderer.CpuTransformRenderer
-import top.fifthlight.blazerod.model.renderer.Renderer
-import top.fifthlight.blazerod.model.renderer.VertexShaderTransformRenderer
+import top.fifthlight.armorstand.util.GameDirectoryGetter
+import top.fifthlight.blazerod.runtime.renderer.ComputeShaderTransformRenderer
+import top.fifthlight.blazerod.runtime.renderer.CpuTransformRenderer
+import top.fifthlight.blazerod.runtime.renderer.Renderer
+import top.fifthlight.blazerod.runtime.renderer.VertexShaderTransformRenderer
 import java.nio.file.InvalidPathException
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
@@ -72,7 +72,7 @@ data class GlobalConfig(
 }
 
 object ConfigHolder {
-    private val configFile = FabricLoader.getInstance().configDir.resolve("armorstand.json")
+    private val configFile = GameDirectoryGetter.configDirectory.resolve("armorstand.json")
     private val _config = MutableStateFlow(GlobalConfig())
     val config = _config.asStateFlow()
 

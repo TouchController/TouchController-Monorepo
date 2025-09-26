@@ -1,0 +1,35 @@
+load("//:properties.bzl", "game_version")
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+java_library(
+    name = "main_resources",
+    visibility = ["//mod:__subpackages__"],
+    resources = glob(["resources/**"], allow_empty = True),
+    resource_strip_prefix = "mod/src/main/resources",
+)
+
+kt_merge_library(
+    name = "main",
+    visibility = ["//mod:__subpackages__"],
+    srcs = glob(
+        include = [
+            "kotlin/**/*.kt",
+            "java/**/*.java",
+        ],
+        allow_empty = True,
+    ),
+    deps = [
+        "//mod/src/game:remapped_client_access_widened_named",
+        "@maven//:io_github_llamalad7_mixinextras_fabric",
+        "@maven//:net_fabricmc_sponge_mixin",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+        "@maven//:org_jetbrains_kotlinx_atomicfu_jvm",
+        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
+        "@minecraft//:%s_client_libraries" % game_version,
+    ],
+    exports = [
+        "//blazerod/model/model-base",
+        "//blazerod/model/model-formats",
+        "//blazerod/render:render_main",
+    ],
+)

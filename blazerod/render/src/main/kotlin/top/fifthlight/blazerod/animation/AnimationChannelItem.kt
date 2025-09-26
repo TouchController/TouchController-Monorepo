@@ -2,15 +2,15 @@ package top.fifthlight.blazerod.animation
 
 import org.joml.Quaternionf
 import org.joml.Vector3f
-import top.fifthlight.blazerod.model.ModelInstance
 import top.fifthlight.blazerod.model.TransformId
 import top.fifthlight.blazerod.model.animation.AnimationChannel
 import top.fifthlight.blazerod.model.animation.AnimationContext
 import top.fifthlight.blazerod.model.animation.AnimationState
-import top.fifthlight.blazerod.model.resource.CameraTransform
-import top.fifthlight.blazerod.model.resource.RenderExpression
-import top.fifthlight.blazerod.model.resource.RenderExpressionGroup
 import top.fifthlight.blazerod.model.util.MutableFloat
+import top.fifthlight.blazerod.runtime.ModelInstance
+import top.fifthlight.blazerod.runtime.resource.CameraTransform
+import top.fifthlight.blazerod.runtime.resource.RenderExpression
+import top.fifthlight.blazerod.runtime.resource.RenderExpressionGroup
 
 sealed class AnimationChannelItem<T : Any, D, P : Any>(
     val channel: AnimationChannel<T, D>,

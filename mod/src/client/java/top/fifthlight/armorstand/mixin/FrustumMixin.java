@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.fifthlight.armorstand.PlayerRenderer;
-import top.fifthlight.blazerod.model.resource.CameraTransform;
+import top.fifthlight.blazerod.runtime.resource.CameraTransform;
 
 @Mixin(Frustum.class)
 public abstract class FrustumMixin {

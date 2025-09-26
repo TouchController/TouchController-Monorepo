@@ -1,6 +1,6 @@
-load("//:properties.bzl", "blazerod_version")
+load("//:properties.bzl", "blazerod_version", "issue_tracker", "license", "home_page", "sources_page",)
 load("//rule:remap_jar.bzl", "remap_jar")
-load("//rule:fabric_mod_json_jar.bzl", "fabric_mod_json_jar")
+load("//rule/fabric:mod_json_jar.bzl", "fabric_mod_json_jar")
 load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
 
 remap_jar(
@@ -22,6 +22,10 @@ fabric_mod_json_jar(
     resource_strip_prefix = "blazerod/render/src/fabric",
     substitutions = {
         "${version}": blazerod_version,
+        "${license}": license,
+        "${home_page}": home_page,
+        "${sources_page}": sources_page,
+        "${issue_tracker}": issue_tracker,
     },
 )
 
@@ -42,15 +46,15 @@ kt_merge_library(
         "//blazerod/render/src/main:main_resources",
     ],
     resources = glob(
-        include = ["src/fabric/resources/**"],
-        exclude = ["src/fabric/resources/fabric.mod.json"],
+        include = ["resources/**"],
+        exclude = ["resources/fabric.mod.json"],
         allow_empty = True,
     ),
     resource_strip_prefix = "blazerod/render/src/fabric/resources",
     actual = True,
     deps = [
-        "//game:remapped_sodium",
-        "//game:remapped_iris",
+        "//game:remapped_sodium_fabric",
+        "//game:remapped_iris_fabric",
         "@maven//:net_fabricmc_fabric_language_kotlin",
         "@maven//:net_fabricmc_fabric_loader",
         ":remapped_deps",

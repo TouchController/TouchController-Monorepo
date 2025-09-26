@@ -3,10 +3,10 @@ package top.fifthlight.blazerod.animation
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import top.fifthlight.blazerod.animation.AnimationChannelItem.*
-import top.fifthlight.blazerod.model.RenderScene
 import top.fifthlight.blazerod.model.animation.Animation
 import top.fifthlight.blazerod.model.animation.AnimationChannel
 import top.fifthlight.blazerod.model.util.MutableFloat
+import top.fifthlight.blazerod.runtime.RenderScene
 
 object AnimationLoader {
     fun load(

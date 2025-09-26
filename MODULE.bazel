@@ -3,7 +3,8 @@
 # Remember to keep sync with properties.bzl
 game_version = "1.21.8"
 fabric_api_version = "0.129.0+1.21.8"
-fabric_language_kotlin_version = "1.11.0+kotlin.2.0.0"
+fabric_language_kotlin_version = "1.13.5+kotlin.2.2.10"
+neoforge_version = "21.8.36"
 
 module(
     name = "armorstand",
@@ -49,6 +50,7 @@ maven.install(
         "net.fabricmc:sponge-mixin:0.15.4+mixin.0.8.7",
         "io.github.llamalad7:mixinextras-fabric:0.4.1",
         "eu.pb4:placeholder-api:2.6.3+1.21.5",
+        "thedarkcolour:kotlinforforge-neoforge:5.9.0",
 
         # regular dependencies
         "org.joml:joml:1.10.8",
@@ -87,6 +89,7 @@ maven.install(
         "https://maven.terraformersmc.com/",
         "https://maven.nucleoid.xyz/",
         "https://masa.dy.fi/maven",
+        "https://thedarkcolour.github.io/KotlinForForge/",
         "https://api.modrinth.com/maven",
     ],
     lock_file = "//:maven_install.json",
@@ -96,15 +99,27 @@ use_repo(maven, "maven")
 
 http_jar = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
 http_jar(
-    name = "sodium",
+    name = "sodium_fabric",
     url = "https://cdn.modrinth.com/data/AANobbMI/versions/ND4ROcMQ/sodium-fabric-0.6.13%2Bmc1.21.6.jar",
     sha256 = "2e67812980688bf33447052c9ddfb820d07967bb3a3443f7865687fa0869118d",
     downloaded_file_name = "sodium.jar",
 )
 http_jar(
-    name = "iris",
+    name = "iris_fabric",
     url = "https://cdn.modrinth.com/data/YL57xq9U/versions/l77DAK6U/iris-fabric-1.9.1%2Bmc1.21.7.jar",
     sha256 = "0e6bd470311cc938b992e9065e0f94a3f603b68b5dfcde25102c64b8733b69bd",
+    downloaded_file_name = "iris.jar",
+)
+http_jar(
+    name = "sodium_neoforge",
+    url = "https://cdn.modrinth.com/data/AANobbMI/versions/ihzX2Dvy/sodium-neoforge-0.6.13%2Bmc1.21.6.jar",
+    sha256 = "595453c1202dc9c037ae8acef73aa4972a826fc3f607dcbf20d1c8ebb99ca646",
+    downloaded_file_name = "sodium.jar",
+)
+http_jar(
+    name = "iris_neoforge",
+    url = "https://cdn.modrinth.com/data/YL57xq9U/versions/xA5cxBvz/iris-neoforge-1.9.1%2Bmc1.21.7.jar",
+    sha256 = "7d5547c730ddf58631d7ded952b9e325cbbee93fd70c2b1c88d312cd21084dae",
     downloaded_file_name = "iris.jar",
 )
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
@@ -169,7 +184,7 @@ use_repo(neoform, "neoform_pin")
 
 neoforge = use_extension("//repo:neoforge.bzl", "neoforge")
 neoforge.version(
-    version = "21.8.36",
+    version = neoforge_version,
     userdev_sha256 = "051b0561fe0725fb953336c363f82540c80a2f4e86cdd17023b7ecc0842a6012",
     sources_sha256 = "4abf052591e38c1c84504f2ae4b741387a303deb04b459f4fa2fe4ae17bf1764",
     universal_sha256 = "758961d98cab1104ad281d5d0574e06a154e8ce94b19c71c2b460c4dc89eb405",

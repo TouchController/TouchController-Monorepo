@@ -5,7 +5,7 @@ import top.fifthlight.armorstand.ArmorStand
 import top.fifthlight.armorstand.config.ConfigHolder
 import top.fifthlight.armorstand.config.GlobalConfig
 import top.fifthlight.armorstand.state.ModelInstanceManager
-import top.fifthlight.blazerod.model.renderer.*
+import top.fifthlight.blazerod.runtime.renderer.*
 
 object RendererManager : AutoCloseable {
     init {

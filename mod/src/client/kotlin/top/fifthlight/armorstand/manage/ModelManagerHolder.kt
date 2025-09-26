@@ -1,6 +1,6 @@
 package top.fifthlight.armorstand.manage
 
-import net.fabricmc.loader.api.FabricLoader
+import top.fifthlight.armorstand.util.GameDirectoryGetter
 import java.lang.AutoCloseable
 import java.nio.file.Path
 
@@ -9,7 +9,7 @@ object ModelManagerHolder : AutoCloseable {
     private var _instance: ModelManagerImpl? = null
     val modelDir: Path = System.getProperty("armorstand.modelDir")?.let {
         Path.of(it).toAbsolutePath()
-    } ?: FabricLoader.getInstance().gameDir.resolve("models")
+    } ?: GameDirectoryGetter.gameDirectory.resolve("models")
     val instance: ModelManager
         get() = _instance ?: throw IllegalStateException("ModelManager not initialized")
 

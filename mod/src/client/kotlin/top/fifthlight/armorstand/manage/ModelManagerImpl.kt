@@ -122,7 +122,7 @@ class ModelManagerImpl(
                     logger.warn("Failed to extract default model", ex)
                 }
             }
-            if (extractDefaultModel || ArmorStandClient.debug) {
+            if (extractDefaultModel || ArmorStandClient.instance.debug) {
                 val defaultAnimationDir = ModelInstanceManager.defaultAnimationDir
                 val extractDefaultAnimations = defaultAnimationDir.notExists()
                 defaultAnimationDir.createDirectories()

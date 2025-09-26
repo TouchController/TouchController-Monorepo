@@ -1,0 +1,17 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "expect_client",
+    visibility = ["//mod:__subpackages__"],
+    srcs = glob(
+        include = [
+            "kotlin/**/*.kt",
+            "java/**/*.java",
+        ],
+        allow_empty = True,
+    ),
+    expect = True,
+    deps = [
+        "//mod/src/game:remapped_client_access_widened_named",
+    ],
+)

@@ -12,9 +12,9 @@ import org.joml.Matrix4f
 import top.fifthlight.armorstand.config.ConfigHolder
 import top.fifthlight.armorstand.state.ModelInstanceManager
 import top.fifthlight.armorstand.util.RendererManager
-import top.fifthlight.blazerod.model.renderer.ScheduledRenderer
-import top.fifthlight.blazerod.model.resource.CameraTransform
-import top.fifthlight.blazerod.model.resource.RenderCamera
+import top.fifthlight.blazerod.runtime.renderer.ScheduledRenderer
+import top.fifthlight.blazerod.runtime.resource.CameraTransform
+import top.fifthlight.blazerod.runtime.resource.RenderCamera
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -99,7 +99,7 @@ object PlayerRenderer {
         matrixStack.pop()
         matrixStack.push()
 
-        if (ArmorStandClient.debugBone) {
+        if (ArmorStandClient.instance.debugBone) {
             instance.debugRender(matrixStack.peek().positionMatrix, consumers)
         } else {
             matrix.set(matrixStack.peek().positionMatrix)

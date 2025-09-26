@@ -2,8 +2,6 @@ package top.fifthlight.armorstand.state
 
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.minecraft.client.MinecraftClient
 import top.fifthlight.armorstand.ArmorStand
@@ -54,7 +52,7 @@ object ClientModelPathManager {
 
     fun getPath(uuid: UUID) = if (uuid == selfUuid) {
         selfPath
-    } else if (ArmorStandClient.debug) {
+    } else if (ArmorStandClient.instance.debug) {
         modelPaths[uuid] ?: selfPath
     } else {
         modelPaths[uuid]

@@ -58,9 +58,15 @@ public class TinyRemapperWorker extends Worker implements AutoCloseable {
             var fixPackageAccess = false;
             var remapAccessWidener = false;
             var removeJarInJar = false;
+            String accessWidenerSourceNamespace = null;
 
             for (var parameter : parameters) {
                 var name = parameter.substring(2); // removePrefix("--")
+                var accessWidenerSourceArg = "access_widener_from_namespace_";
+                if (name.startsWith(accessWidenerSourceArg)) {
+                    accessWidenerSourceNamespace = name.substring(accessWidenerSourceArg.length());
+                    continue;
+                }
                 switch (name) {
                     case "mixin":
                         mixin = true;
@@ -92,6 +98,10 @@ public class TinyRemapperWorker extends Worker implements AutoCloseable {
                     .stream()
                     .map(Paths::get)
                     .toList();
+
+            if (accessWidenerSourceNamespace == null || accessWidenerSourceNamespace.isEmpty()) {
+                accessWidenerSourceNamespace = fromNamespace;
+            }
 
             var mappingArgument = new MappingManager.Argument(
                     Paths.get(mappingPath),
@@ -136,7 +146,7 @@ public class TinyRemapperWorker extends Worker implements AutoCloseable {
                     nonClassFilesProcessors.add(
                             new AccessWidenerRemapper(
                                     entry.getRemapper(),
-                                    fromNamespace,
+                                    accessWidenerSourceNamespace,
                                     toNamespace
                             )
                     );

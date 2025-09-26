@@ -2,7 +2,6 @@ package top.fifthlight.armorstand.state
 
 import com.mojang.logging.LogUtils
 import kotlinx.coroutines.*
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.MinecraftClient
 import top.fifthlight.armorstand.ArmorStand
 import top.fifthlight.armorstand.config.ConfigHolder
@@ -13,10 +12,10 @@ import top.fifthlight.blazerod.animation.AnimationItemInstance
 import top.fifthlight.blazerod.animation.AnimationLoader
 import top.fifthlight.blazerod.animation.context.BaseAnimationContext
 import top.fifthlight.blazerod.model.Metadata
-import top.fifthlight.blazerod.model.ModelFileLoaders
-import top.fifthlight.blazerod.model.ModelInstance
-import top.fifthlight.blazerod.model.RenderScene
-import top.fifthlight.blazerod.model.load.ModelLoader
+import top.fifthlight.blazerod.model.formats.ModelFileLoaders
+import top.fifthlight.blazerod.runtime.ModelInstance
+import top.fifthlight.blazerod.runtime.RenderScene
+import top.fifthlight.blazerod.runtime.load.ModelLoader
 import top.fifthlight.blazerod.util.RefCount
 import top.fifthlight.blazerod.util.TimeUtil
 import java.nio.file.Path
@@ -284,12 +283,6 @@ object ModelInstanceManager {
                 item?.decreaseReferenceCount()
             }
             remove
-        }
-    }
-
-    fun initialize() {
-        WorldRenderEvents.AFTER_ENTITIES.register {
-            cleanup(System.nanoTime())
         }
     }
 }
