@@ -75,7 +75,7 @@ class PmxLoader : ModelFileLoader {
         private var indices: Int = -1
 
         private lateinit var textures: List<Texture?>
-        private lateinit var materials: List<MaterialData>
+        private lateinit var materials: List<MaterialData?>
         private lateinit var vertexToMaterialMap: VertexMaterialTable
         private lateinit var bones: List<PmxBone>
         private val targetToIkDataMap = mutableMapOf<Int, MutableList<PmxBone.IkData>>()
@@ -622,6 +622,10 @@ class PmxLoader : ModelFileLoader {
                     },
                 )
 
+                if (pmxMaterial.surfaceCount == 0) {
+                    return@map null
+                }
+
                 var nextRemappedVertexIndex = 0
                 val remappedIndices = ByteBuffer.allocateDirect(pmxMaterial.surfaceCount * indexBufferType.byteLength)
                     .order(ByteOrder.nativeOrder())
@@ -845,6 +849,7 @@ class PmxLoader : ModelFileLoader {
 
                             // Lookup each material
                             for (materialIndex in materials.indices) {
+                                val material = materials[materialIndex] ?: continue
                                 // Map global vertex index to material local
                                 val materialLocalIndex = vertexToMaterialMap.getLocalIndex(vertexIndex, materialIndex)
                                 if (materialLocalIndex == -1) {
@@ -853,7 +858,6 @@ class PmxLoader : ModelFileLoader {
 
                                 // Fetch building morph target
                                 val buildingTarget = dataMap.getOrPut(materialIndex) {
-                                    val material = materials[materialIndex]
                                     BuildingVertexMorphTarget(material.vertices)
                                 }
                                 buildingTarget.setVertex(materialLocalIndex, x, y, z)
@@ -866,10 +870,10 @@ class PmxLoader : ModelFileLoader {
                                 nameLocal = nameLocal.takeIf(String::isNotBlank),
                                 nameUniversal = nameUniversal.takeIf(String::isNotBlank),
                                 tag = expressionTag,
-                                data = dataMap.mapValues { (materialIndex, value) ->
+                                data = dataMap.mapNotNull { (materialIndex, value) ->
                                     val morphBuffer = value.finish()
-                                    val material = materials[materialIndex]
-                                    Primitive.Attributes.MorphTarget(
+                                    val material = materials[materialIndex] ?: return@mapNotNull null
+                                    materialIndex to Primitive.Attributes.MorphTarget(
                                         position = Accessor(
                                             name = "Morph #$index material #$materialIndex vertex buffer",
                                             bufferView = BufferView(
@@ -885,7 +889,7 @@ class PmxLoader : ModelFileLoader {
                                             type = Accessor.AccessorType.VEC3,
                                         )
                                     )
-                                },
+                                }.toMap(),
                             )
                         )
                     }
@@ -1081,7 +1085,7 @@ class PmxLoader : ModelFileLoader {
                 val meshId = MeshId(modelId, nodeIndex)
                 materialToMeshIds[materialIndex] = meshId
 
-                val pmxMaterial = materialData.material
+                val pmxMaterial = materialData?.material ?: return@forEachIndexed
                 val material = Material.Unlit(
                     name = pmxMaterial.nameLocal,
                     baseColor = pmxMaterial.diffuseColor,
