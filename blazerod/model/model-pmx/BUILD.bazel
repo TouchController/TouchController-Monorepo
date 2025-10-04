@@ -13,66 +13,17 @@ model_info_jar(
 
 kt_jvm_library(
     name = "model-pmx",
-    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    srcs = glob(["**/*.kt"]),
     resource_jars = [
         ":mod_info_json",
         "//blazerod:icon",
     ],
-    resources = glob(
-        include = ["src/main/resources/**"],
-        exclude = ["src/main/resources/fabric.mod.json"],
-    ),
+    resources = glob(["resources/**"]),
+    resource_strip_prefix = "blazerod/model/model-pmx/resources",
     visibility = ["//visibility:public"],
     deps = [
         "//blazerod/model/model-base",
+        "@maven//:org_slf4j_slf4j_api",
+        "@maven//:org_joml_joml",
     ],
 )
-
-java_library(
-    name = "runfile_dummy_lib",
-    srcs = [
-        "src/test/java/top/fifthlight/blazerod/model/pmx/test/RunfileDummy.java"
-    ],
-    deps = [
-        "@bazel_tools//tools/java/runfiles",
-    ],
-)
-
-kt_jvm_test(
-    name = "pmx_load_test",
-    srcs = glob(
-        include = [
-            "src/test/kotlin/**/*.kt",
-            "src/test/java/**/*.java",
-        ],
-        exclude = [
-            "src/test/java/top/fifthlight/blazerod/model/pmx/test/RunfileDummy.java"
-        ],
-    ),
-    args = [
-        "execute",
-        "--select-class",
-        "top.fifthlight.blazerod.model.pmx.test.PmxLoadTest",
-    ],
-    associates = [":model-pmx"],
-    main_class = "org.junit.platform.console.ConsoleLauncher",
-    jvm_flags = [
-        "-Dalicia_solid_path=$(rlocationpath //blazerod/model/example-models:alicia_solid_pmx)",
-        "-Dalicia_blade_path=$(rlocationpath //blazerod/model/example-models:alicia_blade_pmx)",
-    ],
-    data = [
-        "//blazerod/model/example-models:alicia_solid_mmd",
-        "//blazerod/model/example-models:alicia_solid_pmx",
-        "//blazerod/model/example-models:alicia_blade_pmx",
-    ],
-    runtime_deps = [
-        "@maven//:org_junit_jupiter_junit_jupiter_engine",
-        "@maven//:org_junit_platform_junit_platform_console",
-    ],
-    deps = [
-        "@maven//:org_jetbrains_kotlin_kotlin_test_junit5",
-        "@maven//:org_junit_jupiter_junit_jupiter_api",
-        ":runfile_dummy_lib",
-    ],
-)
-

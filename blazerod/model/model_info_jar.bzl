@@ -13,8 +13,8 @@ def _model_info_jar_impl(name, visibility, substitutions):
     mod_info_jar(
         name = name,
         visibility = visibility,
-        fabric = "//blazerod/model:src/main/resources/fabric.mod.json",
-        neoforge = "//blazerod/model:src/main/resources/META-INF/neoforge.mods.toml",
+        fabric = "//blazerod/model:resources/fabric.mod.json",
+        neoforge = "//blazerod/model:resources/META-INF/neoforge.mods.toml",
         resource_strip_prefix = native.package_name(),
         substitutions = predefined_substitutions,
     )

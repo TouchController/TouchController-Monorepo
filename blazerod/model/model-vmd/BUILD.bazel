@@ -13,17 +13,17 @@ model_info_jar(
 
 kt_jvm_library(
     name = "model-vmd",
-    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    srcs = glob(["*.kt"]),
     resource_jars = [
         ":mod_info_json",
         "//blazerod:icon",
     ],
-    resources = glob(
-        include = ["src/main/resources/**"],
-        exclude = ["src/main/resources/fabric.mod.json"],
-    ),
+    resources = glob(["resources/**"]),
+    resource_strip_prefix = "blazerod/model/model-vmd/resources",
     visibility = ["//visibility:public"],
     deps = [
         "//blazerod/model/model-base",
+        "@maven//:it_unimi_dsi_fastutil",
+        "@maven//:org_joml_joml",
     ],
 )

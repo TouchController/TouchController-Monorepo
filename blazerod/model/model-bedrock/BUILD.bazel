@@ -13,21 +13,22 @@ model_info_jar(
 
 kt_jvm_library(
     name = "model-bedrock",
-    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    srcs = glob(["**/*.kt"]),
     resource_jars = [
         ":mod_info_json",
         "//blazerod:icon",
     ],
-    resources = glob(
-        include = ["src/main/resources/**"],
-        exclude = ["src/main/resources/fabric.mod.json"],
-    ),
+    resources = glob(["resources/**"]),
+    resource_strip_prefix = "blazerod/model/model-bedrock/resources",
     visibility = ["//visibility:public"],
     deps = [
         "//blazerod/model/model-base",
-        "@mocha//:mocha",
         "//:kotlin_serialization",
-        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json",
+        "@maven//:org_slf4j_slf4j_api",
+        "@maven//:org_joml_joml",
+        "@maven//:it_unimi_dsi_fastutil",
+        "@mocha//:mocha",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
         "@maven//:com_google_code_gson_gson",
     ],
 )

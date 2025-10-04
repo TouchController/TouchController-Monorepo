@@ -1,4 +1,3 @@
-load("//:properties.bzl", "game_version")
 load("//rule:merge_library.bzl", "kt_merge_library")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("//:properties.bzl", "mod_version", "license")
@@ -32,11 +31,8 @@ kt_merge_library(
         allow_empty = True,
     ) + ["ModInfo.kt"],
     deps = [
-        "//mod/src/game:remapped_client_access_widened_named",
-        "@maven//:io_github_llamalad7_mixinextras_fabric",
-        "@maven//:net_fabricmc_sponge_mixin",
+        "//game:remapped_server_named",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
-        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
-        "@minecraft//:%s_client_libraries" % game_version,
+        "@minecraft//:1.21.8_server_libraries",
     ],
 )

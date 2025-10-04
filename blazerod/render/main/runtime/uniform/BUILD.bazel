@@ -1,0 +1,17 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "uniform",
+    srcs = glob(["*.kt"]),
+    merge_deps = [
+        "//blazerod/render/main:main_base",
+        "//blazerod/render/main/layout",
+        "//blazerod/render/main/util/uniform",
+    ],
+    visibility = ["//blazerod/render:__subpackages__"],
+    deps = [
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        "//blazerod/model/model-base",
+        "@maven//:org_joml_joml",
+    ],
+)

@@ -14,7 +14,6 @@ kt_jvm_library(
     deps = [
         "//:kotlin_serialization",
         "@maven//:net_fabricmc_access_widener",
-        "@maven//:net_fabricmc_tiny_remapper",
         "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
     ],
 )

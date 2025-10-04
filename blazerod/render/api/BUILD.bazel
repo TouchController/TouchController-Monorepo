@@ -14,17 +14,8 @@ expand_template(
 kt_merge_library(
     name = "api",
     srcs = [":api_info"],
-    merge_deps = [
-        "//blazerod/render/api/animation",
-        "//blazerod/render/api/event",
-        "//blazerod/render/api/loader",
-        "//blazerod/render/api/refcount",
-        "//blazerod/render/api/resource",
-    ],
     visibility = ["//visibility:public"],
     deps = [
-        "//blazerod/model/model-base",
         "//blazerod/render/game:remapped_client_access_widened_named",
-        "@maven//:org_joml_joml",
     ],
 )

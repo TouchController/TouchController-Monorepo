@@ -8,6 +8,7 @@ kt_merge_library(
         "//blazerod/render/main/animation/context",
         "//blazerod/render/main/runtime",
         "//blazerod/render/api/animation",
+        "//blazerod/render/api/resource",
     ],
     visibility = ["//blazerod/render:__subpackages__"],
     deps = [

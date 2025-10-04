@@ -3,15 +3,12 @@ package top.fifthlight.blazerod.runtime.data
 import org.joml.Matrix4f
 import org.joml.Matrix4fc
 import top.fifthlight.blazerod.api.refcount.AbstractRefCount
-import top.fifthlight.blazerod.runtime.RenderSceneImpl
 import top.fifthlight.blazerod.util.cowbuffer.CowBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class LocalMatricesBuffer private constructor(val primitiveNodesSize: Int) : CowBuffer.Content<LocalMatricesBuffer>,
-    AbstractRefCount() {
-    constructor(scene: RenderSceneImpl) : this(scene.primitiveComponents.size)
-
+class LocalMatricesBuffer(val primitiveNodesSize: Int) :
+    CowBuffer.Content<LocalMatricesBuffer>, AbstractRefCount() {
     companion object {
         private val IDENTITY = Matrix4f()
         const val MAT4X4_SIZE = 4 * 4 * 4

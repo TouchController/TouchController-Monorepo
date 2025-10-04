@@ -44,7 +44,10 @@ alias(
 remap_jar(
     name = "render_neoforge_merged",
     visibility = ["//visibility:public"],
-    classpath = ["//game:remapped_neoforge_named_without_deps"],
+    classpath = [
+        "//game:remapped_neoforge_named",
+        "@neoforge//:neoforge_deps",
+    ],
     from_namespace = "named",
     inputs = [":render_neoforge_unmapped_merged"],
     mapping = "//game:merged_mojang_mapping",
@@ -53,6 +56,9 @@ remap_jar(
 )
 
 test_suite(
-    name = "tests",
-    tests = ["//blazerod/render/test:standalone_tests"],
+    name = "test",
+    tests = [
+        "//blazerod/render/main/layout/test",
+        "//blazerod/render/main/runtime/test",
+    ],
 )

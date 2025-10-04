@@ -10,13 +10,13 @@ load("//rule/neoforge:merge_jij.bzl", "neoforge_merge_jij")
 java_library(
 	name = "icon",
     visibility = ["//visibility:public"],
-    resources = ["src/main/resources/assets/blazerod/icon.png"],
-    resource_strip_prefix = "blazerod/src/main/resources",
+    resources = ["src/resources/assets/blazerod/icon.png"],
+    resource_strip_prefix = "blazerod/src/resources",
 )
 
 fabric_mod_json_jar(
     name = "fabric_mod_json",
-    src = "src/main/resources/fabric.mod.json",
+    src = "src/resources/fabric.mod.json",
     substitutions = {
         "${version}": blazerod_version,
     },
@@ -25,7 +25,7 @@ fabric_mod_json_jar(
 
 neoforge_mod_toml_jar(
     name = "neoforge_mod_toml",
-    src = "src/main/resources/META-INF/neoforge.mods.toml",
+    src = "src/resources/META-INF/neoforge.mods.toml",
     resource_strip_prefix = "blazerod",
     substitutions = {
         "${version}": blazerod_version,
@@ -38,15 +38,15 @@ neoforge_mod_toml_jar(
 kt_jvm_library(
     name = "blazerod_fabric_without_jij",
     visibility = ["//visibility:public"],
-    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    srcs = glob(["src/*.kt"]),
     resources = glob(
-        include = ["src/main/resources/**"],
+        include = ["src/resources/**"],
         exclude = [
-            "src/main/resources/fabric.mod.json",
-            "src/main/resources/META-INF/neoforge.mods.toml",
+            "src/resources/fabric.mod.json",
+            "src/resources/META-INF/neoforge.mods.toml",
         ],
     ),
-    resource_strip_prefix = "blazerod/src/main/resources",
+    resource_strip_prefix = "blazerod/src/resources",
     resource_jars = [
         ":fabric_mod_json",
         "//:license_jar"
@@ -61,15 +61,15 @@ kt_jvm_library(
 kt_jvm_library(
     name = "blazerod_neoforge_without_jij",
     visibility = ["//visibility:public"],
-    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    srcs = glob(["src/*.kt"]),
     resources = glob(
-        include = ["src/main/resources/**"],
+        include = ["src/resources/**"],
         exclude = [
-            "src/main/resources/fabric.mod.json",
-            "src/main/resources/META-INF/neoforge.mods.toml",
+            "src/resources/fabric.mod.json",
+            "src/resources/META-INF/neoforge.mods.toml",
         ],
     ),
-    resource_strip_prefix = "blazerod/src/main/resources",
+    resource_strip_prefix = "blazerod/src/resources",
     resource_jars = [
         ":neoforge_mod_toml",
         "//:license_jar"

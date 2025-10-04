@@ -4,12 +4,11 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import it.unimi.dsi.fastutil.ints.IntSet
 import top.fifthlight.blazerod.BlazeRod
 import top.fifthlight.blazerod.api.refcount.AbstractRefCount
-import top.fifthlight.blazerod.runtime.resource.RenderPrimitive
 import top.fifthlight.blazerod.util.cowbuffer.CowBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class MorphTargetBuffer private constructor(
+class MorphTargetBuffer(
     private val positionTargets: Int,
     private val colorTargets: Int,
     private val texCoordTargets: Int,
@@ -20,14 +19,6 @@ class MorphTargetBuffer private constructor(
 
     override val typeId: String
         get() = "morph_target_buffer"
-
-    constructor(
-        targets: RenderPrimitive.Targets,
-    ) : this(
-        positionTargets = targets.position.targetsCount,
-        colorTargets = targets.color.targetsCount,
-        texCoordTargets = targets.texCoord.targetsCount,
-    )
 
     private val _positionChannel = WeightChannelImpl(
         channelIndex = 0,

@@ -21,25 +21,24 @@ jobs:
         run: |
           bazel build \
             --verbose_failures \
-            @//mod:mod_fabric \
-            @//mod:mod_neoforge \
-            @//blazerod:blazerod_fabric \
-            @//blazerod:blazerod_neoforge \
-            @//blazerod/model/model-base \
-            @//blazerod/model/model-formats \
-            @//blazerod/model/model-gltf \
-            @//blazerod/model/model-pmd \
-            @//blazerod/model/model-pmx \
-            @//blazerod/model/model-vmd \
-            @//blazerod/model/model-assimp:model-assimp-merged \
-            @//blazerod/example/ball_block
+            //mod:mod_fabric \
+            //mod:mod_neoforge \
+            //blazerod:blazerod_fabric \
+            //blazerod:blazerod_neoforge \
+            //blazerod/model/model-base \
+            //blazerod/model/model-formats \
+            //blazerod/model/model-gltf \
+            //blazerod/model/model-pmd \
+            //blazerod/model/model-pmx \
+            //blazerod/model/model-vmd \
+            //blazerod/model/model-assimp:model-assimp-merged \
+            //blazerod/example/ball_block
       - name: test
         run: |
           bazel test \
             --verbose_failures \
-            @//blazerod/model/model-gltf:glb_load_test \
-            @//blazerod/model/model-pmx:pmx_load_test \
-            @//blazerod/render:tests
+            //blazerod/model:test \
+            //blazerod/render:test
       - name: capture build artifacts
         uses: actions/upload-artifact@v4
         with:

@@ -5,9 +5,8 @@ kt_merge_library(
     visibility = ["//blazerod/render:__subpackages__"],
     srcs = ["BlazeRodDispatchers.kt", "ThreadExecutorDispatcher.kt"],
     deps = [
-        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
         "//blazerod/render/game:remapped_client_access_widened_named",
-        "@minecraft//:1.21.8_client_libraries",
     ],
     merge_deps = [
         "//blazerod/render/main:main_base",

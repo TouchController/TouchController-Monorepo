@@ -10,7 +10,6 @@ kt_merge_library(
     deps = [
         "//blazerod/render/game:remapped_client_access_widened_named",
         "//blazerod/model/model-base",
-        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
         "@minecraft//:1.21.8_client_libraries",
     ],
     merge_deps = [

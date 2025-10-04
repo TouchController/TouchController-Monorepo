@@ -1,5 +1,4 @@
-load("@rules_java//java:defs.bzl", "java_common")
-load("@rules_java//java:defs.bzl", "JavaInfo")
+load("@rules_java//java:defs.bzl", "java_common", "JavaInfo")
 
 def _merge_jar_impl(ctx):
     output_jar = ctx.actions.declare_file(ctx.label.name + ".jar")

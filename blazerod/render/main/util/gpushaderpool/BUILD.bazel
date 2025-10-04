@@ -12,6 +12,5 @@ kt_merge_library(
     deps = [
         "//blazerod/render/game:remapped_client_access_widened_named",
         "@maven//:it_unimi_dsi_fastutil",
-        "@minecraft//:1.21.8_client_libraries",
     ],
 )

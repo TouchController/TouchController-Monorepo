@@ -94,20 +94,12 @@ merge_mapping(
 )
 
 remap_jar(
-    name = "remapped_neoforge_named_without_deps",
+    name = "remapped_neoforge_named",
     from_namespace = "mojang",
-    inputs = ["@neoforge//:compiled_with_neoforge_with_deps"],
+    inputs = ["@neoforge//:compiled_with_neoforge"],
+    classpath = ["@neoforge//:neoforge_deps"],
     mapping = ":merged_mojang_mapping",
     to_namespace = "named",
-)
-
-java_library(
-    name = "remapped_neoforge_named",
-    srcs = ["Dummy.java"],
-    deps = [
-        ":remapped_neoforge_named_without_deps",
-        "@neoforge//:neoforge_deps",
-    ],
 )
 
 extract_jar(
@@ -168,7 +160,8 @@ remap_jar(
 remap_jar(
     name = "remapped_sodium_neoforge",
     classpath = [
-        "@neoforge//:compiled_with_neoforge_with_deps",
+        "@neoforge//:compiled_with_neoforge",
+        "@neoforge//:neoforge_deps",
     ],
     from_namespace = "mojang",
     access_widener_from_namespace = "named",
@@ -185,7 +178,8 @@ remap_jar(
 remap_jar(
     name = "remapped_iris_neoforge",
     classpath = [
-        "@neoforge//:compiled_with_neoforge_with_deps",
+        "@neoforge//:compiled_with_neoforge",
+        "@neoforge//:neoforge_deps",
         "@sodium_neoforge//jar",
     ],
     from_namespace = "mojang",

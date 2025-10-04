@@ -75,7 +75,8 @@ def _java_merge_library_impl(ctx):
     return [
         MergeLibraryInfo(
             merge_jars = java_info.full_compile_jars,
-            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps],
+            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps] +
+                [dep[MergeLibraryInfo] for dep in ctx.attr.merge_only_deps],
         ),
     ] + target
 
@@ -85,6 +86,9 @@ java_merge_library = rule(
     initializer = _merge_library_macro,
     attrs = {
         "merge_deps": attr.label_list(
+            providers = [[_JavaInfo, MergeLibraryInfo]],
+        ),
+        "merge_only_deps": attr.label_list(
             providers = [MergeLibraryInfo]
         ),
         "expect": attr.bool(
@@ -102,7 +106,8 @@ def _kt_merge_library_import_impl(ctx):
     return [
         MergeLibraryInfo(
             merge_jars = ctx.attr.src[_JavaInfo].full_compile_jars,
-            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.deps],
+            deps = [dep[MergeLibraryInfo] for dep in ctx.attr.merge_deps] +
+                [dep[MergeLibraryInfo] for dep in ctx.attr.merge_only_deps],
         ),
         ctx.attr.src[_JavaInfo],
         ctx.attr.src[_KtJvmInfo]
@@ -136,6 +141,9 @@ kt_merge_library = rule(
     implementation = _kt_merge_library_impl,
     attrs = {
         "merge_deps": attr.label_list(
+            providers = [[_JavaInfo, MergeLibraryInfo]],
+        ),
+        "merge_only_deps": attr.label_list(
             providers = [MergeLibraryInfo]
         ),
         "expect": attr.bool(

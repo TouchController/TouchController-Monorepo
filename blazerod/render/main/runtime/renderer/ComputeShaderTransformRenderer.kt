@@ -28,7 +28,7 @@ import top.fifthlight.blazerod.runtime.RenderSceneImpl
 import top.fifthlight.blazerod.runtime.RenderTaskImpl
 import top.fifthlight.blazerod.runtime.data.MorphTargetBuffer
 import top.fifthlight.blazerod.runtime.data.RenderSkinBuffer
-import top.fifthlight.blazerod.runtime.node.component.Primitive
+import top.fifthlight.blazerod.runtime.node.component.PrimitiveComponent
 import top.fifthlight.blazerod.runtime.resource.RenderMaterial
 import top.fifthlight.blazerod.runtime.resource.RenderPrimitive
 import top.fifthlight.blazerod.runtime.uniform.ComputeDataUniformBuffer
@@ -295,7 +295,7 @@ class ComputeShaderTransformRenderer private constructor() :
 
     private class ComputeItem private constructor() {
         private var released = true
-        private var _primitiveComponent: Primitive? = null
+        private var _primitiveComponent: PrimitiveComponent? = null
         private var _renderTask: RenderTaskImpl? = null
         private var _vertexFormat: VertexFormat? = null
         private var _vertexBuffer: GpuBufferSlice? = null
@@ -334,7 +334,7 @@ class ComputeShaderTransformRenderer private constructor() :
             )
 
             fun acquire(
-                primitiveComponent: Primitive,
+                primitiveComponent: PrimitiveComponent,
                 renderTask: RenderTaskImpl,
                 vertexFormat: VertexFormat,
                 vertexBuffer: GpuBufferSlice,

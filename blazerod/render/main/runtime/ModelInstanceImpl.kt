@@ -52,13 +52,13 @@ class ModelInstanceImpl(
         val worldTransforms = Array(scene.nodes.size) { Matrix4f() }
 
         val localMatricesBuffer = run {
-            val buffer = LocalMatricesBuffer(scene)
+            val buffer = LocalMatricesBuffer(scene.primitiveComponents.size)
             buffer.clear()
             CowBuffer.acquire(buffer).also { it.increaseReferenceCount() }
         }
 
         val skinBuffers = scene.skins.mapIndexed { index, skin ->
-            val skinBuffer = RenderSkinBuffer(skin)
+            val skinBuffer = RenderSkinBuffer(skin.jointSize)
             skinBuffer.clear()
             CowBuffer.acquire(skinBuffer).also { it.increaseReferenceCount() }
         }
@@ -66,7 +66,11 @@ class ModelInstanceImpl(
         val targetBuffers = scene.morphedPrimitiveComponents.mapIndexed { index, component ->
             val primitive = component.primitive
             val targets = primitive.targets!!
-            val targetBuffers = MorphTargetBuffer(targets)
+            val targetBuffers = MorphTargetBuffer(
+                positionTargets = targets.position.targetsCount,
+                colorTargets = targets.color.targetsCount,
+                texCoordTargets = targets.texCoord.targetsCount,
+            )
             for (targetGroup in primitive.targetGroups) {
                 fun processGroup(index: Int?, channel: MorphTargetBuffer.WeightChannel, weight: Float) =
                     index?.let {

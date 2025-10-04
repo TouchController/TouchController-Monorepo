@@ -13,8 +13,8 @@ import top.fifthlight.blazerod.model.NodeId
 import top.fifthlight.blazerod.model.NodeTransform
 import top.fifthlight.blazerod.runtime.node.RenderNodeImpl
 import top.fifthlight.blazerod.runtime.node.UpdatePhase
-import top.fifthlight.blazerod.runtime.node.component.IkTarget
-import top.fifthlight.blazerod.runtime.node.component.Primitive
+import top.fifthlight.blazerod.runtime.node.component.IkTargetComponent
+import top.fifthlight.blazerod.runtime.node.component.PrimitiveComponent
 import top.fifthlight.blazerod.runtime.node.component.RenderNodeComponent
 import top.fifthlight.blazerod.runtime.node.forEach
 import top.fifthlight.blazerod.runtime.resource.RenderSkin
@@ -33,10 +33,10 @@ class RenderSceneImpl(
 
     private val sortedNodes: List<RenderNodeImpl>
     private val debugRenderNodes: List<RenderNodeImpl>
-    val primitiveComponents: List<Primitive>
-    val morphedPrimitiveComponents: List<Primitive>
+    val primitiveComponents: List<PrimitiveComponent>
+    val morphedPrimitiveComponents: List<PrimitiveComponent>
     override val ikTargetData: List<RenderScene.IkTargetData>
-    val ikTargetComponents: List<IkTarget>
+    val ikTargetComponents: List<IkTargetComponent>
     override val nodeIdMap: Map<NodeId, RenderNodeImpl>
     override val nodeNameMap: Map<String, RenderNodeImpl>
     override val humanoidTagMap: Map<HumanoidTag, RenderNodeImpl>
@@ -45,9 +45,9 @@ class RenderSceneImpl(
         rootNode.increaseReferenceCount()
         val nodes = mutableListOf<RenderNodeImpl>()
         val debugRenderNodes = mutableListOf<RenderNodeImpl>()
-        val primitiveComponents = mutableListOf<Primitive>()
-        val morphedPrimitives = Int2ReferenceOpenHashMap<Primitive>()
-        val ikTargets = Int2ReferenceOpenHashMap<IkTarget>()
+        val primitiveComponents = mutableListOf<PrimitiveComponent>()
+        val morphedPrimitives = Int2ReferenceOpenHashMap<PrimitiveComponent>()
+        val ikTargets = Int2ReferenceOpenHashMap<IkTargetComponent>()
         val nodeIdMap = mutableMapOf<NodeId, RenderNodeImpl>()
         val nodeNameMap = mutableMapOf<String, RenderNodeImpl>()
         val humanoidTagMap = mutableMapOf<HumanoidTag, RenderNodeImpl>()

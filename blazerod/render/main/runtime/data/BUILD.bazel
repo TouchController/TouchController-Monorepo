@@ -1,0 +1,16 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "data",
+    srcs = glob(["*.kt"]),
+    merge_deps = [
+        "//blazerod/render/main:main_base",
+        "//blazerod/render/api/refcount",
+        "//blazerod/render/main/util/cowbuffer",
+    ],
+    visibility = ["//blazerod/render:__subpackages__"],
+    deps = [
+        "@maven//:org_joml_joml",
+        "@maven//:it_unimi_dsi_fastutil",
+    ],
+)

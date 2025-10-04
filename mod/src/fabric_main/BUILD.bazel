@@ -32,11 +32,12 @@ kt_merge_library(
         allow_empty = True,
     ),
     resource_strip_prefix = "mod/src/fabric/resources",
-    actual = True,
     deps = [
-        "@maven//:net_fabricmc_fabric_language_kotlin",
-        "@maven//:net_fabricmc_fabric_loader",
+        "//game:remapped_client_named",
         ":remapped_deps",
+        "@maven//:net_fabricmc_fabric_loader",
+        "@minecraft//:1.21.8_client_libraries",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     ],
     exports = [
         "//mod/src/main",

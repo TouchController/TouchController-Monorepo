@@ -6,6 +6,5 @@ kt_merge_library(
     srcs = ["GlslExtensionProcessor.kt"],
     deps = [
         "//blazerod/render/game:remapped_client_access_widened_named",
-        "@minecraft//:1.21.8_client_libraries",
     ]
 )

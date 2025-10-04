@@ -17,16 +17,10 @@ kt_merge_library(
         allow_empty = True,
     ),
     resource_strip_prefix = "mod/src/neoforge/resources",
-    actual = True,
     deps = [
         "//game:remapped_neoforge_named",
-        "@maven//:thedarkcolour_kotlinforforge_neoforge",
-    ],
-    exports = [
-        "//mod/src/main",
-    ],
-    associates = [
-        "//mod/src/main",
+        "@neoforge//:neoforge_deps",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     ],
     merge_deps = [
         "//mod/src/main",

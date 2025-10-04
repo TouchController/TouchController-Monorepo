@@ -63,7 +63,11 @@ kt_merge_library(
         ":remapped_deps",
         "//game:remapped_iris_fabric",
         "//game:remapped_sodium_fabric",
-        "@maven//:net_fabricmc_fabric_language_kotlin",
+        "//blazerod/model/model-formats",
+        "//blazerod/render/api/event",
+        "//mod/src/game:remapped_client_access_widened_named",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+        "@minecraft//:1.21.8_client_libraries",
         "@maven//:net_fabricmc_fabric_loader",
     ],
     merge_deps = [

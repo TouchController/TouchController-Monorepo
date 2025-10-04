@@ -89,7 +89,7 @@ class SceneReconstructor private constructor(private val info: GpuLoadModelLoadI
                     } ?: RenderMaterial.defaultMaterial
                     val targets =
                         primitiveInfo.morphedPrimitiveIndex?.let { index -> info.morphTargetInfos[index].await() }
-                    Primitive(
+                    PrimitiveComponent(
                         primitiveIndex = component.infoIndex,
                         primitive = RenderPrimitive(
                             vertices = primitiveInfo.vertices,
@@ -113,7 +113,7 @@ class SceneReconstructor private constructor(private val info: GpuLoadModelLoadI
                 }
 
                 is NodeLoadInfo.Component.Joint -> {
-                    Joint(
+                    JointComponent(
                         skinIndex = component.skinIndex,
                         jointIndex = component.jointIndex,
                     )
@@ -122,12 +122,12 @@ class SceneReconstructor private constructor(private val info: GpuLoadModelLoadI
                 is NodeLoadInfo.Component.Camera -> {
                     val cameraIndex = cameras.size
                     cameras.add(component.camera)
-                    Camera(cameraIndex)
+                    CameraComponent(cameraIndex)
                 }
 
                 is NodeLoadInfo.Component.InfluenceSource -> {
                     val influence = component.influence
-                    InfluenceSource(
+                    InfluenceSourceComponent(
                         targetNodeIndex = nodeIdToIndexMap[component.influence.target] ?: return@mapNotNull null,
                         influence = influence.influence,
                         influenceRotation = influence.influenceRotation,
@@ -138,7 +138,7 @@ class SceneReconstructor private constructor(private val info: GpuLoadModelLoadI
                 }
 
                 is NodeLoadInfo.Component.IkTarget -> {
-                    IkTarget(
+                    IkTargetComponent(
                         ikIndex = component.ikIndex,
                         limitRadian = component.ikTarget.limitRadian,
                         loopCount = component.ikTarget.loopCount,
@@ -146,7 +146,7 @@ class SceneReconstructor private constructor(private val info: GpuLoadModelLoadI
                         effectorNodeIndex = nodeIdToIndexMap[component.ikTarget.effectorNodeId]
                             ?: return@mapNotNull null,
                         chains = component.ikTarget.joints.map {
-                            IkTarget.Chain(
+                            IkTargetComponent.Chain(
                                 nodeIndex = nodeIdToIndexMap[it.nodeId] ?: return@mapNotNull null,
                                 limit = it.limit,
                             )

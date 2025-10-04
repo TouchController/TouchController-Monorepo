@@ -13,23 +13,22 @@ kt_merge_library(
     srcs = ["BlazeRod.kt"],
     visibility = ["//blazerod/render:__subpackages__"],
     deps = [
-        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
     ],
 )
 
 kt_merge_library(
     name = "main",
     srcs = ["BlazeRodMain.kt"],
-    associates = [
-        "//blazerod/render/expect",
-    ],
     merge_deps = [
+        ":main_base",
         "//blazerod/render/api",
         "//blazerod/render/api/animation",
         "//blazerod/render/api/event",
         "//blazerod/render/api/loader",
         "//blazerod/render/api/refcount",
         "//blazerod/render/api/render",
+        "//blazerod/render/api/resource",
         "//blazerod/render/expect",
         "//blazerod/render/main/animation",
         "//blazerod/render/main/animation/context",
@@ -39,8 +38,10 @@ kt_merge_library(
         "//blazerod/render/main/mixin",
         "//blazerod/render/main/render",
         "//blazerod/render/main/runtime",
+        "//blazerod/render/main/runtime/data",
         "//blazerod/render/main/runtime/load",
         "//blazerod/render/main/runtime/renderer",
+        "//blazerod/render/main/runtime/uniform",
         "//blazerod/render/main/systems",
         "//blazerod/render/main/util/bitmap",
         "//blazerod/render/main/util/blaze3d",
@@ -54,17 +55,4 @@ kt_merge_library(
         "//blazerod/render/main/util/uniform",
     ],
     visibility = ["//blazerod/render:__subpackages__"],
-    exports = [
-        "//blazerod/model/model-base",
-    ],
-    deps = [
-        "//blazerod/model/model-base",
-        "//blazerod/render/game:remapped_client_access_widened_named",
-        "@maven//:io_github_llamalad7_mixinextras_fabric",
-        "@maven//:net_fabricmc_sponge_mixin",
-        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
-        "@maven//:org_jetbrains_kotlinx_atomicfu_jvm",
-        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
-        "@minecraft//:%s_client_libraries" % game_version,
-    ],
 )

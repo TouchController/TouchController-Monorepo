@@ -11,7 +11,7 @@ import top.fifthlight.blazerod.runtime.RenderTaskImpl
 import top.fifthlight.blazerod.runtime.TaskMap
 import top.fifthlight.blazerod.runtime.data.MorphTargetBuffer
 import top.fifthlight.blazerod.runtime.data.RenderSkinBuffer
-import top.fifthlight.blazerod.runtime.node.component.Primitive
+import top.fifthlight.blazerod.runtime.node.component.PrimitiveComponent
 import top.fifthlight.blazerod.runtime.resource.RenderPrimitive
 import top.fifthlight.mergetools.api.ActualConstructor
 import top.fifthlight.mergetools.api.ActualImpl
@@ -130,6 +130,6 @@ abstract class TaskMapScheduledRenderer<R, T : Renderer.Type<R, T>> :
         depthFrameBuffer: GpuTextureView?,
         tasks: List<RenderTaskImpl>,
         scene: RenderSceneImpl,
-        component: Primitive,
+        component: PrimitiveComponent,
     )
 }

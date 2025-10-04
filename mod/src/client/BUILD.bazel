@@ -36,6 +36,7 @@ kt_merge_library(
         "//blazerod/render/api/refcount",
         "//blazerod/render/api/render",
         "//blazerod/render/api/event",
+        "//blazerod/render/api/resource",
         "//mod/src/game:remapped_client_access_widened_named",
         "@maven//:com_h2database_h2",
         "@maven//:com_illposed_osc_javaosc_core",
@@ -45,7 +46,7 @@ kt_merge_library(
         "@maven//:org_jetbrains_kotlinx_atomicfu_jvm",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
         "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
-        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
         "@minecraft//:%s_client_libraries" % game_version,
     ],
 )

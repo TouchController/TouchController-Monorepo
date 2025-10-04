@@ -52,7 +52,11 @@ kt_merge_library(
         "//game:remapped_iris_neoforge",
         "//game:remapped_neoforge_named",
         "//game:remapped_sodium_neoforge",
-        "@maven//:thedarkcolour_kotlinforforge_neoforge",
+        "//blazerod/model/model-formats",
+        "//blazerod/render/api/event",
+        "@neoforge//:neoforge_deps",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+        "@minecraft//:1.21.8_client_libraries",
     ],
 )
 

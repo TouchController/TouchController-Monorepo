@@ -3,12 +3,11 @@ package top.fifthlight.blazerod.runtime.data
 import org.joml.Matrix4f
 import org.joml.Matrix4fc
 import top.fifthlight.blazerod.api.refcount.AbstractRefCount
-import top.fifthlight.blazerod.runtime.resource.RenderSkin
 import top.fifthlight.blazerod.util.cowbuffer.CowBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class RenderSkinBuffer private constructor(
+class RenderSkinBuffer(
     val jointSize: Int,
 ) : CowBuffer.Content<RenderSkinBuffer>,
     AbstractRefCount() {
@@ -19,8 +18,6 @@ class RenderSkinBuffer private constructor(
 
     override val typeId: String
         get() = "render_skin_buffer"
-
-    constructor(skin: RenderSkin) : this(skin.jointSize)
 
     val buffer: ByteBuffer = ByteBuffer.allocateDirect(jointSize * 2 * MAT4X4_SIZE).order(ByteOrder.nativeOrder())
 

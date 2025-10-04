@@ -64,6 +64,7 @@ def _neoforge_repo_impl(rctx):
         'package(default_visibility = ["//visibility:public"])',
         'load("@//repo/neoforge/rule:java_source_transform.bzl", "java_source_transform")',
         'load("@//repo/neoforge/rule:remove_manifest.bzl", "remove_manifest")',
+        'load("@//repo/neoforge/rule:java_merge.bzl", "java_merge")',
         'load("@//repo/neoform/rule:patch_zip_content.bzl", "patch_zip_content")',
         'load("@//repo/neoform/rule:import_source_info.bzl", "import_source_info")',
         'load("@//repo/neoform/rule:inject_zip_content.bzl", "inject_zip_content")',
@@ -137,19 +138,8 @@ def _neoforge_repo_impl(rctx):
         '    deps = [":neoforge_universal"],',
         ')',
         '',
-        'java_import(',
-        '    name = "compiled_with_neoforge_with_deps",',
-        '    jars = [":compiled_with_neoforge"],',
-        '    srcjar = ":sources_with_neoforge",',
-        '    deps = [',
-        '        ":decompile_libraries",',
-        '        %s' % neoforge_libraries,
-        '    ],',
-        ')',
-        '',
-        'java_library(',
+        'java_merge(',
         '    name = "neoforge_deps",',
-        '    srcs = ["Dummy.java"],',
         '    deps = [',
         '        ":decompile_libraries",',
         '        %s' % neoforge_libraries,
@@ -158,7 +148,6 @@ def _neoforge_repo_impl(rctx):
     ]
 
     rctx.file("BUILD.bazel", "\n".join(build_file_contents))
-    rctx.file("Dummy.java", "")
 
 _neoforge_repo = repository_rule(
     implementation = _neoforge_repo_impl,

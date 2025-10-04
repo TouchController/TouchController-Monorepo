@@ -27,11 +27,11 @@ sealed class RenderNodeComponent<C : RenderNodeComponent<C>> : AbstractRefCount(
         get() = "node"
 
     sealed class Type<C : RenderNodeComponent<C>> {
-        object Primitive : Type<top.fifthlight.blazerod.runtime.node.component.Primitive>()
-        object Joint : Type<top.fifthlight.blazerod.runtime.node.component.Joint>()
-        object InfluenceSource : Type<top.fifthlight.blazerod.runtime.node.component.InfluenceSource>()
-        object Camera : Type<top.fifthlight.blazerod.runtime.node.component.Camera>()
-        object IkTarget : Type<top.fifthlight.blazerod.runtime.node.component.IkTarget>()
+        object Primitive : Type<top.fifthlight.blazerod.runtime.node.component.PrimitiveComponent>()
+        object Joint : Type<top.fifthlight.blazerod.runtime.node.component.JointComponent>()
+        object InfluenceSource : Type<top.fifthlight.blazerod.runtime.node.component.InfluenceSourceComponent>()
+        object Camera : Type<top.fifthlight.blazerod.runtime.node.component.CameraComponent>()
+        object IkTarget : Type<top.fifthlight.blazerod.runtime.node.component.IkTargetComponent>()
     }
 
     abstract val type: Type<C>
