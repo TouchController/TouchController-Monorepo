@@ -1,0 +1,19 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "focus",
+    srcs = glob(["*.kt"]),
+    visibility = ["//combine:__subpackages__"],
+    deps = [
+        "//combine/core/input/focus",
+        "//combine/core/input/interaction",
+        "//combine/core/input/key",
+        "//combine/core/input/pointer",
+        "//combine/core/input/text",
+        "//combine/core/layout/measure",
+        "//combine/core/modifier",
+        "//combine/core/modifier/pointer",
+        "//combine/core/node",
+        "@maven//:androidx_compose_runtime_runtime",
+    ],
+)

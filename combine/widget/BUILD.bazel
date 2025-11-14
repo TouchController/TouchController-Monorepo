@@ -1,0 +1,26 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "widget",
+    srcs = glob(["*.kt"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:compose",
+        "//combine/core/data",
+        "//combine/core/input/interaction",
+        "//combine/core/layout",
+        "//combine/core/modifier",
+        "//combine/core/modifier/drawing",
+        "//combine/core/modifier/focus",
+        "//combine/core/modifier/input",
+        "//combine/core/modifier/key",
+        "//combine/core/modifier/placement",
+        "//combine/core/modifier/pointer",
+        "//combine/core/paint",
+        "//combine/core/sound",
+        "//combine/core/widget",
+        "//combine/core/widget/layout",
+        "//combine/style",
+        "//combine/theme/base",
+    ],
+)

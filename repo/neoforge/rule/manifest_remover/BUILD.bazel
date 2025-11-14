@@ -1,0 +1,8 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "manifest_remover",
+    srcs = ["ManifestRemover.java"],
+    main_class = "ManifestRemover",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,87 @@
+"TouchController module file"
+
+module(
+    name = "touchcontroller",
+    version = "0.3.1-alpha",
+)
+
+bazel_dep(name = "rules_java", version = "8.16.1")
+bazel_dep(name = "rules_kotlin", version = "2.1.9")
+bazel_dep(name = "rules_jvm_external", version = "6.8")
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "bazel_lib", version = "3.0.0-rc.0")
+bazel_dep(name = "platforms", version = "1.0.0")
+
+game_versions = [
+    "1.21.9",
+    "1.21.10",
+]
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    artifacts = [
+        # Kotlin
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1",
+        "org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0",
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0",
+        "org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.4.0",
+
+        # Combine
+        "org.jetbrains.kotlin:kotlin-compose-compiler-plugin-embeddable:2.1.20",
+        "org.jetbrains.compose.runtime:runtime:1.7.1",
+        "org.jetbrains.compose.runtime:runtime-saveable:1.7.1",
+        "org.mini2Dx:universal-tween-engine:6.3.3",
+
+        # Graphics
+        "org.joml:joml:1.10.5",
+
+        # NeoForge
+        "net.neoforged:srgutils:1.0.10",
+        "io.codechicken:DiffPatch:2.0.0.36:all",
+        "net.neoforged.jst:jst-cli-bundle:1.0.74",
+
+        # Swing
+        # "org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.1",
+
+        # Build dependencies
+        "com.fasterxml.jackson.core:jackson-core:2.9.6",
+        "com.fasterxml.jackson.core:jackson-annotations:2.9.6",
+        "com.fasterxml.jackson.core:jackson-databind:2.9.6",
+        "com.squareup:kotlinpoet:2.2.0",
+    ],
+    fetch_sources = True,
+    lock_file = "//:maven_install.json",
+    repositories = [
+        "https://repo1.maven.org/maven2",
+        "https://maven.google.com/",
+        "https://maven.fabricmc.net/",
+        "https://maven.neoforged.net/releases",
+        "https://maven.terraformersmc.com/",
+    ],
+)
+use_repo(maven, "maven")
+
+minecraft = use_extension("//repo:minecraft_jar.bzl", "minecraft")
+
+[
+    (
+        minecraft.minecraft_jar(
+            assets = True,
+            mapping = True,
+            type = "client",
+            version = version,
+        ),
+        minecraft.minecraft_jar(
+            mapping = True,
+            type = "server",
+            version = version,
+        ),
+    )
+    for version in game_versions
+]
+
+minecraft.exclude_library(names = ["org.ow2.asm:asm:9.6"])
+use_repo(minecraft, "minecraft")
+use_repo(minecraft, "minecraft_assets")
+
+register_toolchains("//:kotlin_toolchain")

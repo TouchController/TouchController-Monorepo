@@ -1,0 +1,30 @@
+load("//rule/combine:texture.bzl", "ninepatch_texture", "texture", "texture_group", "texture_lib")
+
+texture(
+    name = "background",
+    srcs = glob(["background/*.png"]),
+    background = True,
+)
+
+ninepatch_texture(
+    name = "widget",
+    srcs = glob(["widget/*/*.9.png"]),
+)
+
+texture_group(
+    name = "texture_group",
+    deps = [
+        ":background",
+        ":widget",
+    ],
+)
+
+texture_lib(
+    name = "texture",
+    class_name = "BlackstoneTextures",
+    package = "top.fifthlight.combine.theme.blackstone",
+    visibility = ["//combine/theme/blackstone:__pkg__"],
+    deps = [
+        ":texture_group",
+    ],
+)

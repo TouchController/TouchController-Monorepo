@@ -1,0 +1,51 @@
+load("@rules_kotlin//kotlin:core.bzl", "define_kt_toolchain", "kt_compiler_plugin")
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_compiler_plugin(
+    name = "kotlin_serialization_plugin",
+    compile_phase = True,
+    id = "org.jetbrains.kotlin.serialization",
+    stubs_phase = True,
+    deps = [
+        "@rules_kotlin//kotlin/compiler:kotlinx-serialization-compiler-plugin",
+    ],
+)
+
+kt_jvm_library(
+    name = "kotlin_serialization",
+    srcs = [],
+    exported_compiler_plugins = [":kotlin_serialization_plugin"],
+    visibility = ["//visibility:public"],
+    exports = [
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
+    ],
+)
+
+kt_compiler_plugin(
+    name = "compose_plugin",
+    id = "androidx.compose.compiler.plugins.kotlin",
+    target_embedded_compiler = True,
+    visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:org_jetbrains_kotlin_kotlin_compose_compiler_plugin_embeddable",
+    ],
+)
+
+kt_jvm_library(
+    name = "compose",
+    srcs = [],
+    exported_compiler_plugins = [":compose_plugin"],
+    visibility = ["//visibility:public"],
+    exports = [
+        "@maven//:androidx_compose_runtime_runtime",
+    ],
+)
+
+define_kt_toolchain(
+    name = "kotlin_toolchain",
+    api_version = "2.0",
+    experimental_strict_kotlin_deps = "error",
+    experimental_use_abi_jars = True,
+    jvm_target = "21",
+    language_version = "2.0",
+)

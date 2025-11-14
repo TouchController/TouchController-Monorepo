@@ -1,0 +1,20 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "atlas_lib",
+    srcs = glob(["*.kt"]),
+    deps = [
+        "//:kotlin_serialization",
+        "//combine/data",
+        "//rule/combine/metadata",
+        "//rule/worker_api",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+    ],
+)
+
+java_binary(
+    name = "atlas",
+    main_class = "top.fifthlight.combine.resources.altas.TextureAltasGenerator",
+    visibility = ["//visibility:public"],
+    runtime_deps = [":atlas_lib"],
+)

@@ -1,0 +1,8 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "patch_zip_content",
+    main_class = "io.codechicken.diffpatch.cli.DiffPatchCli",
+    visibility = ["//visibility:public"],
+    runtime_deps = ["@maven//:io_codechicken_DiffPatch_all"],
+)

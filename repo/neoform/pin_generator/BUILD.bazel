@@ -1,0 +1,14 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "pin_generator",
+    srcs = ["PinGenerator.java"],
+    main_class = "PinGenerator",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "pin_generator_source",
+    actual = "PinGenerator.java",
+    visibility = ["//visibility:public"],
+)

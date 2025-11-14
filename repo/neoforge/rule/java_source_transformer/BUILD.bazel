@@ -1,0 +1,8 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "java_source_transformer",
+    main_class = "net.neoforged.jst.cli.Main",
+    visibility = ["//visibility:public"],
+    runtime_deps = ["@maven//:net_neoforged_jst_jst_cli_bundle"],
+)

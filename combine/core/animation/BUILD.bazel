@@ -1,0 +1,13 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "animation",
+    srcs = glob(["*.kt"]),
+    visibility = ["//combine:__subpackages__"],
+    deps = [
+        "//:compose",
+        "//combine/core/paint",
+        "//combine/data",
+        "@maven//:org_mini2Dx_universal_tween_engine",
+    ],
+)

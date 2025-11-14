@@ -1,0 +1,11 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "pointer",
+    srcs = glob(["*.kt"]),
+    visibility = ["//combine:__subpackages__"],
+    deps = [
+        "//combine/data",
+        "@maven//:androidx_compose_runtime_runtime",
+    ],
+)

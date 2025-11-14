@@ -1,0 +1,21 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "widget",
+    srcs = glob(["*.kt"]),
+    visibility = ["//combine:__subpackages__"],
+    deps = [
+        "//:compose",
+        "//combine/core/data",
+        "//combine/core/layout",
+        "//combine/core/layout/constraints",
+        "//combine/core/layout/measure",
+        "//combine/core/modifier",
+        "//combine/core/modifier/placement",
+        "//combine/core/node",
+        "//combine/core/paint",
+        "//combine/core/screen",
+        "//combine/core/widget/layout",
+        "//combine/data",
+    ],
+)

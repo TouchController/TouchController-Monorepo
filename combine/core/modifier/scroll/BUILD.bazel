@@ -1,0 +1,22 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "scroll",
+    srcs = glob(["*.kt"]),
+    visibility = ["//combine:__subpackages__"],
+    deps = [
+        "//:compose",
+        "//combine/core/animation",
+        "//combine/core/data",
+        "//combine/core/input/pointer",
+        "//combine/core/layout/constraints",
+        "//combine/core/layout/measure",
+        "//combine/core/modifier",
+        "//combine/core/modifier/drawing",
+        "//combine/core/modifier/pointer",
+        "//combine/core/node",
+        "//combine/core/paint",
+        "//combine/data",
+        "@maven//:org_mini2Dx_universal_tween_engine",
+    ],
+)

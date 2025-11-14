@@ -1,0 +1,12 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "style",
+    srcs = glob(["*.kt"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//combine/core/data",
+        "//combine/core/paint",
+        "@maven//:androidx_compose_runtime_runtime",
+    ],
+)

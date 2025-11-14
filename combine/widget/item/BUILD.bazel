@@ -1,0 +1,20 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "item",
+    srcs = glob(["*.kt"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:compose",
+        "//combine/core/data",
+        "//combine/core/item",
+        "//combine/core/modifier",
+        "//combine/core/modifier/scroll",
+        "//combine/core/sound",
+        "//combine/core/util/math",
+        "//combine/core/widget",
+        "//combine/style",
+        "//combine/theme/base",
+        "//combine/widget",
+    ],
+)

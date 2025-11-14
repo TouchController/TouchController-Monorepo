@@ -1,0 +1,16 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_jvm_library(
+    name = "layout",
+    srcs = glob(["*.kt"]),
+    visibility = ["//combine:__subpackages__"],
+    deps = [
+        "//:compose",
+        "//combine/core/layout/constraints",
+        "//combine/core/layout/measure",
+        "//combine/core/modifier",
+        "//combine/core/node",
+        "//combine/data",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
+    ],
+)
