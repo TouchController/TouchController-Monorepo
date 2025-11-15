@@ -1,0 +1,14 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "blaze3d",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = ["Blaze3DConsts.kt"],
+    deps = [
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        "//blazerod/model/model-base",
+    ],
+    merge_deps = [
+        "//blazerod/render/main/extension",
+    ]
+)

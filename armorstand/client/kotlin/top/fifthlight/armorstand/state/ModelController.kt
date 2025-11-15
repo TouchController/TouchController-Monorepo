@@ -1,0 +1,471 @@
+package top.fifthlight.armorstand.state
+
+import net.minecraft.client.network.AbstractClientPlayerEntity
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState
+import net.minecraft.entity.EntityPose
+import net.minecraft.entity.EntityType
+import net.minecraft.registry.tag.EntityTypeTags
+import net.minecraft.util.Arm
+import net.minecraft.util.math.Direction
+import net.minecraft.util.math.MathHelper
+import top.fifthlight.armorstand.extension.internal.PlayerEntityRenderStateExtInternal
+import top.fifthlight.armorstand.util.toRadian
+import top.fifthlight.armorstand.vmc.VmcMarionetteManager
+import top.fifthlight.blazerod.api.animation.AnimationContextsFactory
+import top.fifthlight.blazerod.api.animation.AnimationItemInstance
+import top.fifthlight.blazerod.api.resource.ModelInstance
+import top.fifthlight.blazerod.api.resource.RenderExpression
+import top.fifthlight.blazerod.api.resource.RenderExpressionGroup
+import top.fifthlight.blazerod.api.resource.RenderScene
+import top.fifthlight.blazerod.model.Expression
+import top.fifthlight.blazerod.model.HumanoidTag
+import top.fifthlight.blazerod.model.NodeTransform
+import top.fifthlight.blazerod.model.TransformId
+import top.fifthlight.blazerod.model.animation.AnimationContext
+import top.fifthlight.blazerod.model.animation.AnimationState
+import java.util.*
+import kotlin.math.PI
+import kotlin.math.sin
+
+sealed interface ModelController {
+    companion object {
+        private fun RenderScene.getBone(tag: HumanoidTag) =
+            humanoidTagMap[tag]?.let { node -> JointItem(nodeIndex = node.nodeIndex) }
+
+        private fun RenderScene.getExpression(tag: Expression.Tag) =
+            expressions.firstOrNull { it.tag == tag }?.let { ExpressionItem.Expression(it) }
+                ?: expressionGroups.firstOrNull { it.tag == tag }?.let { ExpressionItem.Group(it) }
+
+        private const val NANOSECONDS_PER_SECOND = 1_000_000_000L
+
+        fun calculateBlinkProgress(
+            playerUuid: UUID,
+            averageBlinkInterval: Long,
+            blinkDuration: Long,
+            currentTime: Long,
+        ): Float {
+            val seed1 = playerUuid.mostSignificantBits
+            val seed2 = playerUuid.leastSignificantBits
+            val seed = seed1 xor seed2
+
+            val offsetMillis = (seed % (averageBlinkInterval * 2)).coerceAtLeast(0)
+            val effectiveTime = currentTime + offsetMillis
+            val cycleProgress = effectiveTime % averageBlinkInterval
+            return if (cycleProgress < blinkDuration) {
+                val phase = (cycleProgress.toFloat() / blinkDuration.toFloat()) * MathHelper.PI
+                sin(phase)
+            } else {
+                0f
+            }
+        }
+
+        fun calculateBlinkProgress(
+            playerUuid: UUID,
+            averageBlinkInterval: Double,
+            blinkDuration: Double,
+            currentTime: Long,
+        ) = calculateBlinkProgress(
+            playerUuid,
+            (averageBlinkInterval * NANOSECONDS_PER_SECOND).toLong(),
+            (blinkDuration * NANOSECONDS_PER_SECOND).toLong(),
+            currentTime,
+        )
+
+        var PlayerEntityRenderState.animationPendingValues
+            get() = (this as PlayerEntityRenderStateExtInternal).`armorstand$getAnimationPendingValues`()
+            set(value) = (this as PlayerEntityRenderStateExtInternal).`armorstand$setAnimationPendingValues`(value)
+    }
+
+    fun update(
+        uuid: UUID,
+        player: AbstractClientPlayerEntity,
+        renderState: PlayerEntityRenderState,
+    )
+
+    fun apply(
+        uuid: UUID,
+        instance: ModelInstance,
+        renderState: PlayerEntityRenderState,
+    )
+
+    private class JointItem(
+        private val nodeIndex: Int,
+    ) {
+        fun update(instance: ModelInstance, func: NodeTransform.Decomposed.() -> Unit) {
+            instance.setTransformDecomposed(nodeIndex, TransformId.RELATIVE_ANIMATION, func)
+        }
+
+        fun updateAbsolute(instance: ModelInstance, func: NodeTransform.Decomposed.() -> Unit) {
+            instance.setTransformDecomposed(nodeIndex, TransformId.ABSOLUTE, func)
+        }
+    }
+
+    private sealed class ExpressionItem {
+        abstract fun apply(instance: ModelInstance, weight: Float)
+
+        fun RenderExpression.apply(instance: ModelInstance, weight: Float) = bindings.forEach { binding ->
+            when (binding) {
+                is RenderExpression.Binding.MorphTarget -> {
+                    instance.setGroupWeight(binding.morphedPrimitiveIndex, binding.groupIndex, weight)
+                }
+            }
+        }
+
+        data class Expression(
+            val expression: RenderExpression,
+        ) : ExpressionItem() {
+            override fun apply(instance: ModelInstance, weight: Float) = expression.apply(instance, weight)
+        }
+
+        data class Group(
+            val group: RenderExpressionGroup,
+        ) : ExpressionItem() {
+            override fun apply(instance: ModelInstance, weight: Float) = group.items.forEach { item ->
+                val expression = instance.scene.expressions[item.expressionIndex]
+                expression.apply(instance, weight * item.influence)
+            }
+        }
+    }
+
+    class LiveUpdated private constructor(
+        private val center: JointItem?,
+        private val head: JointItem?,
+        private val blinkExpression: ExpressionItem?,
+    ) : ModelController {
+        constructor(
+            scene: RenderScene,
+        ) : this(
+            center = scene.getBone(HumanoidTag.HIPS),
+            head = scene.getBone(HumanoidTag.HEAD),
+            blinkExpression = scene.getExpression(Expression.Tag.BLINK),
+        )
+
+        override fun update(
+            uuid: UUID,
+            player: AbstractClientPlayerEntity,
+            renderState: PlayerEntityRenderState,
+        ) = Unit
+
+        override fun apply(uuid: UUID, instance: ModelInstance, renderState: PlayerEntityRenderState) {
+            val sleepingDirection = renderState.sleepingDirection
+            val bodyYaw = if (renderState.isInPose(EntityPose.SLEEPING) && sleepingDirection != null) {
+                when (sleepingDirection) {
+                    Direction.SOUTH -> 0f
+                    Direction.EAST -> PI.toFloat() * 0.5f
+                    Direction.NORTH -> PI.toFloat()
+                    Direction.WEST -> PI.toFloat() * 1.5f
+                    else -> 0f
+                }
+            } else {
+                MathHelper.PI - renderState.bodyYaw.toRadian()
+            }
+            val headYaw = -renderState.relativeHeadYaw.toRadian()
+            val headPitch = -renderState.pitch.toRadian()
+            center?.update(instance) {
+                rotation.rotationY(bodyYaw)
+            }
+            head?.update(instance) {
+                rotation.rotationYXZ(headYaw, headPitch, 0f)
+            }
+
+            val blinkProgress = calculateBlinkProgress(
+                playerUuid = uuid,
+                averageBlinkInterval = 4.0,
+                blinkDuration = 0.25,
+                currentTime = System.nanoTime(),
+            )
+            blinkExpression?.apply(instance, blinkProgress)
+        }
+    }
+
+    interface AnimatedModelController : ModelController {
+        val animationState: AnimationState
+    }
+
+    class Predefined(
+        context: AnimationContext,
+        private val animationInstance: AnimationItemInstance,
+    ) : AnimatedModelController {
+        override val animationState: AnimationState = animationInstance.createState(context)
+
+        override fun update(
+            uuid: UUID,
+            player: AbstractClientPlayerEntity,
+            renderState: PlayerEntityRenderState,
+        ) = AnimationContextsFactory.create().player(player).let { context ->
+            animationState.updateTime(context)
+            renderState.animationPendingValues = animationInstance.update(context, animationState)
+        }
+
+        override fun apply(uuid: UUID, instance: ModelInstance, renderState: PlayerEntityRenderState) {
+            renderState.animationPendingValues?.let {
+                animationInstance.apply(instance, it)
+                renderState.animationPendingValues = null
+            }
+        }
+    }
+
+    class LiveSwitched private constructor(
+        context: AnimationContext,
+        private val animationSet: FullAnimationSet,
+        private val head: JointItem?,
+        private val blinkExpression: ExpressionItem?,
+    ) : AnimatedModelController {
+        constructor(
+            context: AnimationContext,
+            scene: RenderScene,
+            animationSet: FullAnimationSet,
+        ) : this(
+            context = context,
+            animationSet = animationSet,
+            head = scene.getBone(HumanoidTag.HEAD),
+            blinkExpression = scene.getExpression(Expression.Tag.BLINK),
+        )
+
+        sealed class PlayState {
+            abstract fun getItem(set: FullAnimationSet): AnimationItemInstance
+            open val loop: Boolean = true
+
+            data object Idle : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.idle
+            }
+
+            data object Walking : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.walk
+            }
+
+            data object ElytraFly : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.elytraFly
+            }
+
+            data object Swimming : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.swim
+            }
+
+            data object Sleeping : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.sleep
+            }
+
+            data object Riding : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.ride
+            }
+
+            data object OnHorse : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.onHorse
+            }
+
+            data object OnPig : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.onPig
+            }
+
+            data object OnBoat : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.onBoat
+            }
+
+            data object Dying : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.die
+                override val loop: Boolean
+                    get() = false
+            }
+
+            data object Sprinting : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.sprint
+            }
+
+            data object Sneaking : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.sneak
+            }
+
+            data object SneakIdle : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.sneakIdle
+            }
+
+            data object Crawling : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.crawl
+            }
+
+            data object CrawlIdle : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.crawlIdle
+            }
+
+            data object OnClimbable : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.onClimbable
+            }
+
+            data object OnClimbableUp : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.onClimbableUp
+            }
+
+            data object OnClimbableDown : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.onClimbableDown
+            }
+
+            data object LeftArmSwinging : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.swingLeft
+            }
+
+            data object RightArmSwinging : PlayState() {
+                override fun getItem(set: FullAnimationSet) = set.swingRight
+            }
+        }
+
+        private var playState: PlayState = PlayState.Idle
+        override var animationState: AnimationState = playState.getItem(animationSet).createState(context)
+        private var item: AnimationItemInstance? = null
+        private var reset = false
+
+        companion object {
+            private val horseEntityTypes = listOf(
+                EntityType.HORSE,
+                EntityType.DONKEY,
+                EntityType.MULE,
+                EntityType.LLAMA,
+                EntityType.SKELETON_HORSE,
+                EntityType.ZOMBIE_HORSE,
+            )
+        }
+
+        private fun getState(
+            player: AbstractClientPlayerEntity,
+            renderState: PlayerEntityRenderState,
+        ): PlayState {
+            val vehicleType = player.vehicle?.type
+            return when {
+                player.isDead -> PlayState.Dying
+
+                vehicleType in horseEntityTypes -> PlayState.OnHorse
+                vehicleType == EntityType.PIG -> PlayState.OnPig
+                vehicleType?.isIn(EntityTypeTags.BOAT) == true -> PlayState.OnBoat
+                vehicleType != null -> PlayState.Riding
+
+                renderState.pose == EntityPose.SLEEPING -> PlayState.Sleeping
+                renderState.pose == EntityPose.GLIDING -> PlayState.ElytraFly
+                player.isSwimming -> PlayState.Swimming
+                renderState.pose == EntityPose.SWIMMING -> if (player.movement.horizontalLength() > .01) {
+                    PlayState.Crawling
+                } else {
+                    PlayState.CrawlIdle
+                }
+
+                player.isClimbing -> when {
+                    player.movement.y > 0.1 -> PlayState.OnClimbableUp
+                    player.movement.y < -0.1 -> PlayState.OnClimbableDown
+                    player.isSneaking -> PlayState.OnClimbable
+                    else -> PlayState.Idle
+                }
+
+                renderState.pose == EntityPose.CROUCHING -> if (player.movement.horizontalLength() > .01) {
+                    PlayState.Sneaking
+                } else {
+                    PlayState.SneakIdle
+                }
+
+                player.isSprinting -> PlayState.Sprinting
+
+                player.movement.horizontalLength() > .05 -> PlayState.Walking
+
+                renderState.handSwinging -> when (renderState.preferredArm) {
+                    Arm.LEFT -> PlayState.LeftArmSwinging
+                    Arm.RIGHT -> PlayState.RightArmSwinging
+                }
+
+                else -> PlayState.Idle
+            }
+        }
+
+        override fun update(
+            uuid: UUID,
+            player: AbstractClientPlayerEntity,
+            renderState: PlayerEntityRenderState,
+        ): Unit = AnimationContextsFactory.create().player(player).let { context ->
+            val newState = getState(player, renderState)
+            if (newState != playState) {
+                this.playState = newState
+            }
+            val newItem = newState.getItem(animationSet)
+            if (newItem != item) {
+                animationState = newItem.createState(context)
+                item = newItem
+                reset = true
+            }
+            animationState.updateTime(context)
+            renderState.animationPendingValues = item?.update(context, animationState)
+        }
+
+        override fun apply(uuid: UUID, instance: ModelInstance, renderState: PlayerEntityRenderState) {
+            val item = item ?: return
+            if (reset) {
+                instance.clearTransform()
+                reset = false
+            }
+            renderState.animationPendingValues?.let {
+                item.apply(instance, it)
+                renderState.animationPendingValues = null
+            }
+
+            val sleepingDirection = renderState.sleepingDirection
+            val bodyYaw = if (renderState.isInPose(EntityPose.SLEEPING) && sleepingDirection != null) {
+                when (sleepingDirection) {
+                    Direction.SOUTH -> 0f
+                    Direction.EAST -> PI.toFloat() * 0.5f
+                    Direction.NORTH -> PI.toFloat()
+                    Direction.WEST -> PI.toFloat() * 1.5f
+                    else -> 0f
+                }
+            } else {
+                MathHelper.PI - renderState.bodyYaw.toRadian()
+            }
+
+            val headYaw = -renderState.relativeHeadYaw.toRadian()
+            val headPitch = -renderState.pitch.toRadian()
+            instance.setTransformDecomposed(instance.scene.rootNode.nodeIndex, TransformId.RELATIVE_ANIMATION) {
+                rotation.rotationY(bodyYaw)
+            }
+            head?.update(instance) {
+                rotation.rotationYXZ(headYaw, headPitch, 0f)
+            }
+
+            val blinkProgress = calculateBlinkProgress(
+                playerUuid = uuid,
+                averageBlinkInterval = 4.0,
+                blinkDuration = 0.25,
+                currentTime = System.nanoTime(),
+            )
+            blinkExpression?.apply(instance, blinkProgress)
+        }
+    }
+
+    class Vmc(
+        private val scene: RenderScene,
+    ) : ModelController {
+        private val bones = mutableMapOf<HumanoidTag, Optional<JointItem>>()
+        private val expressions = mutableMapOf<Expression.Tag, Optional<ExpressionItem>>()
+
+        override fun update(uuid: UUID, player: AbstractClientPlayerEntity, renderState: PlayerEntityRenderState) = Unit
+
+        override fun apply(uuid: UUID, instance: ModelInstance, renderState: PlayerEntityRenderState) {
+            val state = VmcMarionetteManager.getState() ?: return
+            state.rootTransform?.let {
+                instance.setTransformDecomposed(scene.rootNode.nodeIndex, TransformId.ABSOLUTE) {
+                    translation.set(it.position)
+                    rotation.set(it.rotation)
+                }
+            }
+            state.boneTransforms.forEach { (bone, value) ->
+                val item = bones.getOrPut(bone) { Optional.ofNullable(scene.getBone(bone)) }
+                item.ifPresent {
+                    it.updateAbsolute(instance) {
+                        translation.set(value.position)
+                        rotation.set(value.rotation)
+                    }
+                }
+            }
+            state.blendShapes.forEach { (tag, value) ->
+                val item = expressions.getOrPut(tag) { Optional.ofNullable(scene.getExpression(tag)) }
+                item.ifPresent {
+                    it.apply(instance, value)
+                }
+            }
+        }
+    }
+}

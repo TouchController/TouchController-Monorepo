@@ -1,0 +1,18 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "extension",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = glob([
+        "**/*.kt",
+        "**/*.java",
+    ]),
+    deps = [
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        "//blazerod/model/model-base",
+        "@minecraft//:1.21.8_client_libraries",
+    ],
+    merge_deps = [
+        "//blazerod/render/main/systems",
+    ]
+)

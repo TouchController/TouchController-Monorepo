@@ -1,0 +1,15 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "access_widener_remapper",
+    srcs = ["AccessWidenerRemapper.java"],
+    main_class = "top.fifthlight.armorstand.AccessWidenerRemapper",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:net_fabricmc_access_widener",
+        "@maven//:net_fabricmc_mapping_io",
+        "@maven//:net_fabricmc_mapping_io_extras",
+        "@maven//:org_ow2_asm_asm",
+        "@maven//:org_ow2_asm_asm_commons",
+    ],
+)

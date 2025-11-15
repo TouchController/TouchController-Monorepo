@@ -1,0 +1,8 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "vineflower",
+    main_class = "org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler",
+    visibility = ["//visibility:public"],
+    runtime_deps = ["@maven//:org_vineflower_vineflower"],
+)

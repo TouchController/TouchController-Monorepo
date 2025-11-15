@@ -1,9 +1,0 @@
-https://maven.neoforged.net/releases/ca/weblite/java-objc-bridge/1.1/java-objc-bridge-1.1.jar 77e34a13bccffc6c8b1a0e3ed46ddb0ea7dd56f2104ecdfacaaec9e4054ac332
-https://maven.neoforged.net/releases/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar 766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7
-https://maven.neoforged.net/releases/net/neoforged/AutoRenamingTool/2.0.8/AutoRenamingTool-2.0.8-all.jar ff883fd677273d68ff92d8db6402f9f6b2d62814d8b09af8f1ca8839404a141c
-https://maven.neoforged.net/releases/net/neoforged/installertools/installertools/2.1.2/installertools-2.1.2-fatjar.jar 9fe7c6df17299f661b9cd07fc1c4e85493b63efae6bb9da0255a97d9d0a87c60
-https://maven.neoforged.net/releases/net/neoforged/mergetool/2.0.7/mergetool-2.0.7-api.jar e78f586e085206e3b5699bf0a8de3ee94c59dd34d8cd5b4033e8c58e5ac9c2ec
-https://maven.neoforged.net/releases/net/neoforged/mergetool/2.0.7/mergetool-2.0.7-fatjar.jar c5dd4b54361699d9cde410db6aed11f9f13088aae0c375f5a77dc5056a4a89c5
-https://maven.neoforged.net/releases/org/checkerframework/checker-qual/3.49.0/checker-qual-3.49.0.jar 8b9d9a36eaaf7c0fc26503c83cd97d8c9c0f9e2913cc2a6e92ac26c735d4dcbe
-https://maven.neoforged.net/releases/org/jetbrains/annotations/26.0.2/annotations-26.0.2.jar 2037be378980d3ba9333e97955f3b2cde392aa124d04ca73ce2eee6657199297
-https://maven.neoforged.net/releases/org/vineflower/vineflower/1.11.1/vineflower-1.11.1.jar a615d07ddbbcd489369674f40e42df639c32be95410890b38f173d5c1e2ea39c

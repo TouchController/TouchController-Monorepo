@@ -1,0 +1,25 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+load("@rules_kotlin//kotlin:core.bzl", "kt_kotlinc_options")
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_kotlinc_options(
+    name = "kotlinc_opts",
+    jvm_target = "11",
+)
+
+kt_jvm_library(
+    name = "jij_merger_library",
+    srcs = glob(["*.kt"]),
+    kotlinc_opts = "kotlinc_opts",
+    deps = [
+        "//:kotlin_serialization",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+    ],
+)
+
+java_binary(
+    name = "jij_merger",
+    main_class = "top.fifthlight.fabazel.jijmerger.JarInJarMergerKt",
+    visibility = ["//visibility:public"],
+    runtime_deps = [":jij_merger_library"],
+)

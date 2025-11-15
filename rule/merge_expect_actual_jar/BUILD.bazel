@@ -1,0 +1,16 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "merge_expect_actual_jar",
+    srcs = ["MergeEntry.java", "ExpectActualMerger.java"],
+    main_class = "top.fifthlight.mergetools.ExpectActualMerger",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//rule/expect_actual_tools/processor/lib",
+        "@maven//:org_ow2_asm_asm",
+        "@maven//:com_palantir_javapoet_javapoet",
+        "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+    ]
+)

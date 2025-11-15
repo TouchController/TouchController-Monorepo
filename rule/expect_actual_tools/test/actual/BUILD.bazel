@@ -1,0 +1,14 @@
+load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
+
+kt_merge_library(
+	name = "actual",
+    visibility = ["//rule/expect_actual_tools/test:__subpackages__"],
+	srcs = ["TestInterfaceImpl.java", "TestInterfaceKtImpl.kt"],
+	actual = True,
+	merge_deps = ["//rule/expect_actual_tools/test/expect"],
+)
+
+merge_library_jar(
+    name = "actual_merged",
+    deps = [":actual"]
+)

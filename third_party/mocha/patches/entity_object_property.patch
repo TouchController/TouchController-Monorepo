@@ -1,0 +1,41 @@
+--- a/team/unnamed/mocha/runtime/value/ObjectValue.java
++++ b/team/unnamed/mocha/runtime/value/ObjectValue.java
+@@ -50,9 +50,25 @@
+      * @since 3.0.0
+      */
+     default @NotNull Value get(final @NotNull String name) {
++        return get(null, name);
++    }
++
++    /**
++     * Gets the value of the specified property with an entity,
++     * ignoring its casing. This method is
++     * CASE-INSENSITIVE.
++     *
++     * @param name The name of the property
++     * @return The value of the property
++     * @since ARMORSTAND PATCHED
++     */
++    @SuppressWarnings("unchecked")
++    default <E> @NotNull Value get(final @Nullable E entity, final @NotNull String name) {
+         final ObjectProperty property = getProperty(name);
+         if (property == null) {
+             return Value.nil();
++        } else if (property instanceof EntityObjectProperty<?>) {
++            return ((EntityObjectProperty<E>) property).value(entity);
+         } else {
+             return property.value();
+         }
+
+--- a/team/unnamed/mocha/runtime/ExpressionInterpreter.java
++++ b/team/unnamed/mocha/runtime/ExpressionInterpreter.java
+@@ -207,8 +207,8 @@
+     @Override
+     public @NotNull Value visitAccess(final @NotNull AccessExpression expression) {
+         final Value objectValue = expression.object().visit(this);
+         if (objectValue instanceof ObjectValue) {
+-            return ((ObjectValue) objectValue).get(expression.property());
++            return ((ObjectValue) objectValue).get(entity, expression.property());
+         }
+         return NumberValue.zero();
+     }

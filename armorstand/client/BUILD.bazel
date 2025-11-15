@@ -1,0 +1,52 @@
+load("//:properties.bzl", "game_version")
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+java_library(
+    name = "client_resources",
+    resource_strip_prefix = "mod/src/client/resources",
+    resources = glob(["resources/**"]),
+    visibility = ["//mod:__subpackages__"],
+)
+
+kt_merge_library(
+    name = "client",
+    srcs = glob(
+        include = [
+            "kotlin/**/*.kt",
+            "java/**/*.java",
+        ],
+        allow_empty = True,
+    ),
+    merge_deps = [
+        "//mod/src/main",
+        "//mod/src/expect_client",
+    ],
+    visibility = ["//mod:__subpackages__"],
+    exports = [
+        "//mod/src/expect_client",
+        "//mod/src/main",
+    ],
+    deps = [
+        "//:kotlin_serialization",
+        "//blazerod/model/model-base",
+        "//blazerod/model/model-formats",
+        "//blazerod/render/api",
+        "//blazerod/render/api/animation",
+        "//blazerod/render/api/loader",
+        "//blazerod/render/api/refcount",
+        "//blazerod/render/api/render",
+        "//blazerod/render/api/event",
+        "//blazerod/render/api/resource",
+        "//mod/src/game:remapped_client_access_widened_named",
+        "@maven//:com_h2database_h2",
+        "@maven//:com_illposed_osc_javaosc_core",
+        "@maven//:io_github_llamalad7_mixinextras_fabric",
+        "@maven//:net_fabricmc_sponge_mixin",
+        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
+        "@maven//:org_jetbrains_kotlinx_atomicfu_jvm",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+        "@minecraft//:%s_client_libraries" % game_version,
+    ],
+)

@@ -1,0 +1,50 @@
+load("@rules_java//java:defs.bzl", "java_library")
+load("//rule:apply_access_widener.bzl", "apply_access_widener")
+load("//rule:extract_access_widener.bzl", "extract_access_widener")
+load("//rule:decompile_jar.bzl", "decompile_jar")
+load("//rule/neoforge:convert_access_widener.bzl", "convert_access_widener")
+load("//rule:remap_access_widener.bzl", "remap_access_widener")
+
+extract_access_widener(
+    name = "access_widener_dep_named",
+    inputs = ["//blazerod/render/fabric:remapped_deps"],
+)
+
+apply_access_widener(
+    name = "remapped_client_access_widened_named",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = [
+        "blazerod.accesswidener",
+        ":access_widener_dep_named",
+    ],
+    input = "//game:remapped_client_named",
+    neverlink = True,
+)
+
+remap_access_widener(
+    name = "access_transformer_mojang",
+    src = "blazerod.accesswidener",
+    mapping = "//game:merged_mojang_mapping",
+    from_namespace = "named",
+    to_namespace = "mojang",
+)
+
+convert_access_widener(
+    name = "access_transformer_file",
+    src = ":access_transformer_mojang",
+    output_name = "access_transformer.cfg",
+)
+
+java_library(
+    name = "access_transformer",
+    visibility = ["//blazerod/render:__subpackages__"],
+    resources = [":access_transformer_file"],
+    resource_strip_prefix = "blazerod/render/game",
+)
+
+java_library(
+    name = "access_widener",
+    visibility = ["//blazerod/render:__subpackages__"],
+    resources = ["blazerod.accesswidener"],
+    resource_strip_prefix = "blazerod/render/game",
+)

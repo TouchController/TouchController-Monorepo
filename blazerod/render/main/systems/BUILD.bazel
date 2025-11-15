@@ -1,0 +1,12 @@
+load("//rule:merge_library.bzl", "java_merge_library")
+
+java_merge_library(
+    name = "systems",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = glob(["**/*.java"]),
+    deps = [
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        "@minecraft//:1.21.8_client_libraries",
+        "@maven//:org_jetbrains_annotations",
+    ],
+)

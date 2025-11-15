@@ -1,0 +1,67 @@
+load("//:properties.bzl", "game_version", "home_page", "issue_tracker", "license", "mod_version", "neoforge_version", "sources_page")
+load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
+load("//rule:remap_jar.bzl", "remap_jar")
+load("//rule/neoforge:mod_toml_jar.bzl", "neoforge_mod_toml_jar")
+
+neoforge_mod_toml_jar(
+    name = "neoforge_mod_toml",
+    src = "resources/META-INF/neoforge.mods.toml",
+    resource_strip_prefix = "mod/src/neoforge_client",
+    substitutions = {
+        "${version}": mod_version,
+        "${game_version}": game_version,
+        "${neoforge_version}": neoforge_version,
+        "${license}": license,
+        "${home_page}": home_page,
+        "${sources_page}": sources_page,
+        "${issue_tracker}": issue_tracker,
+    },
+)
+
+kt_merge_library(
+    name = "neoforge_unmapped",
+    srcs = glob(
+        include = [
+            "kotlin/**/*.kt",
+            "java/**/*.java",
+        ],
+        allow_empty = True,
+    ),
+    actual = True,
+    associates = [
+        "//mod/src/main",
+    ],
+    merge_deps = [
+        "//mod/src/client",
+        "//mod/src/neoforge_main:neoforge_main_unmapped",
+    ],
+    resource_jars = [
+        ":neoforge_mod_toml",
+        "//mod/src/game:access_transformer",
+        "//mod/src/main:main_resources",
+        "//mod/src/client:client_resources",
+    ],
+    resource_strip_prefix = "mod/src/neoforge/resources",
+    resources = glob(
+        include = ["resources/**"],
+        allow_empty = True,
+        exclude = ["resources/META-INF/neoforge.mods.toml"],
+    ),
+    visibility = ["//mod:__subpackages__"],
+    deps = [
+        "//game:remapped_iris_neoforge",
+        "//game:remapped_neoforge_named",
+        "//game:remapped_sodium_neoforge",
+        "//blazerod/model/model-formats",
+        "//blazerod/render/api/event",
+        "@neoforge//:neoforge_deps",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+        "@minecraft//:1.21.8_client_libraries",
+    ],
+)
+
+merge_library_jar(
+    name = "neoforge_unmapped_merged",
+    visibility = ["//mod:__subpackages__"],
+    deps = [":neoforge_unmapped"],
+)

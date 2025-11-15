@@ -1,0 +1,12 @@
+# Remember to keep sync with MODULE.bazel
+blazerod_version = "0.0.8"
+mod_version = "0.0.8"
+game_version = "1.21.8"
+fabric_api_version_modrinth = "X2hTodix"
+fabric_language_kotlin_version_modrinth = "Y91MRWtG"
+kotlin_for_forge_version_modrinth = "pp2cY80Q"
+neoforge_version = "21.8.36"
+home_page = "https://github.com/fifth-light/ArmorStand"
+sources_page = "https://github.com/fifth-light/ArmorStand"
+issue_tracker = "https://github.com/fifth-light/ArmorStand/issues"
+license = "LGPL-3.0-or-later"

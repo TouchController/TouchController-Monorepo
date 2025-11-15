@@ -1,9 +1,0 @@
-load("@rules_java//java:defs.bzl", "java_binary")
-
-java_binary(
-    name = "split_resources",
-    visibility = ["//visibility:public"],
-    srcs = ["SplitResourcesFromClasses.java"],
-    main_class = "net.neoforged.neoform.runtime.tools.SplitResourcesFromClasses",
-    deps = ["@maven//:net_neoforged_srgutils"],
-)

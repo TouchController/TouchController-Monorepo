@@ -1,0 +1,11 @@
+license="${license}"
+issueTrackerURL="${issue_tracker}"
+
+[[mods]]
+modId="blazerod"
+version="${version}"
+displayName="BlazeRod"
+displayURL="${home_page}"
+logoFile="assets/blazerod/icon.png"
+authors="fifth_light"
+description='''A model rendering API and library for Minecraft.'''

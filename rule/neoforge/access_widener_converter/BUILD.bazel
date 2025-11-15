@@ -1,0 +1,11 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "access_widener_converter",
+    srcs = ["AccessWidenerConvertor.java"],
+    main_class = "top.fifthlight.armorstand.AccessWidenerConvertor",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:net_fabricmc_access_widener",
+    ]
+)

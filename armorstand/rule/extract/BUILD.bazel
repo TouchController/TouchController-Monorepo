@@ -1,8 +1,0 @@
-load("@rules_java//java:defs.bzl", "java_binary")
-
-java_binary(
-    name = "extract",
-    srcs = ["JarExtractor.java"],
-    main_class = "top.fifthlight.fabazel.jarextractor.JarExtractor",
-    visibility = ["//visibility:public"],
-)

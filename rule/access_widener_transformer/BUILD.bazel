@@ -1,0 +1,12 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "access_widener_transformer",
+    srcs = ["AccessWidenerTransformer.java"],
+    main_class = "top.fifthlight.fabazel.accesswidenertransformer.AccessWidenerTransformer",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:net_fabricmc_access_widener",
+        "@maven//:org_ow2_asm_asm",
+    ],
+)

@@ -1,0 +1,16 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "resource",
+    srcs = glob(include = ["**/*.kt"]),
+    expect = True,
+    merge_deps = [
+        "//blazerod/render/api/refcount",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//blazerod/model/model-base",
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        "@maven//:org_joml_joml",
+    ],
+)

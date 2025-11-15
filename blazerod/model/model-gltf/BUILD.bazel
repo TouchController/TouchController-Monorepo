@@ -1,0 +1,31 @@
+load("@rules_java//java:defs.bzl", "java_library")
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library", "kt_jvm_test")
+load("//blazerod/model:model_info_jar.bzl", "model_info_jar")
+load("//rule:merge_jar.bzl", "merge_jar")
+
+model_info_jar(
+    name = "mod_info_json",
+    substitutions = {
+        "${mod_id}": "blazerod-model-gltf",
+        "${name}": "BlazeRod model GLTF",
+        "${description}": "GLTF & VRM model loading support.",
+    },
+)
+
+kt_jvm_library(
+    name = "model-gltf",
+    srcs = glob(["**/*.kt"]),
+    resource_jars = [
+        ":mod_info_json",
+        "//blazerod:icon",
+    ],
+    resources = glob(["resources/**"]),
+    resource_strip_prefix = "blazerod/model/model-gltf/resources",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:kotlin_serialization",
+        "//blazerod/model/model-base",
+        "@maven//:org_joml_joml",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+    ],
+)

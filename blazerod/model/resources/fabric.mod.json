@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${name}",
+  "description": "${description}",
+  "authors": ["fifth_light"],
+  "license": "${license}",
+  "icon": "assets/blazerod/icon.png",
+  "contact": {
+    "homepage": "${home_page}",
+    "sources": "${sources_page}",
+    "issues": "${issue_tracker}"
+  },
+  "environment": "client",
+  "custom": {
+    "modmenu": {
+      "parent": "blazerod",
+      "badges": ["library"]
+    }
+  }
+}

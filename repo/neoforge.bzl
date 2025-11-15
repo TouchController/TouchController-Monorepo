@@ -1,19 +1,19 @@
 """NeoForge repository rule, fetches NeoForge artifact and setup Bazel rules"""
 
 load("@//private:maven_coordinate.bzl", _convert_maven_coordinate = "convert_maven_coordinate", _convert_maven_coordinate_to_repo = "convert_maven_coordinate_to_repo", _convert_maven_coordinate_to_url = "convert_maven_coordinate_to_url")
-load("@//private:snake_case.bzl", _camel_case_to_snake_case = "camel_case_to_snake_case")
 load("@//private:pin_file.bzl", _parse_pin_file = "parse_pin_file")
+load("@//private:snake_case.bzl", _camel_case_to_snake_case = "camel_case_to_snake_case")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
 
 _neoforge_repository_url = "https://maven.neoforged.net/releases"
 _mojang_repository_url = "https://libraries.minecraft.net"
 
-def _convert_maven_coordinate_to_url_with_repo(maven_coordinate, extension = "jar"):
+def _convert_maven_coordinate_to_url_with_repo(maven_coordinate):
     # Ugly but works
     if "mojang" in maven_coordinate:
-        return _convert_maven_coordinate_to_url(_mojang_repository_url, maven_coordinate, extension)
+        return _convert_maven_coordinate_to_url(_mojang_repository_url, maven_coordinate)
     else:
-        return _convert_maven_coordinate_to_url(_neoforge_repository_url, maven_coordinate, extension)
+        return _convert_maven_coordinate_to_url(_neoforge_repository_url, maven_coordinate)
 
 def _neoforge_repo_impl(rctx):
     version_name = rctx.attr.version
@@ -69,82 +69,82 @@ def _neoforge_repo_impl(rctx):
         'load("@//repo/neoform/rule:import_source_info.bzl", "import_source_info")',
         'load("@//repo/neoform/rule:inject_zip_content.bzl", "inject_zip_content")',
         'load("@rules_java//java:defs.bzl", "java_library", "java_import")',
-        '',
-        'alias(',
+        "",
+        "alias(",
         '    name = "neoforge_userdev",',
         '    actual = "%s",' % neoforge_userdev_zip,
-        ')',
-        '',
-        'java_import(',
+        ")",
+        "",
+        "java_import(",
         '    name = "neoforge_universal",',
         '    jars = ["%s"],' % neoforge_universal_zip,
         '    srcjar = "%s",' % neoforge_sources_zip,
-        ')',
-        '',
-        'alias(',
+        ")",
+        "",
+        "alias(",
         '    name = "neoforge_sources",',
         '    actual = "%s",' % neoforge_sources_zip,
-        ')',
-        '',
-        'patch_zip_content(',
+        ")",
+        "",
+        "patch_zip_content(",
         '    name = "add_neoforge_patches",',
         '    prefix = "%s",' % config_data["patches"],
         '    patches = ":neoforge_userdev",',
         '    input = "%s",' % rctx.attr.joined_patched_sources,
-        ')',
-        '',
-        'java_source_transform(',
+        ")",
+        "",
+        "java_source_transform(",
         '    name = "transform_sources",',
         '    input = ":add_neoforge_patches",',
         '    access_transformers = glob(["%s/%s*"]),' % (output_prefix, config_data["ats"]),
-        ')',
-        '',
-        'import_source_info(',
+        ")",
+        "",
+        "import_source_info(",
         '    name = "decompile_libraries",',
         '    deps = [":transform_sources"],',
-        ')',
-        '',
-        'java_library(',
+        ")",
+        "",
+        "java_library(",
         '    name = "recompile_with_manifest",',
         '    srcs = [":transform_sources"],',
-        '    deps = [',
+        "    deps = [",
         '        ":decompile_libraries",',
         '        ":neoforge_universal",',
-        '        %s' % neoforge_libraries,
-        '    ],',
+        "        %s" % neoforge_libraries,
+        "    ],",
         '    javacopts = ["-XepDisableAllChecks", "-nowarn", "-g", "-proc:none", "-implicit:none"],',
-        ')',
-        '',
-        'remove_manifest(',
+        ")",
+        "",
+        "remove_manifest(",
         '    name = "recompile",',
         '    src = ":recompile_with_manifest",',
-        ')',
-        '',
-        'java_import(',
+        ")",
+        "",
+        "java_import(",
         '    name = "recompile_with_deps",',
         '    jars = [":recompile"],',
         '    srcjar = ":transform_sources",',
-        ')',
-        '',
-        'inject_zip_content(',
+        ")",
+        "",
+        "inject_zip_content(",
         '    name = "sources_with_neoforge",',
         '    input = ":transform_sources",',
         '    deps = [":neoforge_sources"],',
-        ')',
-        '',
-        'inject_zip_content(',
+        ")",
+        "",
+        "inject_zip_content(",
         '    name = "compiled_with_neoforge",',
         '    input = ":recompile",',
         '    deps = [":neoforge_universal"],',
-        ')',
-        '',
-        'java_merge(',
+        ")",
+        "",
+        "java_merge(",
         '    name = "neoforge_deps",',
-        '    deps = [',
+        "    deps = [",
         '        ":decompile_libraries",',
-        '        %s' % neoforge_libraries,
-        '    ],',
-        ')',
+        "        %s" % neoforge_libraries,
+        "    ],",
+        ")",
     ]
 
     rctx.file("BUILD.bazel", "\n".join(build_file_contents))
@@ -182,7 +182,7 @@ def _neoforge_pin_impl(rctx):
         url_lines.append('"%s"' % _convert_maven_coordinate_to_url_with_repo(coordinate))
     rctx.template("PinGenerator.java", rctx.attr._pinner_source, {
         "/*INJECT HERE*/": ", ".join(url_lines),
-        "/*OUTPUT NAME*/": "neoforge_pin"
+        "/*OUTPUT NAME*/": "neoforge_pin",
     })
 
     build_bazel_contents = [
@@ -276,6 +276,7 @@ def _neoforge_impl(mctx):
     versions = versions.values()
 
     libraries = []
+
     def append_library(coordinate):
         if coordinate not in libraries:
             libraries.append(coordinate)

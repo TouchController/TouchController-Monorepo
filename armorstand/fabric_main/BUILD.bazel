@@ -1,0 +1,52 @@
+load("//:properties.bzl", "mod_version", "issue_tracker", "license", "home_page", "sources_page",)
+load("//rule:remap_jar.bzl", "remap_jar")
+load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
+
+remap_jar(
+    name = "remapped_deps",
+    visibility = ["//mod/src:__subpackages__"],
+    classpath = ["//game:remapped_client_intermediary"],
+    from_namespace = "intermediary",
+    inputs = [
+         "@maven//:net_fabricmc_fabric_api_fabric_api",
+    ],
+    mapping = "//game:merged_mapping",
+    mixin = True,
+    remap_transitive_deps = True,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
+)
+
+kt_merge_library(
+    name = "fabric_main_unmapped",
+    visibility = ["//mod:__subpackages__"],
+    srcs = glob(
+        include = [
+            "kotlin/**/*.kt",
+            "java/**/*.java",
+        ],
+        allow_empty = True,
+    ),
+    resources = glob(
+        include = ["resources/**"],
+        allow_empty = True,
+    ),
+    resource_strip_prefix = "mod/src/fabric/resources",
+    deps = [
+        "//game:remapped_client_named",
+        ":remapped_deps",
+        "@maven//:net_fabricmc_fabric_loader",
+        "@minecraft//:1.21.8_client_libraries",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+    ],
+    exports = [
+        "//mod/src/main",
+    ],
+    associates = [
+        "//mod/src/main",
+    ],
+    merge_deps = [
+        "//mod/src/main",
+    ],
+)
+

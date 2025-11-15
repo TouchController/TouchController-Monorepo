@@ -1,8 +1,8 @@
 """NeoForm repository rule, fetches NeoForm artifact and setup Bazel rules"""
 
 load("@//private:maven_coordinate.bzl", _convert_maven_coordinate = "convert_maven_coordinate", _convert_maven_coordinate_to_repo = "convert_maven_coordinate_to_repo", _convert_maven_coordinate_to_url = "convert_maven_coordinate_to_url")
-load("@//private:snake_case.bzl", _camel_case_to_snake_case = "camel_case_to_snake_case")
 load("@//private:pin_file.bzl", _parse_pin_file = "parse_pin_file")
+load("@//private:snake_case.bzl", _camel_case_to_snake_case = "camel_case_to_snake_case")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
 
 _neoform_repository_url = "https://maven.neoforged.net/releases"
@@ -215,13 +215,13 @@ def _neoform_repo_impl(rctx):
         rule_impl.append("    )")
         rule_impl.append("    ")
         rule_impl.append("    return [")
-        rule_impl.append('        DefaultInfo(files = depset([output_file])),')
+        rule_impl.append("        DefaultInfo(files = depset([output_file])),")
         if jar_output:
-            rule_impl.append('        JavaSourceInfo(')
-            rule_impl.append('            source_jar = output_file,')
-            rule_impl.append('            deps = input_deps,')
-            rule_impl.append('            libraries = input_libraries,')
-            rule_impl.append('        ),')
+            rule_impl.append("        JavaSourceInfo(")
+            rule_impl.append("            source_jar = output_file,")
+            rule_impl.append("            deps = input_deps,")
+            rule_impl.append("            libraries = input_libraries,")
+            rule_impl.append("        ),")
         rule_impl.append("    ]")
         rule_impl = "\n".join(rule_impl)
 
@@ -336,9 +336,9 @@ def _neoform_repo_impl(rctx):
                             if side_name == "client":
                                 task_def.append('    %s = ["%s", %s],' % (item_key, rctx.attr.client_libraries, sided_libraries))
                             elif side_name == "server":
-                                task_def.append('    %s = ["%s", %s],' % (item_key, rctx.attr.server_libraries, sided_libraries))
+                                task_def.append("    %s = [%s]," % (item_key, sided_libraries))
                             elif side_name == "joined":
-                                task_def.append('    %s = ["%s", "%s", %s],' % (item_key, rctx.attr.client_libraries, rctx.attr.server_libraries, sided_libraries))
+                                task_def.append('    %s = ["%s",%s],' % (item_key, rctx.attr.client_libraries, sided_libraries))
                             else:
                                 fail("Unsupported side when listing libraries: %s" % side_name)
                         else:
@@ -389,11 +389,6 @@ _neoform_repo = repository_rule(
             mandatory = True,
             providers = [JavaInfo],
         ),
-        "server_libraries": attr.label(
-            doc = "Server libraries",
-            mandatory = True,
-            providers = [JavaInfo],
-        ),
         "pin_file": attr.label(
             doc = "Pin file",
             allow_single_file = [".txt"],
@@ -408,7 +403,7 @@ def _neoform_pin_impl(rctx):
         url_lines.append('"%s"' % _convert_maven_coordinate_to_url(_neoform_repository_url, coordinate))
     rctx.template("PinGenerator.java", rctx.attr._pinner_source, {
         "/*INJECT HERE*/": ", ".join(url_lines),
-        "/*OUTPUT NAME*/": "neoform_pin"
+        "/*OUTPUT NAME*/": "neoform_pin",
     })
 
     build_bazel_contents = [
@@ -471,11 +466,6 @@ version = tag_class(
             mandatory = True,
             providers = [JavaInfo],
         ),
-        "server_libraries": attr.label(
-            doc = "Server libraries",
-            mandatory = True,
-            providers = [JavaInfo],
-        ),
     },
 )
 
@@ -512,8 +502,6 @@ def _neoform_impl(mctx):
                     fail("NeoForm version %s already exists with a different server mapping" % version.version)
                 elif versions[version.version].client_libraries != version.client_libraries:
                     fail("NeoForm version %s already exists with a different client libraries" % version.version)
-                elif versions[version.version].server_libraries != version.server_libraries:
-                    fail("NeoForm version %s already exists with a different server libraries" % version.version)
             else:
                 versions[version.version] = {
                     "version": version.version,
@@ -523,11 +511,11 @@ def _neoform_impl(mctx):
                     "client_mapping": version.client_mapping,
                     "server_mapping": version.server_mapping,
                     "client_libraries": version.client_libraries,
-                    "server_libraries": version.server_libraries,
                 }
     versions = versions.values()
 
     libraries = []
+
     def append_library(coordinate):
         if coordinate not in libraries:
             libraries.append(coordinate)
@@ -563,7 +551,6 @@ def _neoform_impl(mctx):
             client_mapping = version["client_mapping"],
             server_mapping = version["server_mapping"],
             client_libraries = version["client_libraries"],
-            server_libraries = version["server_libraries"],
             pin_file = pin_file,
         )
 

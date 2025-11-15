@@ -1,0 +1,26 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+load("//blazerod/model:model_info_jar.bzl", "model_info_jar")
+load("//rule:merge_jar.bzl", "merge_jar")
+
+model_info_jar(
+    name = "mod_info_json",
+    substitutions = {
+        "${mod_id}": "blazerod-model-base",
+        "${name}": "BlazeRod model base",
+        "${description}": "Common declaration of model data.",
+    },
+)
+
+kt_jvm_library(
+    name = "model-base",
+    srcs = glob(["**/*.kt"]),
+    deps = [
+        "@maven//:org_joml_joml",
+        "@maven//:it_unimi_dsi_fastutil",
+    ],
+    resource_jars = [
+        ":mod_info_json",
+        "//blazerod:icon",
+    ],
+    visibility = ["//visibility:public"],
+)

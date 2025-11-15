@@ -1,0 +1,200 @@
+"ArmorStand module file"
+
+# Remember to keep sync with properties.bzl
+game_version = "1.21.8"
+fabric_api_version = "0.129.0+1.21.8"
+fabric_language_kotlin_version = "1.13.5+kotlin.2.2.10"
+neoforge_version = "21.8.36"
+
+module(
+    name = "armorstand",
+    version = "0.0.8",
+)
+
+bazel_dep(name = "rules_java", version = "8.12.0")
+bazel_dep(name = "rules_kotlin", version = "2.1.9")
+bazel_dep(name = "rules_jvm_external", version = "6.7")
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    artifacts = [
+        # mapping
+        "net.fabricmc:yarn:1.21.8+build.1:v2",
+        "net.fabricmc:intermediary:%s:v2" % game_version,
+
+        # build dependencies
+        "net.fabricmc:tiny-remapper:0.11.1",
+        "net.fabricmc:mapping-io:0.7.1",
+        "net.fabricmc:mapping-io-extras:0.7.1",
+        "net.fabricmc:access-widener:2.1.0",
+        "org.ow2.asm:asm:9.8",
+        "org.ow2.asm:asm-commons:9.8",
+        "org.vineflower:vineflower:1.11.1",
+        "com.fasterxml.jackson.core:jackson-core:2.9.6",
+        "com.fasterxml.jackson.core:jackson-annotations:2.9.6",
+        "com.fasterxml.jackson.core:jackson-databind:2.9.6",
+        "de.swiesend:secret-service:2.0.1-alpha",
+        "ch.qos.logback:logback-classic:1.5.18",
+        "com.github.mizosoft.methanol:methanol:1.8.3",
+        "net.neoforged:srgutils:1.0.10",
+        "io.codechicken:DiffPatch:2.0.0.36:all",
+        "net.neoforged.jst:jst-cli-bundle:1.0.74",
+        "com.palantir.javapoet:javapoet:0.7.0",
+        "com.google.jimfs:jimfs:1.3.1",
+
+        # mod dependencies
+        "net.fabricmc:fabric-loader:0.16.14",
+        "com.terraformersmc:modmenu:15.0.0-beta.3",
+        "net.fabricmc.fabric-api:fabric-api:%s" % fabric_api_version,
+        "net.fabricmc:fabric-language-kotlin:%s" % fabric_language_kotlin_version,
+        "net.fabricmc:sponge-mixin:0.15.4+mixin.0.8.7",
+        "io.github.llamalad7:mixinextras-fabric:0.4.1",
+        "eu.pb4:placeholder-api:2.6.3+1.21.5",
+        "thedarkcolour:kotlinforforge-neoforge:5.9.0",
+
+        # regular dependencies
+        "org.joml:joml:1.10.8",
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3",
+        "it.unimi.dsi:fastutil:8.5.15",
+        "org.jetbrains:annotations:26.0.2",
+        "com.h2database:h2:2.3.232",
+        "org.antlr:antlr4-runtime:4.13.1",
+        "io.github.douira:glsl-transformer:2.0.1",
+        "org.anarres:jcpp:1.4.14",
+        "com.illposed.osc:javaosc-core:0.9",
+        "org.lwjgl:lwjgl:3.3.3",
+        "org.lwjgl:lwjgl-assimp:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-windows:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-windows-x86:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-windows-arm64:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-linux-arm32:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-linux-arm64:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-linux:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-macos:3.3.3",
+        "org.lwjgl:lwjgl-assimp:jar:natives-macos-arm64:3.3.3",
+        "org.javassist:javassist:3.30.2-GA",
+
+        # test dependencies
+        "org.jetbrains.kotlin:kotlin-test-junit5:2.1.10",
+        "org.junit.jupiter:junit-jupiter-api:5.12.2",
+        "org.junit.jupiter:junit-jupiter-engine:5.12.2",
+        "org.junit.platform:junit-platform-suite-api:1.12.2",
+        "org.junit.platform:junit-platform-suite-engine:1.12.2",
+        "org.junit.platform:junit-platform-console:1.12.2",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+        "https://maven.fabricmc.net/",
+        "https://maven.neoforged.net/releases",
+        "https://maven.terraformersmc.com/",
+        "https://maven.nucleoid.xyz/",
+        "https://masa.dy.fi/maven",
+        "https://thedarkcolour.github.io/KotlinForForge/",
+        "https://api.modrinth.com/maven",
+    ],
+    lock_file = "//:maven_install.json",
+    fetch_sources = True,
+)
+use_repo(maven, "maven")
+
+http_jar = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
+http_jar(
+    name = "sodium_fabric",
+    url = "https://cdn.modrinth.com/data/AANobbMI/versions/ND4ROcMQ/sodium-fabric-0.6.13%2Bmc1.21.6.jar",
+    sha256 = "2e67812980688bf33447052c9ddfb820d07967bb3a3443f7865687fa0869118d",
+    downloaded_file_name = "sodium.jar",
+)
+http_jar(
+    name = "iris_fabric",
+    url = "https://cdn.modrinth.com/data/YL57xq9U/versions/l77DAK6U/iris-fabric-1.9.1%2Bmc1.21.7.jar",
+    sha256 = "0e6bd470311cc938b992e9065e0f94a3f603b68b5dfcde25102c64b8733b69bd",
+    downloaded_file_name = "iris.jar",
+)
+http_jar(
+    name = "sodium_neoforge",
+    url = "https://cdn.modrinth.com/data/AANobbMI/versions/ihzX2Dvy/sodium-neoforge-0.6.13%2Bmc1.21.6.jar",
+    sha256 = "595453c1202dc9c037ae8acef73aa4972a826fc3f607dcbf20d1c8ebb99ca646",
+    downloaded_file_name = "sodium.jar",
+)
+http_jar(
+    name = "iris_neoforge",
+    url = "https://cdn.modrinth.com/data/YL57xq9U/versions/xA5cxBvz/iris-neoforge-1.9.1%2Bmc1.21.7.jar",
+    sha256 = "7d5547c730ddf58631d7ded952b9e325cbbee93fd70c2b1c88d312cd21084dae",
+    downloaded_file_name = "iris.jar",
+)
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "mocha",
+    url = "https://repo.maven.apache.org/maven2/team/unnamed/mocha/3.0.1/mocha-3.0.1-sources.jar",
+    sha256 = "325319bfb53aa83bdb8367b03fced9b32fc285e12ec1b9d60134bc16d8170119",
+    build_file = "@//third_party/mocha:BUILD.mocha.bazel",
+    patch_strip = 1,
+    patches = [
+        "@//third_party/mocha/patches:entity_object_property.patch",
+        "@//third_party/mocha/patches:mutable_entity.patch",
+    ],
+)
+# Download YSM for its bundled model
+http_archive(
+    name = "yes_steve_model",
+    url = "https://cdn.modrinth.com/data/86xjpqqS/versions/1cHRrrpZ/yesstevemodel-fabric-1.21.1-2.4.1-release.jar",
+    sha256 = "ec51cfae84d219a45fac5098a31bfe980bcb7c2d8b413e8fffbd05a411a85680",
+    build_file = "@//third_party/ysm:BUILD.ysm.bazel",
+)
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+http_file(
+    name = "makeup_ultra_fast",
+    url = "https://cdn.modrinth.com/data/izsIPI7a/versions/jIWDGbU5/MakeUp-UltraFast-9.2.zip",
+    sha256 = "896c7539e17f5604893518fc69f643acc3d492e09ed332b7239623551ed5d309",
+    downloaded_file_path = "MakeUp-UltraFast-9.2.zip",
+)
+
+minecraft = use_extension("//repo:minecraft_jar.bzl", "minecraft")
+minecraft.minecraft_jar(
+    version = game_version,
+    type = "client",
+    assets = True,
+    mapping = True,
+)
+minecraft.minecraft_jar(
+    version = game_version,
+    type = "server",
+    mapping = True,
+)
+minecraft.exclude_library(names = ["org.ow2.asm:asm:9.6"])
+use_repo(minecraft, "minecraft")
+use_repo(minecraft, "minecraft_assets")
+
+neoform = use_extension("//repo:neoform.bzl", "neoform")
+neoform.version(
+    version = "1.21.8-20250717.133445",
+    sha256 = "d67401bd0769ee045128fb84142fb660fe49db8ea86538d4dc308c25cd0cdbca",
+    client_jar = "@minecraft//:%s_client" % game_version,
+    server_jar = "@minecraft//:%s_server" % game_version,
+    client_mapping = "@minecraft//:%s_client_mapping" % game_version,
+    server_mapping = "@minecraft//:%s_server_mapping" % game_version,
+    client_libraries = "@minecraft//:%s_client_libraries" % game_version,
+    server_libraries = "@minecraft//:%s_server_libraries" % game_version,
+)
+neoform.pin(
+    pin_file = "//:neoform_pin.txt",
+)
+use_repo(neoform, neoform = "neoform_1_21_8_20250717_133445")
+use_repo(neoform, "neoform_pin")
+
+neoforge = use_extension("//repo:neoforge.bzl", "neoforge")
+neoforge.version(
+    version = neoforge_version,
+    userdev_sha256 = "051b0561fe0725fb953336c363f82540c80a2f4e86cdd17023b7ecc0842a6012",
+    sources_sha256 = "4abf052591e38c1c84504f2ae4b741387a303deb04b459f4fa2fe4ae17bf1764",
+    universal_sha256 = "758961d98cab1104ad281d5d0574e06a154e8ce94b19c71c2b460c4dc89eb405",
+    joined_patched_sources = "@neoform//tasks/joined_patch",
+)
+neoforge.pin(
+    pin_file = "//:neoforge_pin.txt",
+)
+use_repo(neoforge, neoforge = "neoforge_21_8_36")
+use_repo(neoforge, "neoforge_pin")
+
+register_toolchains("//:kotlin_toolchain")

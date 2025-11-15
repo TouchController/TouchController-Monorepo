@@ -1,0 +1,44 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+load("//blazerod/model:model_info_jar.bzl", "model_info_jar")
+load("//rule/fabric:merge_jij.bzl", "fabric_merge_jij")
+
+model_info_jar(
+    name = "mod_info_json",
+    substitutions = {
+        "${mod_id}": "blazerod-model-bedrock",
+        "${name}": "BlazeRod model bedrock",
+        "${description}": "Bedrock model loading support.",
+    },
+)
+
+kt_jvm_library(
+    name = "model-bedrock",
+    srcs = glob(["**/*.kt"]),
+    resource_jars = [
+        ":mod_info_json",
+        "//blazerod:icon",
+    ],
+    resources = glob(["resources/**"]),
+    resource_strip_prefix = "blazerod/model/model-bedrock/resources",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//blazerod/model/model-base",
+        "//:kotlin_serialization",
+        "@maven//:org_slf4j_slf4j_api",
+        "@maven//:org_joml_joml",
+        "@maven//:it_unimi_dsi_fastutil",
+        "@mocha//:mocha",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+        "@maven//:com_google_code_gson_gson",
+    ],
+)
+
+fabric_merge_jij(
+    name = "model-bedrock-merged",
+    input = ":model-bedrock",
+    visibility = ["//visibility:public"],
+    deps = {
+        "@mocha//:mocha": "team_unnamed_mocha:3.0.1",
+        "@maven//:org_javassist_javassist": "org_javassist_javassist:3.30.2-GA",
+    },
+)

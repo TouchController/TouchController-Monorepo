@@ -1,0 +1,35 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+load("//blazerod/model:model_info_jar.bzl", "model_info_jar")
+load("//rule:merge_jar.bzl", "merge_jar")
+
+formats = [
+    "gltf",
+    "pmx",
+    "pmd",
+    "vmd",
+    "assimp",
+    "bedrock",
+]
+
+format_targets = ["//blazerod/model/model-" + format for format in formats]
+
+model_info_jar(
+    name = "mod_info_json",
+    substitutions = {
+        "${mod_id}": "blazerod-model-formats",
+        "${name}": "BlazeRod model formats",
+        "${description}": "Manage model loading of BlazeRod.",
+    },
+)
+
+kt_jvm_library(
+    name = "model-formats",
+    srcs = ["ModelFileLoaders.kt"],
+    resource_jars = [
+        ":mod_info_json",
+        "//blazerod:icon",
+    ],
+    visibility = ["//visibility:public"],
+    deps = ["//blazerod/model/model-base"],
+    runtime_deps = format_targets,
+)

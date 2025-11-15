@@ -1,0 +1,21 @@
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
+load("//:properties.bzl", "blazerod_version")
+
+expand_template(
+    name = "api_info",
+    template = "BlazeRodApi.template.kt",
+    out = "BlazeRodApi.kt",
+    substitutions = {
+        "${version}": blazerod_version,
+    }
+)
+
+kt_merge_library(
+    name = "api",
+    srcs = [":api_info"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//blazerod/render/game:remapped_client_access_widened_named",
+    ],
+)

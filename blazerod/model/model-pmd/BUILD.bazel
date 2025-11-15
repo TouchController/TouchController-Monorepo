@@ -1,0 +1,29 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library", "kt_jvm_test")
+load("//blazerod/model:model_info_jar.bzl", "model_info_jar")
+load("//rule:merge_jar.bzl", "merge_jar")
+
+model_info_jar(
+    name = "mod_info_json",
+    substitutions = {
+        "${mod_id}": "blazerod-model-pmd",
+        "${name}": "BlazeRod model PMD",
+        "${description}": "PMD model file loading support.",
+    },
+)
+
+kt_jvm_library(
+    name = "model-pmd",
+    srcs = glob(["**/*.kt"]),
+    resource_jars = [
+        ":mod_info_json",
+        "//blazerod:icon",
+    ],
+    resources = glob(["resources/**"]),
+    resource_strip_prefix = "blazerod/model/model-pmd/resources",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//blazerod/model/model-base",
+        "@maven//:org_slf4j_slf4j_api",
+        "@maven//:org_joml_joml",
+    ],
+)

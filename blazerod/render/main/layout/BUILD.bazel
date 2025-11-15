@@ -1,0 +1,15 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "layout",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = ["GpuDataLayout.kt", "LayoutStrategy.kt"],
+    deps = [
+        "//blazerod/model/model-base",
+        "@maven//:it_unimi_dsi_fastutil",
+        "@maven//:org_joml_joml",
+    ],
+    merge_deps = [
+        "//blazerod/render/main/util/math",
+    ]
+)

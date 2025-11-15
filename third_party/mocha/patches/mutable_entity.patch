@@ -1,0 +1,61 @@
+--- a/team/unnamed/mocha/MochaEngine.java
++++ b/team/unnamed/mocha/MochaEngine.java
+@@ -98,6 +98,8 @@ public interface MochaEngine<T> {
+         return createStandard(null);
+     }
+
++    void setEntity(T entity);
++
+     //#region PARSING API
+
+     /**
+
+--- a/team/unnamed/mocha/MochaEngineImpl.java
++++ b/team/unnamed/mocha/MochaEngineImpl.java
+@@ -48,7 +48,8 @@ import java.util.function.Consumer;
+
+ final class MochaEngineImpl<T> implements MochaEngine<T> {
+     private final Scope scope;
+-    private final T entity;
++    @Nullable
++    private T entity;
+     private final MolangCompiler compiler;
+
+     private Consumer<@NotNull ParseException> parseExceptionHandler;
+@@ -62,6 +63,11 @@ final class MochaEngineImpl<T> implements MochaEngine<T> {
+         this.compiler = new MolangCompiler(entity, getClass().getClassLoader(), scope);
+     }
+
++    public void setEntity(@Nullable T entity) {
++        this.entity = entity;
++        this.compiler.setEntity(entity);
++    }
++
+     @Override
+     public double eval(final @NotNull List<Expression> expressions) {
+         // create bindings that just apply for this evaluation
+
+--- a/team/unnamed/mocha/runtime/MolangCompiler.java
++++ b/team/unnamed/mocha/runtime/MolangCompiler.java
+@@ -62,7 +62,8 @@ import static java.util.Objects.requireNonNull;
+ public final class MolangCompiler {
+     private static final Random RANDOM = new Random();
+
+-    private final Object entity;
++    @Nullable
++    private Object entity;
+     private final ClassLoader classLoader;
+     private final ClassPool classPool;
+
+@@ -76,6 +77,10 @@ public final class MolangCompiler {
+         this.scope = requireNonNull(scope, "scope");
+     }
+
++    public void setEntity(@Nullable Object entity) {
++        this.entity = entity;
++    }
++
+     public @Nullable Object entity() {
+         return entity;
+     }
+

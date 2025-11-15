@@ -1,57 +1,254 @@
-load("@rules_kotlin//kotlin:core.bzl", "define_kt_toolchain", "kt_compiler_plugin")
-load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
-load("@//rule:extract_update_log.bzl", "extract_update_log")
-load("//:properties.bzl", "mod_version")
-load("@rules_java//java:defs.bzl", "java_plugin")
-load("@rules_java//java:defs.bzl", "java_library")
+load("@//rule:upload_modrinth.bzl", "modrinth_dependency", "upload_modrinth")
+load("@rules_java//java:defs.bzl", "java_binary")
+load("//:properties.bzl", "blazerod_version", "fabric_api_version_modrinth", "fabric_language_kotlin_version_modrinth", "game_version", "kotlin_for_forge_version_modrinth", "mod_version")
+load("//rule:generate_remap_classpath.bzl", "generate_remap_classpath")
+load("//rule:remap_jar.bzl", "remap_jar")
+load("//rule/fabric:merge_jij.bzl", "fabric_merge_jij")
+load("//rule/neoforge:merge_jij.bzl", "neoforge_merge_jij")
 
-kt_compiler_plugin(
-    name = "serialization_plugin",
-    compile_phase = True,
-    id = "org.jetbrains.kotlin.serialization",
-    stubs_phase = True,
-    deps = [
-        "@rules_kotlin//kotlin/compiler:kotlinx-serialization-compiler-plugin",
-    ],
-)
-
-kt_jvm_library(
-    name = "kotlin_serialization",
-    srcs = [],
+alias(
+    name = "mod_fabric_unmapped",
+    actual = "//armorstand/fabric_client:fabric_unmapped",
     visibility = ["//visibility:public"],
-    exported_compiler_plugins = [":serialization_plugin"],
-    exports = [
-        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm",
-    ],
-)
-
-define_kt_toolchain(
-    name = "kotlin_toolchain",
-    jvm_target = "21",
-    api_version = "2.0",
-    language_version = "2.0",
-    experimental_use_abi_jars = True,
-    experimental_strict_kotlin_deps = "error",
-)
-
-extract_update_log(
-    name = "update_log",
-    visibility = ["//visibility:public"],
-    version = mod_version,
-    inputs = [
-        "NEWS-zh.md",
-        "NEWS-en.md",
-    ],
 )
 
 alias(
-    name = "license",
+    name = "mod_neoforge_unmapped",
+    actual = "//armorstand/neoforge_client:neoforge_unmapped",
     visibility = ["//visibility:public"],
-    actual = "LICENSE",
 )
 
-java_library(
-    name = "license_jar",
+alias(
+    name = "mod_fabric_unmapped_merged",
+    actual = "//armorstand/fabric_client:fabric_unmapped_merged",
     visibility = ["//visibility:public"],
-    resources = [":license"],
+)
+
+alias(
+    name = "mod_neoforge_unmapped_merged",
+    actual = "//armorstand/neoforge_client:neoforge_unmapped_merged",
+    visibility = ["//visibility:public"],
+)
+
+remap_jar(
+    name = "mod_fabric_merged",
+    classpath = ["//game:remapped_client_named"],
+    from_namespace = "named",
+    inputs = [":mod_fabric_unmapped_merged"],
+    mapping = "//game:merged_mapping",
+    mixin = True,
+    to_namespace = "intermediary",
+    visibility = ["//visibility:public"],
+)
+
+remap_jar(
+    name = "mod_neoforge_merged",
+    classpath = ["//game:remapped_client_named"],
+    from_namespace = "named",
+    inputs = [":mod_neoforge_unmapped_merged"],
+    mapping = "//game:merged_mojang_mapping",
+    mixin = True,
+    to_namespace = "mojang",
+    visibility = ["//visibility:public"],
+)
+
+fabric_merge_jij(
+    name = "mod_fabric",
+    input = ":mod_fabric_merged",
+    visibility = ["//visibility:public"],
+    deps = {
+        "@maven//:com_h2database_h2": "com_h2database_h2:2.3.232",
+        "@maven//:com_illposed_osc_javaosc_core": "com_illposed_osc_javaosc_core:0.9",
+        "@mocha//:mocha": "team_unnamed_mocha:3.0.1",
+        "@maven//:org_javassist_javassist": "org_javassist_javassist:3.30.2-GA",
+        "//blazerod/model/model-base": "blazerod-model-base:=",
+        "//blazerod/model/model-formats": "blazerod-model-formats:=",
+        "//blazerod/model/model-gltf": "blazerod-model-formats-gltf:=",
+        "//blazerod/model/model-pmd": "blazerod-model-formats-pmd:=",
+        "//blazerod/model/model-pmx": "blazerod-model-formats-pmx:=",
+        "//blazerod/model/model-vmd": "blazerod-model-formats-vmd:=",
+        "//blazerod/model/model-bedrock": "blazerod-model-formats-bedrock:=",
+        "//blazerod/render:render_fabric_merged": "blazerod-render:=",
+        "//blazerod:blazerod_fabric_without_jij": "blazerod:=",
+    },
+)
+
+neoforge_merge_jij(
+    name = "mod_neoforge",
+    input = ":mod_neoforge_merged",
+    visibility = ["//visibility:public"],
+    deps = {
+        "@maven//:com_h2database_h2": "com.h2database:h2:2.3.232:LIBRARY",
+        "@maven//:com_illposed_osc_javaosc_core": "com.illposed.osc:javaosc.core:0.9:LIBRARY",
+        "@mocha//:mocha": "team.unnamed:mocha:3.0.1:LIBRARY",
+        "@maven//:org_javassist_javassist": "org.javassist:javassist:3.30.2-GA:LIBRARY",
+        "//blazerod/model/model-base": "top.fifthlight.blazerod:blazerod-model-base:%s:" % blazerod_version,
+        "//blazerod/model/model-formats": "top.fifthlight.blazerod:blazerod-model-formats:%s:" % blazerod_version,
+        "//blazerod/model/model-gltf": "top.fifthlight.blazerod:blazerod-model-formats-gltf:%s:" % blazerod_version,
+        "//blazerod/model/model-pmd": "top.fifthlight.blazerod:blazerod-model-formats-pmd:%s:" % blazerod_version,
+        "//blazerod/model/model-pmx": "top.fifthlight.blazerod:blazerod-model-formats-pmx:%s:" % blazerod_version,
+        "//blazerod/model/model-vmd": "top.fifthlight.blazerod:blazerod-model-formats-vmd:%s:" % blazerod_version,
+        "//blazerod/model/model-bedrock": "top.fifthlight.blazerod:blazerod-model-formats-bedrock:%s:" % blazerod_version,
+        "//blazerod/render:render_neoforge_merged": "top.fifthlight.blazerod:blazerod-render:%s:" % blazerod_version,
+        "//blazerod:blazerod_neoforge_without_jij": "top.fifthlight.blazerod:blazerod:%s:" % blazerod_version,
+    },
+)
+
+generate_remap_classpath(
+    name = "remap_classpath",
+    prefix = "../../../../../../",
+    deps = [
+        "//armorstand/fabric_client:remapped_deps",
+        "//game:remapped_client_intermediary",
+    ],
+)
+
+java_binary(
+    name = "client",
+    srcs = [],
+    data = [
+        ":remap_classpath",
+        "@minecraft_assets//:assets_%s" % game_version,
+        "//blazerod/model/example-models",
+        "@makeup_ultra_fast//file",
+        "@minecraft_assets//:assets",
+        "@yes_steve_model//:model_default",
+        "@yes_steve_model//:model_wine_fox",
+    ],
+    env = {
+        "LANG": "en_US.UTF8",
+    },
+    jvm_flags = [
+        "-Dkotlinx.coroutines.debug=on",
+        "-Dfabric.development=true",
+        "-Dfabric.remapClasspathFile=$(rlocationpath :remap_classpath)",
+        "-Ddev.launch.version=%s" % game_version,
+        "-Ddev.launch.type=client",
+        "-Ddev.launch.assetsPath=$(rlocationpath @minecraft_assets//:assets)",
+        "-Ddev.launch.mainClass=net.fabricmc.loader.impl.launch.knot.KnotClient",
+        "-Ddev.launch.copyFiles=" +
+        "$(rlocationpath @makeup_ultra_fast//file):shaderpacks/MakeUp-UltraFast-9.2.zip," +
+        "$(rlocationpath //blazerod/model/example-models:example-models):models," +
+        "$(rlocationpath @yes_steve_model//:model_wine_fox):models/wine_fox," +
+        "$(rlocationpath @yes_steve_model//:model_default):models/default",
+        "-Ddev.launch.expandRunfileProperties=fabric.remapClasspathFile",
+        "-Dblazerod.debug=true",
+        "-Dblazerod.debug.gui=true",
+        "-Darmorstand.debug=true",
+        "-Darmorstand.debug.bone=false",
+        "-Darmorstand.debug.gui=false",
+        "-Xmx4G",
+    ],
+    main_class = "top.fifthlight.fabazel.devlaunchwrapper.DevLaunchWrapper",
+    runtime_deps = [
+        "//rule/dev_launch_wrapper",
+        "@minecraft//:%s_client_libraries" % game_version,
+        ":mod_fabric_unmapped",
+        "//armorstand/fabric_client:remapped_deps",
+        "//blazerod:blazerod_fabric_without_jij",
+        "//game:remapped_client_named",
+        "//game:remapped_iris_fabric",
+        "//game:remapped_sodium_fabric",
+        "@maven//:com_h2database_h2",
+        "@maven//:com_illposed_osc_javaosc_core",
+        "@maven//:io_github_douira_glsl_transformer",
+        "@maven//:io_github_llamalad7_mixinextras_fabric",
+        "@maven//:net_fabricmc_fabric_language_kotlin",
+        "@maven//:net_fabricmc_fabric_loader",
+        "@maven//:net_fabricmc_sponge_mixin",
+        "@maven//:net_fabricmc_yarn_v2",
+        "@maven//:org_anarres_jcpp",
+        "@maven//:org_antlr_antlr4_runtime",
+    ],
+)
+
+java_binary(
+    name = "server",
+    srcs = [],
+    data = [":remap_classpath"],
+    jvm_flags = [
+        "-Dfabric.development=true",
+        "-Dfabric.remapClasspathFile=$(rlocationpath :remap_classpath)",
+        "-Ddev.launch.version=%s" % game_version,
+        "-Ddev.launch.type=server",
+        "-Ddev.launch.mainClass=net.fabricmc.loader.impl.launch.knot.KnotServer",
+        "-Ddev.launch.expandRunfileProperties=fabric.remapClasspathFile",
+        "-Xmx4G",
+    ],
+    main_class = "top.fifthlight.fabazel.devlaunchwrapper.DevLaunchWrapper",
+    runtime_deps = [
+        "//rule/dev_launch_wrapper",
+        "@minecraft//:%s_server_libraries" % game_version,
+        ":mod_fabric_unmapped",
+        "//armorstand/fabric_client:remapped_deps",
+        "//game:remapped_server_named",
+        "@maven//:io_github_llamalad7_mixinextras_fabric",
+        "@maven//:net_fabricmc_fabric_language_kotlin",
+        "@maven//:net_fabricmc_fabric_loader",
+        "@maven//:net_fabricmc_sponge_mixin",
+        "@maven//:net_fabricmc_yarn_v2",
+    ],
+)
+
+modrinth_dependency(
+    name = "fabric_api",
+    dependency_type = "required",
+    project_id = "P7dR8mSH",
+    version_id = fabric_api_version_modrinth,
+)
+
+modrinth_dependency(
+    name = "fabric_language_kotlin",
+    dependency_type = "required",
+    project_id = "Ha28R6CL",
+    version_id = fabric_language_kotlin_version_modrinth,
+)
+
+modrinth_dependency(
+    name = "modmenu",
+    dependency_type = "optional",
+    project_id = "mOgUt4GM",
+)
+
+upload_modrinth(
+    name = "upload_modrinth_fabric",
+    changelog = "//:update_log",
+    file = ":mod_fabric",
+    file_name = "ArmorStand-%s+fabric.jar" % mod_version,
+    game_versions = [game_version],
+    loaders = ["fabric"],
+    project_id = "tLPuDSOw",
+    token_secret_id = "modrinth_token",
+    version_id = mod_version + "+fabric",
+    version_name = mod_version,
+    version_type = "alpha",
+    deps = [
+        ":fabric_api",
+        ":fabric_language_kotlin",
+        ":modmenu",
+    ],
+)
+
+modrinth_dependency(
+    name = "kotlin_for_forge",
+    dependency_type = "required",
+    project_id = "ordsPcFz",
+    version_id = kotlin_for_forge_version_modrinth,
+)
+
+upload_modrinth(
+    name = "upload_modrinth_neoforge",
+    changelog = "//:update_log",
+    file = ":mod_neoforge",
+    file_name = "ArmorStand-%s+neoforge.jar" % mod_version,
+    game_versions = [game_version],
+    loaders = ["neoforge"],
+    project_id = "tLPuDSOw",
+    token_secret_id = "modrinth_token",
+    version_id = mod_version + "+neoforge",
+    version_name = mod_version,
+    version_type = "alpha",
+    deps = [
+        ":kotlin_for_forge",
+    ],
 )

@@ -1,0 +1,13 @@
+accessWidener v2 named
+accessible method net/minecraft/client/gl/ShaderProgram <init> (ILjava/lang/String;)V
+accessible field net/minecraft/client/gl/GlGpuBuffer id I
+accessible field net/minecraft/client/texture/NativeImage MEMORY_POOL Lcom/mojang/jtracy/MemoryPool;
+accessible method net/minecraft/client/texture/NativeImage$Format fromChannelCount (I)Lnet/minecraft/client/texture/NativeImage$Format;
+mutable field net/minecraft/client/gl/RenderPassImpl IS_DEVELOPMENT Z
+accessible field net/minecraft/client/gl/RenderPassImpl pipeline Lnet/minecraft/client/gl/CompiledShaderPipeline;
+accessible class net/minecraft/client/gl/BufferManager$ARBBufferManager
+accessible class net/minecraft/client/gl/BufferManager$DefaultBufferManager
+accessible method net/minecraft/client/gl/GlCommandEncoder drawBoundObjectWithRenderPass (Lnet/minecraft/client/gl/RenderPassImpl;IIILcom/mojang/blaze3d/vertex/VertexFormat$IndexType;I)V
+accessible field com/mojang/blaze3d/vertex/VertexFormatElement ELEMENTS Ljava/util/List;
+accessible field net/minecraft/client/render/OverlayTexture texture Lnet/minecraft/client/texture/NativeImageBackedTexture;
+accessible class net/minecraft/client/gl/GlBackend$ShaderKey

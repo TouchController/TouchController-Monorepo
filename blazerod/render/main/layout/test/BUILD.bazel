@@ -1,0 +1,34 @@
+load("//rule:junit_test.bzl", "kt_junit_test")
+
+kt_junit_test(
+    name = "std140_test",
+    srcs = ["Std140Test.kt"],
+    test_class = "top.fifthlight.blazerod.layout.test.Std140Test",
+    deps = [
+        "//blazerod/render/main/layout",
+        "@maven//:it_unimi_dsi_fastutil",
+        "@maven//:org_jetbrains_kotlin_kotlin_test",
+        "@maven//:org_joml_joml",
+    ],
+)
+
+kt_junit_test(
+    name = "std430_test",
+    srcs = ["Std430Test.kt"],
+    test_class = "top.fifthlight.blazerod.layout.test.Std430Test",
+    deps = [
+        "//blazerod/render/main/layout",
+        "@maven//:it_unimi_dsi_fastutil",
+        "@maven//:org_jetbrains_kotlin_kotlin_test",
+        "@maven//:org_joml_joml",
+    ],
+)
+
+test_suite(
+    name = "test",
+    visibility = ["//blazerod/render/main/layout:__pkg__"],
+    tests = [
+        ":std140_test",
+        ":std430_test",
+    ],
+)

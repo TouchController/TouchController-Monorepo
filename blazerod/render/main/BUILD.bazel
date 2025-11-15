@@ -1,0 +1,58 @@
+load("//:properties.bzl", "game_version")
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+java_library(
+    name = "main_resources",
+    resource_strip_prefix = "blazerod/render/main/resources",
+    resources = glob(["resources/**"]),
+    visibility = ["//blazerod/render:__subpackages__"],
+)
+
+kt_merge_library(
+    name = "main_base",
+    srcs = ["BlazeRod.kt"],
+    visibility = ["//blazerod/render:__subpackages__"],
+    deps = [
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm",
+    ],
+)
+
+kt_merge_library(
+    name = "main",
+    srcs = ["BlazeRodMain.kt"],
+    merge_deps = [
+        ":main_base",
+        "//blazerod/render/api",
+        "//blazerod/render/api/animation",
+        "//blazerod/render/api/event",
+        "//blazerod/render/api/loader",
+        "//blazerod/render/api/refcount",
+        "//blazerod/render/api/render",
+        "//blazerod/render/api/resource",
+        "//blazerod/render/expect",
+        "//blazerod/render/main/animation",
+        "//blazerod/render/main/animation/context",
+        "//blazerod/render/main/debug",
+        "//blazerod/render/main/extension",
+        "//blazerod/render/main/layout",
+        "//blazerod/render/main/mixin",
+        "//blazerod/render/main/render",
+        "//blazerod/render/main/runtime",
+        "//blazerod/render/main/runtime/data",
+        "//blazerod/render/main/runtime/load",
+        "//blazerod/render/main/runtime/renderer",
+        "//blazerod/render/main/runtime/uniform",
+        "//blazerod/render/main/systems",
+        "//blazerod/render/main/util/bitmap",
+        "//blazerod/render/main/util/blaze3d",
+        "//blazerod/render/main/util/cowbuffer",
+        "//blazerod/render/main/util/dispatchers",
+        "//blazerod/render/main/util/glsl",
+        "//blazerod/render/main/util/gpushaderpool",
+        "//blazerod/render/main/util/iterator",
+        "//blazerod/render/main/util/math",
+        "//blazerod/render/main/util/objectpool",
+        "//blazerod/render/main/util/uniform",
+    ],
+    visibility = ["//blazerod/render:__subpackages__"],
+)

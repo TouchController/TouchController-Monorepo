@@ -1,0 +1,27 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+load("//rule:merge_library.bzl", "merge_library_jar")
+
+java_binary(
+    name = "develop",
+    srcs = ["DevelopMain.java"],
+    main_class = "top.fifthlight.mergetools.test.DevelopMain",
+    deps = [
+        "//rule/expect_actual_tools/test/expect",
+    ],
+    runtime_deps = [
+        "//rule/expect_actual_tools/test/actual",
+    ],
+)
+
+merge_library_jar(
+    name = "publish_lib",
+    deps = ["//rule/expect_actual_tools/test/actual"],
+)
+
+java_binary(
+    name = "publish",
+    srcs = ["PublishMain.java"],
+    main_class = "top.fifthlight.mergetools.test.PublishMain",
+    deps = [":publish_lib"],
+    runtime_deps = ["@maven//:org_jetbrains_kotlin_kotlin_stdlib"],
+)

@@ -1,0 +1,58 @@
+# Automatically build the project and run any configured tests for every push
+# and submitted pull request. This can help catch issues that only occur on
+# certain platforms or Java versions, and provides a first line of defence
+# against bad commits.
+
+name: build
+on: [pull_request, push]
+
+jobs:
+  build-with-bazel:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+      - uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+      - name: build
+        run: |
+          bazel build \
+            --verbose_failures \
+            //mod:mod_fabric \
+            //mod:mod_neoforge \
+            //blazerod:blazerod_fabric \
+            //blazerod:blazerod_neoforge \
+            //blazerod/model/model-base \
+            //blazerod/model/model-formats \
+            //blazerod/model/model-gltf \
+            //blazerod/model/model-pmd \
+            //blazerod/model/model-pmx \
+            //blazerod/model/model-vmd \
+            //blazerod/model/model-assimp:model-assimp-merged \
+            //blazerod/example/ball_block
+      - name: test
+        run: |
+          bazel test \
+            --verbose_failures \
+            //blazerod/model:test \
+            //blazerod/render:test
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-bazel
+          path: |
+            bazel-bin/mod/mod_fabric.jar
+            bazel-bin/mod/mod_neoforge.jar
+            bazel-bin/blazerod/blazerod_fabric.jar
+            bazel-bin/blazerod/blazerod_neoforge.jar
+            bazel-bin/blazerod/model/model-base/model-base.jar
+            bazel-bin/blazerod/model/model-formats/model-formats.jar
+            bazel-bin/blazerod/model/model-gltf/model-gltf.jar
+            bazel-bin/blazerod/model/model-pmd/model-pmd.jar
+            bazel-bin/blazerod/model/model-pmx/model-pmx.jar
+            bazel-bin/blazerod/model/model-vmd/model-vmd.jar
+            bazel-bin/blazerod/model/model-assimp/model-assimp-merged.jar
+            bazel-bin/blazerod/example/ball_block/ball_block.jar

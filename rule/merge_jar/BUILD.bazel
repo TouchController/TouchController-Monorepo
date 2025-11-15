@@ -1,0 +1,8 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "merge_jar",
+    srcs = ["JarMerger.java"],
+    main_class = "top.fifthlight.fabazel.jarmerger.JarMerger",
+    visibility = ["//visibility:public"],
+)

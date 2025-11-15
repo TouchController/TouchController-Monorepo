@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "package": "top.fifthlight.blazerod.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "AddressModeMixin",
+    "GpuBufferSliceMixin",
+    "MinecraftClientAccessor",
+    "RenderPipelineBuilderMixin",
+    "RenderPipelineMixin",
+    "RenderPipelineSnippetMixin",
+    "RenderSystemMixin",
+    "ShaderTypeMixin",
+    "TextureFormatMixin",
+    "gl.GlBackendMixin",
+    "gl.GlCommandEncoderMixin",
+    "gl.GlConstMixin",
+    "gl.GlGpuBufferMixin",
+    "gl.RenderPassImplMixin",
+    "gl.ShaderProgramMixin"
+  ]
+}

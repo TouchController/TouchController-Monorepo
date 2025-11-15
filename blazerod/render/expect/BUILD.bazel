@@ -1,0 +1,17 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "expect",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = glob(
+        include = [
+            "**/*.kt",
+            "**/*.java",
+        ],
+        allow_empty = True,
+    ),
+    expect = True,
+    deps = [
+        "//blazerod/render/game:remapped_client_access_widened_named",
+    ],
+)

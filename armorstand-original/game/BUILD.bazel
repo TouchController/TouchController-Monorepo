@@ -1,0 +1,195 @@
+load("//:properties.bzl", "game_version", "mod_version")
+load("//rule:decompile_jar.bzl", "decompile_jar")
+load("//rule:extract_jar.bzl", "extract_jar")
+load("//rule:merge_mapping.bzl", "merge_mapping", "merge_mapping_input")
+load("//rule:remap_jar.bzl", "remap_jar")
+load("@rules_java//java:defs.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+extract_jar(
+    name = "intermediary_mapping",
+    entry_path = "mappings/mappings.tiny",
+    filename = "_mappings/intermediary.tiny",
+    input = "@maven//:net_fabricmc_intermediary_v2",
+)
+
+extract_jar(
+    name = "yarn_mapping",
+    entry_path = "mappings/mappings.tiny",
+    filename = "_mappings/yarn.tiny",
+    input = "@maven//:net_fabricmc_yarn_v2",
+)
+
+merge_mapping_input(
+    name = "yarn_input",
+    file = ":yarn_mapping",
+    format = "tinyv2",
+)
+
+merge_mapping_input(
+    name = "intermediary_input",
+    file = ":intermediary_mapping",
+    format = "tinyv2",
+    source_namespace = "intermediary",
+)
+
+merge_mapping(
+    name = "merged_mapping",
+    complete_namespace = {
+        "named": "intermediary",
+        "intermediary": "official",
+    },
+    inputs = [
+        ":yarn_input",
+        ":intermediary_input",
+    ],
+    output = "merged.tiny",
+    output_source_namespace = "official",
+)
+
+remap_jar(
+    name = "remapped_client_intermediary",
+    from_namespace = "official",
+    inputs = ["@minecraft//:%s_client" % game_version],
+    mapping = ":merged_mapping",
+    to_namespace = "intermediary",
+)
+
+remap_jar(
+    name = "remapped_client_named",
+    from_namespace = "official",
+    inputs = ["@minecraft//:%s_client" % game_version],
+    mapping = ":merged_mapping",
+    to_namespace = "named",
+)
+
+merge_mapping_input(
+    name = "mojang_input",
+    file = "@minecraft//:%s_client_mapping" % game_version,
+    format = "proguard",
+    source_namespace = "official",
+    namespace_mappings = {
+        "source": "mojang",
+        "target": "official",
+    }
+)
+
+merge_mapping_input(
+    name = "neoforge_yarn_fix",
+    file = ":neoforge_yarn_fix.tiny",
+    format = "tinyv2",
+    source_namespace = "official",
+)
+
+merge_mapping(
+    name = "merged_mojang_mapping",
+    inputs = [
+        ":mojang_input",
+        ":merged_mapping",
+        ":neoforge_yarn_fix",
+    ],
+    output = "merged_mojang.tiny",
+    output_source_namespace = "official",
+)
+
+remap_jar(
+    name = "remapped_neoforge_named",
+    from_namespace = "mojang",
+    inputs = ["@neoforge//:compiled_with_neoforge"],
+    classpath = ["@neoforge//:neoforge_deps"],
+    mapping = ":merged_mojang_mapping",
+    to_namespace = "named",
+)
+
+extract_jar(
+    name = "server_jar_file",
+    entry_path = "META-INF/versions/%s/server-%s.jar" % (game_version, game_version),
+    filename = "_minecraft/server.jar",
+    input = "@minecraft//:%s_server" % game_version,
+)
+
+java_import(
+    name = "server_jar",
+    jars = [
+        ":server_jar_file",
+    ],
+)
+
+remap_jar(
+    name = "remapped_server_named",
+    from_namespace = "official",
+    inputs = [":server_jar"],
+    mapping = ":merged_mapping",
+    to_namespace = "named",
+)
+
+remap_jar(
+    name = "remapped_sodium_fabric",
+    classpath = [
+        "//game:remapped_client_intermediary",
+    ],
+    from_namespace = "intermediary",
+    inputs = [
+        "@sodium_fabric//jar",
+    ],
+    mapping = "//game:merged_mapping",
+    mixin = True,
+    remap_transitive_deps = False,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
+)
+
+remap_jar(
+    name = "remapped_iris_fabric",
+    classpath = [
+        "//game:remapped_client_intermediary",
+        "@sodium_fabric//jar",
+    ],
+    from_namespace = "intermediary",
+    inputs = [
+        "@iris_fabric//jar",
+    ],
+    mapping = "//game:merged_mapping",
+    mixin = True,
+    remap_transitive_deps = False,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
+)
+
+remap_jar(
+    name = "remapped_sodium_neoforge",
+    classpath = [
+        "@neoforge//:compiled_with_neoforge",
+        "@neoforge//:neoforge_deps",
+    ],
+    from_namespace = "mojang",
+    access_widener_from_namespace = "named",
+    inputs = [
+        "@sodium_neoforge//jar",
+    ],
+    mapping = ":merged_mojang_mapping",
+    mixin = True,
+    remap_transitive_deps = False,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
+)
+
+remap_jar(
+    name = "remapped_iris_neoforge",
+    classpath = [
+        "@neoforge//:compiled_with_neoforge",
+        "@neoforge//:neoforge_deps",
+        "@sodium_neoforge//jar",
+    ],
+    from_namespace = "mojang",
+    access_widener_from_namespace = "named",
+    inputs = [
+        "@iris_neoforge//jar",
+    ],
+    mapping = ":merged_mojang_mapping",
+    mixin = True,
+    remap_transitive_deps = False,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
+)

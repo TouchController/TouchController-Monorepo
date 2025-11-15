@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "ball-block",
+  "version": "1.0.0",
+  "name": "Ball block",
+  "description": "Add a ball block to Minecraft.",
+  "authors": [
+    "fifth_light"
+  ],
+  "license": "Apache-2.0",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "top.fifthlight.blazerod.example.ballblock.BallBlockMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "1.21.8",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*"
+  }
+}

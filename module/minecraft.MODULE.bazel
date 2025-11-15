@@ -1,0 +1,58 @@
+"MODULE.bazel Minecraft part"
+
+game_versions = {
+    "1.7.10": {
+        "mappings": False,
+    },
+    "1.12.2": {
+        "mappings": False,
+    },
+    "1.16.5": {
+        "mappings": True,
+    },
+    "1.21.1": {
+        "mappings": True,
+    },
+    "1.21.3": {
+        "mappings": True,
+    },
+    "1.21.4": {
+        "mappings": True,
+    },
+    "1.21.5": {
+        "mappings": True,
+    },
+    "1.21.6": {
+        "mappings": True,
+    },
+    "1.21.7": {
+        "mappings": True,
+    },
+    "1.21.8": {
+        "mappings": True,
+    },
+    "1.21.9": {
+        "mappings": True,
+    },
+    "1.21.10": {
+        "mappings": True,
+    },
+}
+
+minecraft = use_extension("//repo:minecraft.bzl", "minecraft")
+
+[
+    minecraft.version(
+        version = version,
+        assets = True,
+        client = True,
+        server = True,
+        client_mappings = game_versions[version]["mappings"],
+        server_mappings = game_versions[version]["mappings"],
+    )
+    for version in game_versions.keys()
+]
+
+minecraft.exclude_library(names = ["org.ow2.asm:asm:9.6"])
+use_repo(minecraft, "minecraft")
+use_repo(minecraft, "minecraft_assets")

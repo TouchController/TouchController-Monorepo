@@ -1,0 +1,10 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "iterator",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = ["IteratorUtil.kt", "MapUtil.kt"],
+    deps = [
+        "@maven//:it_unimi_dsi_fastutil",
+    ]
+)

@@ -1,0 +1,90 @@
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+load("//:properties.bzl", "blazerod_version", "game_version", "fabric_language_kotlin_version_modrinth")
+load("//blazerod/model:model_info_jar.bzl", "model_info_jar")
+load("//rule/fabric:merge_jij.bzl", "fabric_merge_jij")
+load("@//rule:upload_modrinth.bzl", "modrinth_dependency", "upload_modrinth")
+
+model_info_jar(
+    name = "mod_info_json",
+    substitutions = {
+        "${mod_id}": "blazerod-model-assimp",
+        "${name}": "BlazeRod model assimp",
+        "${description}": "Assimp model loading support.",
+    },
+)
+
+kt_jvm_library(
+    name = "model-assimp",
+    srcs = glob(["**/*.kt"]),
+    resource_jars = [
+        ":mod_info_json",
+        "//blazerod:icon",
+    ],
+    resources = glob(["resources/**"]),
+    resource_strip_prefix = "blazerod/model/model-assimp/resources",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//blazerod/model/model-base",
+        "@maven//:org_slf4j_slf4j_api",
+        "@maven//:org_joml_joml",
+        "@maven//:org_lwjgl_lwjgl",
+        "@maven//:org_lwjgl_lwjgl_assimp",
+    ],
+    runtime_deps = [
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_windows",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_windows_x86",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_windows_arm64",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_linux_arm32",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_linux_arm64",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_linux",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_macos",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_macos_arm64",
+    ],
+)
+
+fabric_merge_jij(
+    name = "model-assimp-merged",
+    input = ":model-assimp",
+    visibility = ["//visibility:public"],
+    deps = {
+        "@maven//:org_lwjgl_lwjgl_assimp": "org_lwjgl_lwjgl_assimp:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_windows": "org_lwjgl_lwjgl_assimp_natives_windows:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_windows_x86": "org_lwjgl_lwjgl_assimp_natives_windows_x86:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_windows_arm64": "org_lwjgl_lwjgl_assimp_natives_windows_arm64:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_linux_arm32": "org_lwjgl_lwjgl_assimp_natives_linux_arm32:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_linux_arm64": "org_lwjgl_lwjgl_assimp_natives_linux_arm64:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_linux": "org_lwjgl_lwjgl_assimp_natives_linux:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_macos": "org_lwjgl_lwjgl_assimp_natives_macos:3.3.3",
+        "@maven//:org_lwjgl_lwjgl_assimp_natives_macos_arm64": "org_lwjgl_lwjgl_assimp_natives_macos_arm64:3.3.3",
+    },
+)
+
+modrinth_dependency(
+    name = "fabric_language_kotlin",
+    project_id = "Ha28R6CL",
+    version_id = fabric_language_kotlin_version_modrinth,
+    dependency_type = "required",
+)
+
+modrinth_dependency(
+    name = "armorstand",
+    project_id = "tLPuDSOw",
+    dependency_type = "required",
+)
+
+upload_modrinth(
+    name = "upload_modrinth",
+    token_secret_id = "modrinth_token",
+    project_id = "xeMk2Ovz",
+    version_name = blazerod_version,
+    version_id = blazerod_version,
+    version_type = "alpha",
+    game_versions = [game_version],
+    loaders = ["fabric"],
+    deps = [
+        ":fabric_language_kotlin",
+        ":armorstand",
+    ],
+    file = ":model-assimp-merged",
+    file_name = "blazerod-model-assimp-%s.jar" % blazerod_version,
+)

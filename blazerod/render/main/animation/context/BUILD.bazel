@@ -1,0 +1,18 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "context",
+    srcs = glob(["*.kt"]),
+    actual = True,
+    visibility = ["//blazerod/render:__subpackages__"],
+    deps = [
+        "//blazerod/model/model-base",
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        "@maven//:org_joml_joml",
+    ],
+    merge_deps = [
+        "//blazerod/render/api/animation",
+        "//blazerod/render/main/mixin",
+        "//blazerod/render/main/util/math",
+    ],
+)

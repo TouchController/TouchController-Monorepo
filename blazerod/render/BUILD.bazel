@@ -1,0 +1,64 @@
+load("//rule:remap_jar.bzl", "remap_jar")
+
+alias(
+    name = "render_fabric_unmapped",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/fabric:fabric_unmapped",
+)
+
+alias(
+    name = "render_fabric_unmapped_merged",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/fabric:fabric_unmapped_merged",
+)
+
+remap_jar(
+    name = "render_fabric_merged",
+    visibility = ["//visibility:public"],
+    classpath = ["//game:remapped_client_named"],
+    from_namespace = "named",
+    inputs = [":render_fabric_unmapped_merged"],
+    mapping = "//game:merged_mapping",
+    mixin = True,
+    to_namespace = "intermediary",
+)
+
+alias(
+    name = "render_main",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/main",
+)
+
+alias(
+    name = "render_neoforge_unmapped",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/neoforge:neoforge_unmapped",
+)
+
+alias(
+    name = "render_neoforge_unmapped_merged",
+    visibility = ["//visibility:public"],
+    actual = "//blazerod/render/neoforge:neoforge_unmapped_merged",
+)
+
+remap_jar(
+    name = "render_neoforge_merged",
+    visibility = ["//visibility:public"],
+    classpath = [
+        "//game:remapped_neoforge_named",
+        "@neoforge//:neoforge_deps",
+    ],
+    from_namespace = "named",
+    inputs = [":render_neoforge_unmapped_merged"],
+    mapping = "//game:merged_mojang_mapping",
+    mixin = True,
+    to_namespace = "mojang",
+)
+
+test_suite(
+    name = "test",
+    tests = [
+        "//blazerod/render/main/layout/test",
+        "//blazerod/render/main/runtime/test",
+    ],
+)

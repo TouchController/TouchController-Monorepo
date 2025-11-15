@@ -1,3 +1,0 @@
-tiny	2	0	official	named
-c	fxa	net/minecraft/client/gui/hud/InGameHud
-	m	(Lfxb;Lftu;)V	p	renderItemHotbar

@@ -1,0 +1,13 @@
+accessWidener v2 named
+accessible field net/minecraft/client/gui/widget/EntryListWidget MENU_LIST_BACKGROUND_TEXTURE Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/client/gui/widget/EntryListWidget INWORLD_MENU_LIST_BACKGROUND_TEXTURE Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/client/gui/widget/TabNavigationWidget grid Lnet/minecraft/client/gui/widget/DirectionalLayoutWidget;
+accessible field net/minecraft/client/gui/widget/TabNavigationWidget tabButtons Lcom/google/common/collect/ImmutableList;
+accessible field net/minecraft/client/gui/widget/CheckboxWidget checked Z
+accessible field net/minecraft/client/Mouse cursorDeltaX D
+accessible field net/minecraft/client/Mouse cursorDeltaY D
+accessible field net/minecraft/client/gui/widget/CheckboxWidget SELECTED_HIGHLIGHTED_TEXTURE Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/client/gui/widget/CheckboxWidget SELECTED_TEXTURE Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/client/gui/widget/CheckboxWidget HIGHLIGHTED_TEXTURE Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/client/gui/widget/CheckboxWidget TEXTURE Lnet/minecraft/util/Identifier;
+

@@ -1,0 +1,26 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+load("@rules_kotlin//kotlin:core.bzl", "kt_compiler_plugin", "kt_kotlinc_options")
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+
+kt_kotlinc_options(
+    name = "kotlinc_opts",
+    jvm_target = "11",
+)
+
+kt_jvm_library(
+    name = "access_widener_extractor_library",
+    srcs = glob(["*.kt"]),
+    kotlinc_opts = "kotlinc_opts",
+    deps = [
+        "//:kotlin_serialization",
+        "@maven//:net_fabricmc_access_widener",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm",
+    ],
+)
+
+java_binary(
+    name = "access_widener_extractor",
+    main_class = "top.fifthlight.fabazel.accesswidenerextractor.AccessWidenerExtractorKt",
+    visibility = ["//visibility:public"],
+    runtime_deps = [":access_widener_extractor_library"],
+)

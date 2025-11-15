@@ -1,0 +1,71 @@
+load("//:properties.bzl", "blazerod_version", "issue_tracker", "license", "home_page", "sources_page",)
+load("//rule:remap_jar.bzl", "remap_jar")
+load("//rule/fabric:mod_json_jar.bzl", "fabric_mod_json_jar")
+load("//rule:merge_library.bzl", "kt_merge_library", "merge_library_jar")
+
+remap_jar(
+    name = "remapped_deps",
+    visibility = ["//blazerod/render:__subpackages__"],
+    classpath = ["//game:remapped_client_intermediary"],
+    from_namespace = "intermediary",
+    inputs = ["@maven//:net_fabricmc_fabric_api_fabric_api"],
+    mapping = "//game:merged_mapping",
+    mixin = True,
+    remap_transitive_deps = True,
+    remove_jar_in_jar = True,
+    to_namespace = "named",
+)
+
+fabric_mod_json_jar(
+    name = "fabric_mod_json",
+    src = "fabric.mod.json.template",
+    resource_strip_prefix = "blazerod/render/fabric",
+    substitutions = {
+        "${version}": blazerod_version,
+        "${license}": license,
+        "${home_page}": home_page,
+        "${sources_page}": sources_page,
+        "${issue_tracker}": issue_tracker,
+    },
+)
+
+kt_merge_library(
+    name = "fabric_unmapped",
+    visibility = ["//blazerod/render:__subpackages__"],
+    srcs = glob(["**/*.kt"]),
+    resource_jars = [
+        "//blazerod:icon",
+        ":fabric_mod_json",
+        "//blazerod/render/game:access_widener",
+        "//blazerod/render/main:main_resources",
+    ],
+    actual = True,
+    deps = [
+        "//game:remapped_sodium_fabric",
+        "//game:remapped_iris_fabric",
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        ":remapped_deps",
+        "@maven//:org_slf4j_slf4j_api",
+        "@maven//:net_fabricmc_fabric_language_kotlin",
+        "@maven//:net_fabricmc_fabric_loader",
+    ],
+    merge_deps = [
+        "//blazerod/render/main",
+        "//blazerod/render/api/resource",
+        "//blazerod/render/api/event",
+        "//blazerod/render/expect",
+        "//blazerod/render/main:main_base",
+        "//blazerod/render/main/debug",
+        "//blazerod/render/main/util/dispatchers",
+        "//blazerod/render/main/util/objectpool",
+        "//blazerod/render/main/layout",
+        "//blazerod/render/main/runtime",
+        "//blazerod/render/main/runtime/uniform",
+    ],
+)
+
+merge_library_jar(
+    name = "fabric_unmapped_merged",
+    visibility = ["//blazerod/render:__subpackages__"],
+    deps = [":fabric_unmapped"],
+)

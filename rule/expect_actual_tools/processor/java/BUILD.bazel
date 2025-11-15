@@ -1,0 +1,58 @@
+load("@rules_java//java:defs.bzl", "java_plugin", "java_library")
+
+java_library(
+    name = "expect_processor_lib",
+    srcs = ["expect/ExpectAnnotationProcessor.java"],
+    deps = [
+        "//rule/expect_actual_tools/api",
+        "//rule/expect_actual_tools/processor/lib",
+        "@maven//:com_palantir_javapoet_javapoet",
+        "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+    ],
+)
+
+java_library(
+    name = "actual_processor_lib",
+    srcs = ["actual/ActualAnnotationProcessor.java"],
+    deps = [
+        "//rule/expect_actual_tools/api:api",
+        "//rule/expect_actual_tools/processor/lib",
+        "@maven//:com_palantir_javapoet_javapoet",
+        "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+    ],
+)
+
+java_plugin(
+    name = "expect_processor",
+    visibility = ["//visibility:public"],
+    srcs = ["expect/ExpectAnnotationProcessor.java"],
+    deps = [
+        "//rule/expect_actual_tools/api:api",
+        "//rule/expect_actual_tools/processor/lib",
+        "@maven//:com_palantir_javapoet_javapoet",
+        "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+    ],
+    generates_api = True,
+    processor_class = "top.fifthlight.mergetools.processor.expect.ExpectAnnotationProcessor",
+)
+
+java_plugin(
+    name = "actual_processor",
+    visibility = ["//visibility:public"],
+    srcs = ["actual/ActualAnnotationProcessor.java"],
+    deps = [
+        "//rule/expect_actual_tools/api:api",
+        "//rule/expect_actual_tools/processor/lib",
+        "@maven//:com_palantir_javapoet_javapoet",
+        "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+    ],
+    processor_class = "top.fifthlight.mergetools.processor.actual.ActualAnnotationProcessor",
+)

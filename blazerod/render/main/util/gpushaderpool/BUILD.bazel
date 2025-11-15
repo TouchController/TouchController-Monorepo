@@ -1,0 +1,16 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "gpushaderpool",
+    srcs = ["GpuShaderDataPool.kt", "SlicedMappableRingBuffer.kt"],
+    merge_deps = [
+        "//blazerod/render/main/extension",
+        "//blazerod/render/main/util/math",
+        "//blazerod/render/main/util/objectpool",
+    ],
+    visibility = ["//blazerod/render:__subpackages__"],
+    deps = [
+        "//blazerod/render/game:remapped_client_access_widened_named",
+        "@maven//:it_unimi_dsi_fastutil",
+    ],
+)

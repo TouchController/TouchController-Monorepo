@@ -1,5 +1,0 @@
-filegroup(
-    name = "licenses",
-    visibility = ["//visibility:public"],
-    srcs = glob(["LICENSE.*"]) + ["README.md"],
-)

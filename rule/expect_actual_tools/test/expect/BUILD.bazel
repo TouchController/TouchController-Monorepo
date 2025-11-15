@@ -1,0 +1,8 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+	name = "expect",
+    visibility = ["//rule/expect_actual_tools/test:__subpackages__"],
+	srcs = ["TestInterface.java", "TestInterfaceKt.kt"],
+	expect = True,
+)

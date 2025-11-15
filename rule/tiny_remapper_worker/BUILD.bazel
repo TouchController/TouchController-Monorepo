@@ -1,0 +1,20 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "tiny_remapper_worker",
+    srcs = glob(["*.java"]),
+    main_class = "top.fifthlight.fabazel.remapper.TinyRemapperWorker",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:net_fabricmc_tiny_remapper",
+        "@maven//:net_fabricmc_access_widener",
+        "@maven//:org_ow2_asm_asm_commons",
+        "@maven//:net_fabricmc_mapping_io",
+        "@maven//:net_fabricmc_mapping_io_extras",
+        "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+        "@maven//:com_google_jimfs_jimfs",
+        "//rule/worker_api",
+    ],
+)

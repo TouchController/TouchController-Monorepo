@@ -1,0 +1,18 @@
+load("//rule:merge_library.bzl", "kt_merge_library")
+
+kt_merge_library(
+    name = "animation",
+    srcs = glob(["*.kt"]),
+    actual = True,
+    merge_deps = [
+        "//blazerod/render/main/animation/context",
+        "//blazerod/render/main/runtime",
+        "//blazerod/render/api/animation",
+        "//blazerod/render/api/resource",
+    ],
+    visibility = ["//blazerod/render:__subpackages__"],
+    deps = [
+        "//blazerod/model/model-base",
+        "@maven//:org_joml_joml",
+    ],
+)

@@ -1,0 +1,35 @@
+{
+  "spec": 2,
+  "metadata": {
+    "name": "Bedrock test model",
+    "tips": "A simple test model for checking position and UV.",
+    "license": {
+      "type": "LGPL-3.0-or-later"
+    },
+    "authors": [
+      {
+        "name": "fifth_light",
+        "role": "Model",
+        "contact": {
+          "GitHub": "https://github.com/fifth-light"
+        }
+      }
+    ],
+    "link": {
+      "home": "https://github.com/fifth-light/ArmorStand"
+    }
+  },
+  "files": {
+    "player": {
+      "model": {
+        "main": "models/main.json"
+      },
+      "animation": {
+        "main": "animations/main.animation.json"
+      },
+      "texture": [
+        "textures/texture.png"
+      ]
+    }
+  }
+}

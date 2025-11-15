@@ -1,0 +1,9 @@
+exports_files(glob(["resources/**"]))
+
+test_suite(
+    name = "test",
+    tests = [
+        "//blazerod/model/model-gltf/test",
+        "//blazerod/model/model-pmx/test",
+    ],
+)
