@@ -1,12 +1,14 @@
 # TouchControllerWiki
 
 > 欢迎来到新 TouchControllerWiki！
-> 
-> 引用本Wiki内容时务必注明出处。
+>
+> 引用本 Wiki 内容时务必注明出处。
 
 这里是 TouchController 的官方维基，我们欢迎任何形式的贡献！
 
 The official wiki for TouchController, welcomes contributions in any form.
+
+<a href="https://tcwiki.fifthlight.top/">TouchControllerWiki</a> © 2025 by <a href="https://github.com/TouchController">TouchController</a> is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
 
 ## TouchController 简介
 
