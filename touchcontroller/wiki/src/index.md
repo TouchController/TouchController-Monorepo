@@ -2,7 +2,7 @@
 
 > 欢迎来到新 TouchControllerWiki！
 >
-> 引用本 Wiki 内容时务必注明出处。
+> 本 Wiki 采用 CC BY-SA 4.0 许可协议，引用本 Wiki 内容时务必注明出处。
 
 这里是 TouchController 的官方维基，我们欢迎任何形式的贡献！
 
