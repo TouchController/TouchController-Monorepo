@@ -14,7 +14,8 @@ import kotlin.math.min
 class CrossfadeAnimationItemPendingValues(
     val sourcePending: AnimationItemPendingValues,
     val targetPending: AnimationItemPendingValues,
-    var weight: Float
+    var weight: Float,
+    var rootWeight: Float
 ) : AnimationItemPendingValues
 
 class CrossfadeAnimationState(
@@ -66,8 +67,9 @@ class CrossfadeAnimationItemInstance(
         val targetPending = targetInstance.update(context, crossfadeState.targetState)
         
         val weight = min(1f, max(0f, crossfadeState.elapsedTime / crossfadeState.duration))
+        val rootWeight = min(1f, max(0f, crossfadeState.elapsedTime / 0.05f))
         
-        return CrossfadeAnimationItemPendingValues(sourcePending, targetPending, weight)
+        return CrossfadeAnimationItemPendingValues(sourcePending, targetPending, weight, rootWeight)
     }
 
     @Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
@@ -81,8 +83,8 @@ class CrossfadeAnimationItemInstance(
         val modelImpl = instance as ModelInstanceImpl
         
         val weight = crossfadeValues.weight
+        val rootWeight = crossfadeValues.rootWeight
         
-        // If the crossfade is complete, just apply the target animation directly
         if (weight >= 1f) {
             targetInstance.apply(modelImpl, crossfadeValues.targetPending)
             return
@@ -91,7 +93,6 @@ class CrossfadeAnimationItemInstance(
         val sourcePendingImpl = crossfadeValues.sourcePending as AnimationItemPendingValuesImpl
         val targetPendingImpl = crossfadeValues.targetPending as AnimationItemPendingValuesImpl
         
-        // Fast path: if weight is 0, just apply source
         if (weight <= 0f) {
             sourceInstance.apply(modelImpl, crossfadeValues.sourcePending)
             return
@@ -121,16 +122,19 @@ class CrossfadeAnimationItemInstance(
             
             appliedNodes.add(key)
             
+            // Check if this is a Root node (no parent)
+            val isRoot = modelImpl.scene.nodes[nodeIdx].parent == null
+            val currentWeight = if (isRoot && tChannel is AnimationChannelItem.TranslationItem) rootWeight else weight
+            
             when (tChannel) {
                 is AnimationChannelItem.TranslationItem -> {
                     val tVec = tVal as Vector3f
                     if (sVal != null) {
                         val sVec = sVal as Vector3f
-                        tVec.lerp(sVec, 1f - weight) // if weight=1, tVec unchanged. if weight=0, tVec=sVec.
+                        tVec.lerp(sVec, 1f - currentWeight)
                     } else {
-                        // interpolate from identity (0,0,0)
                         val sVec = Vector3f(0f, 0f, 0f)
-                        tVec.lerp(sVec, 1f - weight)
+                        tVec.lerp(sVec, 1f - currentWeight)
                     }
                     tChannel.applyUnsafe(modelImpl, tVec)
                 }
@@ -138,11 +142,10 @@ class CrossfadeAnimationItemInstance(
                     val tQuat = tVal as Quaternionf
                     if (sVal != null) {
                         val sQuat = sVal as Quaternionf
-                        tQuat.slerp(sQuat, 1f - weight)
+                        tQuat.slerp(sQuat, 1f - currentWeight)
                     } else {
-                        // interpolate from identity
                         val sQuat = Quaternionf()
-                        tQuat.slerp(sQuat, 1f - weight)
+                        tQuat.slerp(sQuat, 1f - currentWeight)
                     }
                     tChannel.applyUnsafe(modelImpl, tQuat)
                 }
@@ -150,16 +153,15 @@ class CrossfadeAnimationItemInstance(
                     val tVec = tVal as Vector3f
                     if (sVal != null) {
                         val sVec = sVal as Vector3f
-                        tVec.lerp(sVec, 1f - weight)
+                        tVec.lerp(sVec, 1f - currentWeight)
                     } else {
-                        // interpolate from identity (1,1,1)
                         val sVec = Vector3f(1f, 1f, 1f)
-                        tVec.lerp(sVec, 1f - weight)
+                        tVec.lerp(sVec, 1f - currentWeight)
                     }
                     tChannel.applyUnsafe(modelImpl, tVec)
                 }
                 else -> {
-                    if (weight >= 0.5f) {
+                    if (currentWeight >= 0.5f) {
                         tChannel.applyUnsafe(modelImpl, tVal)
                     } else if (sVal != null) {
                         for (j in sourceChannels.indices) {
@@ -182,27 +184,31 @@ class CrossfadeAnimationItemInstance(
             
             if (!appliedNodes.contains(key)) {
                 val sVal = sourcePendingImpl.pendingValues[i]
+                
+                val isRoot = modelImpl.scene.nodes[nodeIdx].parent == null
+                val currentWeight = if (isRoot && sChannel is AnimationChannelItem.TranslationItem) rootWeight else weight
+                
                 when (sChannel) {
                     is AnimationChannelItem.TranslationItem -> {
                         val sVec = sVal as Vector3f
                         val tVec = Vector3f(0f, 0f, 0f)
-                        sVec.lerp(tVec, weight) // if weight=1, sVec=(0,0,0)
+                        sVec.lerp(tVec, currentWeight)
                         sChannel.applyUnsafe(modelImpl, sVec)
                     }
                     is AnimationChannelItem.RotationItem -> {
                         val sQuat = sVal as Quaternionf
                         val tQuat = Quaternionf()
-                        sQuat.slerp(tQuat, weight)
+                        sQuat.slerp(tQuat, currentWeight)
                         sChannel.applyUnsafe(modelImpl, sQuat)
                     }
                     is AnimationChannelItem.ScaleItem -> {
                         val sVec = sVal as Vector3f
                         val tVec = Vector3f(1f, 1f, 1f)
-                        sVec.lerp(tVec, weight)
+                        sVec.lerp(tVec, currentWeight)
                         sChannel.applyUnsafe(modelImpl, sVec)
                     }
                     else -> {
-                        if (weight < 0.5f) {
+                        if (currentWeight < 0.5f) {
                             sChannel.applyUnsafe(modelImpl, sVal)
                         }
                     }
