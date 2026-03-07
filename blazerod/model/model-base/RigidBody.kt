@@ -19,6 +19,7 @@ data class RigidBody(
     val physicsMode: PhysicsMode,
     val ccdMotionThreshold: Float = 0f,
     val ccdSweptSphereRadius: Float = 0f,
+    val collisionMargin: Float = 0.04f,
 ) {
     enum class ShapeType {
         SPHERE,

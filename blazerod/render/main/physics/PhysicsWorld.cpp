@@ -317,6 +317,10 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             rigidbody->setCcdSweptSphereRadius(rigidbody_item.ccd_swept_sphere_radius);
         }
 
+        // Apply Native Collision Margin
+        rigidbody->setContactProcessingThreshold(BT_LARGE_FLOAT);
+        rigidbody->setMargin(rigidbody_item.collision_margin);
+
         rigidbody->setSleepingThresholds(0.01f, 0.0017453293f);
         this->world->addRigidBody(rigidbody.get(), rigidbody_item.collision_group, rigidbody_item.collision_mask);
         if (rigidbody_item.physics_mode != PhysicsMode::PHYSICS) {
@@ -414,6 +418,14 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
         }
         for (int i = 3; i < 6; i++) {
             constraint->setDamping(i, 0.6f); // Rotational - Moderate to stop twisting without "freezing"
+        }
+
+        // --- Constraint Tuning (Proper MMD Fix) ---
+        // softness, bias_factor, and relaxation_factor control how constraints behave at limits.
+        for (int i = 0; i < 6; i++) {
+            constraint->setLimitSoftness(i, joint_item.softness);
+            constraint->setBiasFactor(i, joint_item.bias_factor);
+            constraint->setRelaxationFactor(i, joint_item.relaxation_factor);
         }
 
         this->world->addConstraint(constraint.get(), false);

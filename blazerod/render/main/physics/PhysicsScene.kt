@@ -28,7 +28,7 @@ class PhysicsScene(
             .putFloat(offset + 4, vector.y())
             .putFloat(offset + 8, vector.z())
 
-        val rigidBodyItemSize = 80
+        val rigidBodyItemSize = 84
         val rigidBodiesBuffer = ByteBuffer.allocateDirect(rigidBodyItemSize * rigidBodies.size)
             .order(ByteOrder.nativeOrder())
         rigidBodies.forEachIndexed { index, rigidBody ->
@@ -47,9 +47,10 @@ class PhysicsScene(
             rigidBodiesBuffer.putFloat(offset + 68, rigidBody.frictionForce)
             rigidBodiesBuffer.putFloat(offset + 72, rigidBody.ccdMotionThreshold)
             rigidBodiesBuffer.putFloat(offset + 76, rigidBody.ccdSweptSphereRadius)
+            rigidBodiesBuffer.putFloat(offset + 80, rigidBody.collisionMargin)
         }
 
-        val jointItemSize = 108
+        val jointItemSize = 120
         val jointsBuffer = ByteBuffer.allocateDirect(jointItemSize * joints.size)
             .order(ByteOrder.nativeOrder())
         joints.forEachIndexed { index, joint ->
@@ -65,6 +66,9 @@ class PhysicsScene(
             jointsBuffer.putVector3f(offset + 72, joint.rotationMax)
             jointsBuffer.putVector3f(offset + 84, joint.positionSpring)
             jointsBuffer.putVector3f(offset + 96, joint.rotationSpring)
+            jointsBuffer.putFloat(offset + 108, joint.softness)
+            jointsBuffer.putFloat(offset + 112, joint.biasFactor)
+            jointsBuffer.putFloat(offset + 116, joint.relaxationFactor)
         }
 
         try {

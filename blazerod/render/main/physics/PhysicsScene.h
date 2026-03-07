@@ -44,6 +44,7 @@ struct RigidBody {
     PhysicsMode physics_mode;
     float ccd_motion_threshold;
     float ccd_swept_sphere_radius;
+    float collision_margin;
 };
 
 struct Joint {
@@ -58,6 +59,9 @@ struct Joint {
     Vector3f rotation_max;
     Vector3f position_spring;
     Vector3f rotation_spring;
+    float softness;
+    float bias_factor;
+    float relaxation_factor;
 };
 
 class PhysicsScene {

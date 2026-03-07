@@ -28,7 +28,7 @@ static void CopyVector3fField(Vector3f& vector, void* data) {
 }
 
 static std::vector<RigidBody> DeserializeRigidbodies(size_t size, void* data) {
-    const size_t rigidbody_size = 80;
+    const size_t rigidbody_size = 84;
     if (size == 0) {
         throw std::invalid_argument("Empty rigidbody data");
     }
@@ -58,6 +58,7 @@ static std::vector<RigidBody> DeserializeRigidbodies(size_t size, void* data) {
         CopyField(rigidbody.friction_force, rigidbody_data + 68);
         CopyField(rigidbody.ccd_motion_threshold, rigidbody_data + 72);
         CopyField(rigidbody.ccd_swept_sphere_radius, rigidbody_data + 76);
+        CopyField(rigidbody.collision_margin, rigidbody_data + 80);
 
         rigidbodies.push_back(rigidbody);
     }
@@ -66,7 +67,7 @@ static std::vector<RigidBody> DeserializeRigidbodies(size_t size, void* data) {
 }
 
 static std::vector<Joint> DeserializeJoints(size_t size, void* data) {
-    const size_t joint_size = 108;
+    const size_t joint_size = 120;
     if (size % joint_size != 0) {
         throw std::invalid_argument("Invalid joint size");
     }
@@ -90,6 +91,9 @@ static std::vector<Joint> DeserializeJoints(size_t size, void* data) {
         CopyVector3fField(joint.rotation_max, joint_data + 72);
         CopyVector3fField(joint.position_spring, joint_data + 84);
         CopyVector3fField(joint.rotation_spring, joint_data + 96);
+        CopyField(joint.softness, joint_data + 108);
+        CopyField(joint.bias_factor, joint_data + 112);
+        CopyField(joint.relaxation_factor, joint_data + 116);
 
         joints.push_back(joint);
     }

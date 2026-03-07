@@ -1171,6 +1171,13 @@ class PmxLoader : ModelFileLoader {
                         )
                     }
 
+                    val garmentGroupMask = rigidBodies.filter {
+                        val n = it.nameLocal.lowercase()
+                        n.contains("vest") || n.contains("shirt") || n.contains("coat") ||
+                        n.contains("jacket") || n.contains("suit") || n.contains("dress") ||
+                        n.contains("inner") || n.contains("outer") || n.contains("服") || n.contains("衣")
+                    }.fold(0) { acc, rb -> acc or (1 shl rb.groupId) }
+
                     boneToRigidBodyMap[index]?.forEach { index ->
                         add(
                             NodeComponent.RigidBodyComponent(
@@ -1203,7 +1210,12 @@ class PmxLoader : ModelFileLoader {
                                     }
 
                                      val baseGroup = 1 shl rigidBody.groupId
-                                     val collisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
+                                     val baseCollisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
+                                     val collisionMask = if (isBreast) {
+                                         baseCollisionMask and garmentGroupMask.inv()
+                                     } else {
+                                         baseCollisionMask
+                                     }
                                      val name = rigidBody.nameLocal.lowercase()
                                      val isPhysicsEnabled = adjustedPhysicsMode != RigidBody.PhysicsMode.FOLLOW_BONE
                                      
@@ -1230,8 +1242,6 @@ class PmxLoader : ModelFileLoader {
                                     val finalMoveAttenuation = rigidBody.moveAttenuation.coerceAtLeast(safetyDamping)
                                     val finalRotationDamping = rigidBody.rotationDamping.coerceAtLeast(safetyDamping)
 
-                                    // Special: Use PHYSICS_PLUS_BONE for breasts to prevent "rubber stretching" from the torso.
-                                    // This keeps them translationally locked to the chest bone while letting Bullet drive rotation.
                                     val finalPhysicsMode = if (isBreast && adjustedPhysicsMode == RigidBody.PhysicsMode.PHYSICS) {
                                         RigidBody.PhysicsMode.PHYSICS_PLUS_BONE
                                     } else {
@@ -1258,10 +1268,11 @@ class PmxLoader : ModelFileLoader {
                                             isHair -> rigidBody.repulsion.coerceAtMost(0.1f)
                                             else -> rigidBody.repulsion
                                         },
-                                        frictionForce = rigidBody.frictionForce,
+                                        frictionForce = if (isHair) 0f else rigidBody.frictionForce,
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
-                                        ccdSweptSphereRadius = sweptRadius
+                                        ccdSweptSphereRadius = sweptRadius,
+                                        collisionMargin = if (isHair || isBreast) 0.001f else 0.04f
                                     )
                                 },
                             )
@@ -1438,6 +1449,9 @@ class PmxLoader : ModelFileLoader {
                             rotationMax = joint.rotationMaximum,
                             positionSpring = joint.positionSpring,
                             rotationSpring = joint.rotationSpring,
+                            softness = 0.9f,
+                            biasFactor = 0.3f,
+                            relaxationFactor = 1.0f,
                         )
                     },
                     expressions = buildList {

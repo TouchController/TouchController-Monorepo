@@ -16,4 +16,7 @@ data class RenderPhysicsJoint(
     val rotationMax: Vector3fc,
     val positionSpring: Vector3fc,
     val rotationSpring: Vector3fc,
+    val softness: Float = 1.0f,
+    val biasFactor: Float = 0.3f,
+    val relaxationFactor: Float = 1.0f,
 )
