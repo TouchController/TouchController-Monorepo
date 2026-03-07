@@ -311,7 +311,6 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
         auto rigidbody = std::make_unique<btRigidBody>(rigidbody_info);
         
         // --- CCD (Continuous Collision Detection) ---
-        // Prevents fast-moving small objects (hair/breasts) from tunneling.
         if (rigidbody_item.ccd_motion_threshold > 0.0f) {
             rigidbody->setCcdMotionThreshold(rigidbody_item.ccd_motion_threshold);
             rigidbody->setCcdSweptSphereRadius(rigidbody_item.ccd_swept_sphere_radius);
@@ -319,7 +318,9 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
 
         // Apply Native Collision Margin
         rigidbody->setContactProcessingThreshold(BT_LARGE_FLOAT);
-        rigidbody->setMargin(rigidbody_item.collision_margin);
+        if (rigidbody->getCollisionShape()) {
+            rigidbody->getCollisionShape()->setMargin(rigidbody_item.collision_margin);
+        }
 
         rigidbody->setSleepingThresholds(0.01f, 0.0017453293f);
         this->world->addRigidBody(rigidbody.get(), rigidbody_item.collision_group, rigidbody_item.collision_mask);
@@ -422,10 +423,12 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
 
         // --- Constraint Tuning (Proper MMD Fix) ---
         // softness, bias_factor, and relaxation_factor control how constraints behave at limits.
-        for (int i = 0; i < 6; i++) {
-            constraint->setLimitSoftness(i, joint_item.softness);
-            constraint->setBiasFactor(i, joint_item.bias_factor);
-            constraint->setRelaxationFactor(i, joint_item.relaxation_factor);
+        constraint->getTranslationalLimitMotor()->m_limitSoftness = joint_item.softness;
+        for (int i = 0; i < 3; i++) {
+            btRotationalLimitMotor* rotMotor = constraint->getRotationalLimitMotor(i);
+            rotMotor->m_limitSoftness = joint_item.softness;
+            rotMotor->m_biasFactor = joint_item.bias_factor;
+            rotMotor->m_relaxationFactor = joint_item.relaxation_factor;
         }
 
         this->world->addConstraint(constraint.get(), false);
