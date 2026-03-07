@@ -421,14 +421,16 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->setDamping(i, 0.6f); // Rotational - Moderate to stop twisting without "freezing"
         }
 
-        // --- Constraint Tuning (Proper MMD Fix) ---
-        // softness, bias_factor, and relaxation_factor control how constraints behave at limits.
-        constraint->getTranslationalLimitMotor()->m_limitSoftness = joint_item.softness;
+        btTranslationalLimitMotor* transMotor = constraint->getTranslationalLimitMotor();
+        transMotor->m_limitSoftness = joint_item.softness;
+        transMotor->m_stopERP.setValue(joint_item.bias_factor, joint_item.bias_factor, joint_item.bias_factor);
+        transMotor->m_normalCFM.setValue(joint_item.relaxation_factor, joint_item.relaxation_factor, joint_item.relaxation_factor);
+
         for (int i = 0; i < 3; i++) {
             btRotationalLimitMotor* rotMotor = constraint->getRotationalLimitMotor(i);
             rotMotor->m_limitSoftness = joint_item.softness;
-            rotMotor->m_biasFactor = joint_item.bias_factor;
-            rotMotor->m_relaxationFactor = joint_item.relaxation_factor;
+            rotMotor->m_stopERP = joint_item.bias_factor;
+            rotMotor->m_stopCFM = joint_item.relaxation_factor;
         }
 
         this->world->addConstraint(constraint.get(), false);
