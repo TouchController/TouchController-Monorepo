@@ -1202,11 +1202,42 @@ class PmxLoader : ModelFileLoader {
                                         basePhysicsMode
                                     }
 
-                                    val baseGroup = 1 shl rigidBody.groupId
-                                    // PMX: bit set = IGNORE collision. Bullet: bit set = ALLOW collision.
-                                    // So we must invert the nonCollisionGroup mask.
-                                    val collisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
+                                     val baseGroup = 1 shl rigidBody.groupId
+                                     val collisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
+                                     val name = rigidBody.nameLocal.lowercase()
+                                     val isPhysicsEnabled = adjustedPhysicsMode != RigidBody.PhysicsMode.FOLLOW_BONE
+                                     
+                                     val isBreast = name.contains("乳") || name.contains("胸")
+                                     val isHair = name.contains("髪") || name.contains("hair") || name.contains("side") || name.contains("tail")
+                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
+
+                                    // Identify fast-moving or thin bodies that need CCD (Continuous Collision Detection)
+                                    val needsCCD = isPhysicsEnabled && (isBreast || isHair || isSkirt)
+
+                                    val threshold = if (needsCCD) {
+                                        // Set threshold based on the smallest dimension to catch tunneling
+                                        val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
+                                        minSize * 0.5f // Trigger CCD if moved more than half its size in one step
+                                    } else 0f
+
+                                    val sweptRadius = if (needsCCD) {
+                                        val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
+                                        minSize * 0.2f // Internal swept sphere for collision detection
+                                    } else 0f
                                     
+                                    // Safety: Ensure minimum damping for physics-driven bodies to prevent infinite jitter
+                                    val safetyDamping = if (isPhysicsEnabled) 0.1f else 0f
+                                    val finalMoveAttenuation = rigidBody.moveAttenuation.coerceAtLeast(safetyDamping)
+                                    val finalRotationDamping = rigidBody.rotationDamping.coerceAtLeast(safetyDamping)
+
+                                    // Special: Use PHYSICS_PLUS_BONE for breasts to prevent "rubber stretching" from the torso.
+                                    // This keeps them translationally locked to the chest bone while letting Bullet drive rotation.
+                                    val finalPhysicsMode = if (isBreast && adjustedPhysicsMode == RigidBody.PhysicsMode.PHYSICS) {
+                                        RigidBody.PhysicsMode.PHYSICS_PLUS_BONE
+                                    } else {
+                                        adjustedPhysicsMode
+                                    }
+
                                     RigidBody(
                                         name = rigidBody.nameLocal.takeIf(String::isNotBlank),
                                         collisionGroup = baseGroup,
@@ -1220,12 +1251,13 @@ class PmxLoader : ModelFileLoader {
                                         shapePosition = rigidBody.shapePosition,
                                         shapeRotation = rigidBody.shapeRotation,
                                         mass = rigidBody.mass,
-                                        // Restore full physical fidelity from PMX file.
-                                        moveAttenuation = rigidBody.moveAttenuation,
-                                        rotationDamping = rigidBody.rotationDamping,
+                                        moveAttenuation = finalMoveAttenuation,
+                                        rotationDamping = finalRotationDamping,
                                         repulsion = rigidBody.repulsion,
                                         frictionForce = rigidBody.frictionForce,
-                                        physicsMode = adjustedPhysicsMode,
+                                        physicsMode = finalPhysicsMode,
+                                        ccdMotionThreshold = threshold,
+                                        ccdSweptSphereRadius = sweptRadius
                                     )
                                 },
                             )

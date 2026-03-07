@@ -28,7 +28,7 @@ static void CopyVector3fField(Vector3f& vector, void* data) {
 }
 
 static std::vector<RigidBody> DeserializeRigidbodies(size_t size, void* data) {
-    const size_t rigidbody_size = 72;
+    const size_t rigidbody_size = 80;
     if (size == 0) {
         throw std::invalid_argument("Empty rigidbody data");
     }
@@ -56,6 +56,8 @@ static std::vector<RigidBody> DeserializeRigidbodies(size_t size, void* data) {
         CopyField(rigidbody.rotation_damping, rigidbody_data + 60);
         CopyField(rigidbody.repulsion, rigidbody_data + 64);
         CopyField(rigidbody.friction_force, rigidbody_data + 68);
+        CopyField(rigidbody.ccd_motion_threshold, rigidbody_data + 72);
+        CopyField(rigidbody.ccd_swept_sphere_radius, rigidbody_data + 76);
 
         rigidbodies.push_back(rigidbody);
     }

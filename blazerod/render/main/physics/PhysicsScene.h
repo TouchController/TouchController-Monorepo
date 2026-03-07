@@ -42,6 +42,8 @@ struct RigidBody {
     float repulsion;
     float friction_force;
     PhysicsMode physics_mode;
+    float ccd_motion_threshold;
+    float ccd_swept_sphere_radius;
 };
 
 struct Joint {

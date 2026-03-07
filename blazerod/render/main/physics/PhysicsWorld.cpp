@@ -198,8 +198,9 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
     solver_info.m_numIterations = 50;
     solver_info.m_splitImpulse = 1;
     solver_info.m_splitImpulsePenetrationThreshold = -0.04f;
-    // Set ERP/CFM to MMD compatible values if needed
-    solver_info.m_erp2 = 0.8f; 
+    // Balanced erp to reduce jitter/flickering while maintaining constraint stiffness.
+    solver_info.m_erp = 0.4f;
+    solver_info.m_erp2 = 0.4f; 
 
     this->ground_shape = std::make_unique<btStaticPlaneShape>(btVector3(0, 1, 0), 0.0f);
     btTransform ground_transform;
@@ -310,6 +311,14 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
         rigidbody_info.m_additionalDamping = true;
 
         auto rigidbody = std::make_unique<btRigidBody>(rigidbody_info);
+        
+        // --- CCD (Continuous Collision Detection) ---
+        // Prevents fast-moving small objects (hair/breasts) from tunneling.
+        if (rigidbody_item.ccd_motion_threshold > 0.0f) {
+            rigidbody->setCcdMotionThreshold(rigidbody_item.ccd_motion_threshold);
+            rigidbody->setCcdSweptSphereRadius(rigidbody_item.ccd_swept_sphere_radius);
+        }
+
         rigidbody->setSleepingThresholds(0.01f, 0.0017453293f);
         this->world->addRigidBody(rigidbody.get(), rigidbody_item.collision_group, rigidbody_item.collision_mask);
         if (rigidbody_item.physics_mode != PhysicsMode::PHYSICS) {
@@ -403,9 +412,12 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
 
         // --- Joint Damping (CRITICAL FIX FOR TWISTING) ---
         // BT_G6DOF_SPRING uses a unique damping scale. Standard MMD engines
-        // use roughly 0.5 to stabilize hair strands.
-        for (int i = 0; i < 6; i++) {
-            constraint->setDamping(i, 0.5f);
+        // use higher rotation damping to stabilize long hair strands.
+        for (int i = 0; i < 3; i++) {
+            constraint->setDamping(i, 0.5f); // Linear
+        }
+        for (int i = 3; i < 6; i++) {
+            constraint->setDamping(i, 0.8f); // Rotational - Higher to stop twisting
         }
 
         this->world->addConstraint(constraint.get(), false);

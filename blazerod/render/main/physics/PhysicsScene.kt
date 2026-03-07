@@ -28,7 +28,7 @@ class PhysicsScene(
             .putFloat(offset + 4, vector.y())
             .putFloat(offset + 8, vector.z())
 
-        val rigidBodyItemSize = 72
+        val rigidBodyItemSize = 80
         val rigidBodiesBuffer = ByteBuffer.allocateDirect(rigidBodyItemSize * rigidBodies.size)
             .order(ByteOrder.nativeOrder())
         rigidBodies.forEachIndexed { index, rigidBody ->
@@ -45,6 +45,8 @@ class PhysicsScene(
             rigidBodiesBuffer.putFloat(offset + 60, rigidBody.rotationDamping)
             rigidBodiesBuffer.putFloat(offset + 64, rigidBody.repulsion)
             rigidBodiesBuffer.putFloat(offset + 68, rigidBody.frictionForce)
+            rigidBodiesBuffer.putFloat(offset + 72, rigidBody.ccdMotionThreshold)
+            rigidBodiesBuffer.putFloat(offset + 76, rigidBody.ccdSweptSphereRadius)
         }
 
         val jointItemSize = 108
