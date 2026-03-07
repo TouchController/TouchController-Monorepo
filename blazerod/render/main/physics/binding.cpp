@@ -130,6 +130,19 @@ JNIEXPORT void JNICALL Java_top_fifthlight_blazerod_physics_PhysicsLibrary_reset
 
 /*
  * Class:     top_fifthlight_blazerod_physics_PhysicsLibrary
+ * Method:    setSolverIterations
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_top_fifthlight_blazerod_physics_PhysicsLibrary_setSolverIterations(JNIEnv* env,
+                                                                                               jclass clazz,
+                                                                                               jlong physics_world,
+                                                                                               jint iterations) {
+    auto physics_world_ptr = reinterpret_cast<PhysicsWorld*>(physics_world);
+    physics_world_ptr->SetSolverIterations(iterations);
+}
+
+/*
+ * Class:     top_fifthlight_blazerod_physics_PhysicsLibrary
  * Method:    destroyPhysicsWorld
  * Signature: (J)V
  */

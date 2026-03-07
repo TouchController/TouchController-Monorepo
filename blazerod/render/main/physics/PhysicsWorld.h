@@ -71,6 +71,7 @@ class PhysicsWorld {
     void ResetRigidBody(size_t rigidbody_index, float px, float py, float pz,
                         float qx, float qy, float qz, float qw);
     void Step(float delta_time, int max_sub_steps, float fixed_time_step);
+    void SetSolverIterations(int iterations);
 };
 } 
 

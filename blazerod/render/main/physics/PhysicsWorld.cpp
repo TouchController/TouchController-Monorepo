@@ -193,9 +193,13 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
     this->world->setGravity(btVector3(0, -98.0f, 0));
 
     btContactSolverInfo& solver_info = this->world->getSolverInfo();
-    solver_info.m_numIterations = 20;
+    // Increase solver iterations for improved stability with long hair/skirt chains.
+    // Standard MMD engines use 50-100.
+    solver_info.m_numIterations = 50;
     solver_info.m_splitImpulse = 1;
     solver_info.m_splitImpulsePenetrationThreshold = -0.04f;
+    // Set ERP/CFM to MMD compatible values if needed
+    solver_info.m_erp2 = 0.8f; 
 
     this->ground_shape = std::make_unique<btStaticPlaneShape>(btVector3(0, 1, 0), 0.0f);
     btTransform ground_transform;
@@ -397,6 +401,13 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->setStiffness(5, joint_item.rotation_spring.z);
         }
 
+        // --- Joint Damping (CRITICAL FIX FOR TWISTING) ---
+        // BT_G6DOF_SPRING uses a unique damping scale. Standard MMD engines
+        // use roughly 0.5 to stabilize hair strands.
+        for (int i = 0; i < 6; i++) {
+            constraint->setDamping(i, 0.5f);
+        }
+
         this->world->addConstraint(constraint.get(), false);
         this->joints.push_back(std::move(constraint));
     }
@@ -468,6 +479,10 @@ void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_st
         }
         rigidbody_index++;
     }
+}
+
+void PhysicsWorld::SetSolverIterations(int iterations) {
+    this->world->getSolverInfo().m_numIterations = iterations;
 }
 
 }  // namespace blazerod::physics

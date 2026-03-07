@@ -38,6 +38,8 @@ public class PhysicsLibrary {
     public native static void applyVelocityDamping(long physicsWorld, int rigidBodyIndex,
                                                    float linearAttenuation, float angularAttenuation);
 
+    public native static void setSolverIterations(long physicsWorld, int iterations);
+
     public native static void destroyPhysicsWorld(long physicsWorld);
 
     public static boolean isPhysicsAvailable() {

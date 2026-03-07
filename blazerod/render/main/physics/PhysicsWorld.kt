@@ -117,6 +117,10 @@ class PhysicsWorld(
         PhysicsLibrary.stepPhysicsWorld(pointer, deltaTime, maxSubSteps, fixedTimeStep)
     }
 
+    fun setSolverIterations(iterations: Int) {
+        PhysicsLibrary.setSolverIterations(pointer, iterations)
+    }
+
     override fun close() {
         if (closed) {
             return

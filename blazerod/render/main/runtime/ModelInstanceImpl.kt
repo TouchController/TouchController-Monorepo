@@ -83,6 +83,12 @@ class ModelInstanceImpl(
                                 bulletWorld.pushTransforms(src)
                             }
                             override fun step(deltaTime: Float, maxSubSteps: Int, fixedTimeStep: Float) {
+                                // Adaptive Physics Solver
+                                // If the model is close (LOD < 10m), use High-Fidelity (50 iterations)
+                                // If far away, drop to 20 iterations to save CPU.
+                                val isHighQuality = lodDistance < 10f
+                                bulletWorld.setSolverIterations(if (isHighQuality) 50 else 20)
+                                
                                 bulletWorld.step(deltaTime, maxSubSteps, fixedTimeStep)
                             }
                             override fun dispose() {

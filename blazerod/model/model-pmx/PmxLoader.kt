@@ -1203,19 +1203,10 @@ class PmxLoader : ModelFileLoader {
                                     }
 
                                     val baseGroup = 1 shl rigidBody.groupId
-                                    val collisionMask = rigidBody.nonCollisionGroup and 0xFFFF
-                                    val defaultMask = collisionMask
-                                    println(
-                                        "PHYSDBG RB_GROUP " +
-                                            "idx=$index " +
-                                            "name=${rigidBody.nameLocal} " +
-                                            "groupId=${rigidBody.groupId} " +
-                                            "nonColl=${rigidBody.nonCollisionGroup} " +
-                                            "baseGroup=$baseGroup " +
-                                            "defaultMask=$defaultMask " +
-                                            "finalMask=$collisionMask",
-                                    )
-
+                                    // PMX: bit set = IGNORE collision. Bullet: bit set = ALLOW collision.
+                                    // So we must invert the nonCollisionGroup mask.
+                                    val collisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
+                                    
                                     RigidBody(
                                         name = rigidBody.nameLocal.takeIf(String::isNotBlank),
                                         collisionGroup = baseGroup,
@@ -1229,9 +1220,10 @@ class PmxLoader : ModelFileLoader {
                                         shapePosition = rigidBody.shapePosition,
                                         shapeRotation = rigidBody.shapeRotation,
                                         mass = rigidBody.mass,
-                                        moveAttenuation = (rigidBody.moveAttenuation + 0.05f).coerceAtMost(1f),
-                                        rotationDamping = (rigidBody.rotationDamping + 0.05f).coerceAtMost(1f),
-                                        repulsion = rigidBody.repulsion.coerceAtMost(0.1f),
+                                        // Restore full physical fidelity from PMX file.
+                                        moveAttenuation = rigidBody.moveAttenuation,
+                                        rotationDamping = rigidBody.rotationDamping,
+                                        repulsion = rigidBody.repulsion,
                                         frictionForce = rigidBody.frictionForce,
                                         physicsMode = adjustedPhysicsMode,
                                     )
