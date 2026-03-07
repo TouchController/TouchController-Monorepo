@@ -1209,6 +1209,13 @@ class PmxLoader : ModelFileLoader {
                                         basePhysicsMode
                                     }
 
+                                     val name = nameLocal.lowercase()
+                                     val isPhysicsEnabled = adjustedPhysicsMode != RigidBody.PhysicsMode.FOLLOW_BONE
+                                     
+                                     val isBreast = name.contains("乳") || name.contains("胸")
+                                     val isHair = name.contains("髪") || name.contains("hair") || name.contains("side") || name.contains("tail")
+                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
+
                                      val baseGroup = 1 shl rigidBody.groupId
                                      val baseCollisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
                                      val collisionMask = if (isBreast) {
@@ -1216,12 +1223,6 @@ class PmxLoader : ModelFileLoader {
                                      } else {
                                          baseCollisionMask
                                      }
-                                     val name = rigidBody.nameLocal.lowercase()
-                                     val isPhysicsEnabled = adjustedPhysicsMode != RigidBody.PhysicsMode.FOLLOW_BONE
-                                     
-                                     val isBreast = name.contains("乳") || name.contains("胸")
-                                     val isHair = name.contains("髪") || name.contains("hair") || name.contains("side") || name.contains("tail")
-                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
 
                                     // Identify fast-moving or thin bodies that need CCD (Continuous Collision Detection)
                                     val needsCCD = isPhysicsEnabled && (isBreast || isHair || isSkirt)
