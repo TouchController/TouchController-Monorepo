@@ -195,10 +195,10 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
     btContactSolverInfo& solver_info = this->world->getSolverInfo();
     solver_info.m_numIterations = 50;
     solver_info.m_splitImpulse = 1;
-    solver_info.m_splitImpulsePenetrationThreshold = -0.04f;
-    solver_info.m_erp = 0.4f;
-    solver_info.m_erp2 = 0.4f; 
-    solver_info.m_globalCfm = 0.0001f;
+    solver_info.m_splitImpulsePenetrationThreshold = -0.001f;
+    solver_info.m_erp = 0.8f;
+    solver_info.m_erp2 = 0.8f; 
+    solver_info.m_globalCfm = 0.00001f;
 
     this->ground_shape = std::make_unique<btStaticPlaneShape>(btVector3(0, 1, 0), 0.0f);
     btTransform ground_transform;
@@ -413,12 +413,11 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->setStiffness(5, joint_item.rotation_spring.z);
         }
 
-        // --- Joint Damping (Modified for more natural flow) ---
         for (int i = 0; i < 3; i++) {
-            constraint->setDamping(i, 0.2f); // Linear - Lowered to let hair drape/fall better
+            constraint->setDamping(i, 0.2f);
         }
         for (int i = 3; i < 6; i++) {
-            constraint->setDamping(i, 0.6f); // Rotational - Moderate to stop twisting without "freezing"
+            constraint->setDamping(i, 0.6f);
         }
 
         btTranslationalLimitMotor* transMotor = constraint->getTranslationalLimitMotor();

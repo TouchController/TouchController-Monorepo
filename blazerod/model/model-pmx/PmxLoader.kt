@@ -1212,31 +1212,29 @@ class PmxLoader : ModelFileLoader {
                                      val name = nameLocal.lowercase()
                                      val isPhysicsEnabled = adjustedPhysicsMode != RigidBody.PhysicsMode.FOLLOW_BONE
                                      
-                                     val isBreast = name.contains("乳") || name.contains("胸")
-                                     val isHair = name.contains("髪") || name.contains("hair") || name.contains("side") || name.contains("tail")
-                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
+                                     // Enhanced keyword detection for Japanese and English models
+                                     val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast")
+                                     val isHair = name.contains("髪") || name.contains("hair") || name.contains("side") || name.contains("tail") || 
+                                                  name.contains("twin") || name.contains("pony") || name.contains("braid") || name.contains("毛")
+                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon") || name.contains("裾") || name.contains("勾")
 
                                      val baseGroup = 1 shl rigidBody.groupId
                                      val baseCollisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
+                                     
                                      val collisionMask = if (isBreast) {
-                                         baseCollisionMask and garmentGroupMask.inv()
+                                         val bodyGroupMask = (1 shl 0) or (1 shl 1)
+                                         baseCollisionMask and garmentGroupMask.inv() and bodyGroupMask.inv()
+                                     } else if (isHair) {
+                                         val headGroupMask = (1 shl 0)
+                                         baseCollisionMask and headGroupMask.inv()
                                      } else {
                                          baseCollisionMask
                                      }
 
                                     // Identify fast-moving or thin bodies that need CCD (Continuous Collision Detection)
                                     val needsCCD = isPhysicsEnabled && (isBreast || isHair || isSkirt)
-
-                                    val threshold = if (needsCCD) {
-                                        // Set threshold based on the smallest dimension to catch tunneling
-                                        val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
-                                        minSize * 0.5f // Trigger CCD if moved more than half its size in one step
-                                    } else 0f
-
-                                    val sweptRadius = if (needsCCD) {
-                                        val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
-                                        minSize * 0.2f // Internal swept sphere for collision detection
-                                    } else 0f
+                                    val threshold = if (needsCCD) 0.001f else 0f
+                                    val sweptRadius = if (needsCCD) 0.01f else 0f
                                     
                                     // Safety: Ensure minimum damping for physics-driven bodies to prevent infinite jitter
                                     val safetyDamping = if (isPhysicsEnabled) 0.1f else 0f
@@ -1265,7 +1263,7 @@ class PmxLoader : ModelFileLoader {
                                         moveAttenuation = finalMoveAttenuation,
                                         rotationDamping = finalRotationDamping,
                                         repulsion = when {
-                                            isBreast -> rigidBody.repulsion.coerceAtMost(0.02f)
+                                            isBreast -> rigidBody.repulsion.coerceAtMost(0.01f) // Even lower repulsion for breasts
                                             isHair -> rigidBody.repulsion.coerceAtMost(0.1f)
                                             else -> rigidBody.repulsion
                                         },
@@ -1273,7 +1271,7 @@ class PmxLoader : ModelFileLoader {
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
                                         ccdSweptSphereRadius = sweptRadius,
-                                        collisionMargin = if (isHair || isBreast) 0.001f else 0.04f
+                                        collisionMargin = if (isHair || isBreast) 0.005f else 0.04f // Increased margin slightly from 0.001 to 0.005
                                     )
                                 },
                             )
@@ -1450,8 +1448,8 @@ class PmxLoader : ModelFileLoader {
                             rotationMax = joint.rotationMaximum,
                             positionSpring = joint.positionSpring,
                             rotationSpring = joint.rotationSpring,
-                            softness = 0.9f,
-                            biasFactor = 0.3f,
+                            softness = if (joint.nameLocal.lowercase().let { it.contains("乳") || it.contains("胸") }) 1.0f else 0.9f,
+                            biasFactor = if (joint.nameLocal.lowercase().let { it.contains("乳") || it.contains("胸") || it.contains("bust") }) 0.5f else 0.3f,
                             relaxationFactor = 1.0f,
                         )
                     },
