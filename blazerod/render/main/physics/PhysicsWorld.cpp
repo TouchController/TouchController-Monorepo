@@ -193,14 +193,12 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
     this->world->setGravity(btVector3(0, -98.0f, 0));
 
     btContactSolverInfo& solver_info = this->world->getSolverInfo();
-    // Increase solver iterations for improved stability with long hair/skirt chains.
-    // Standard MMD engines use 50-100.
     solver_info.m_numIterations = 50;
     solver_info.m_splitImpulse = 1;
     solver_info.m_splitImpulsePenetrationThreshold = -0.04f;
-    // Balanced erp to reduce jitter/flickering while maintaining constraint stiffness.
     solver_info.m_erp = 0.4f;
     solver_info.m_erp2 = 0.4f; 
+    solver_info.m_globalCfm = 0.0001f;
 
     this->ground_shape = std::make_unique<btStaticPlaneShape>(btVector3(0, 1, 0), 0.0f);
     btTransform ground_transform;
@@ -410,14 +408,12 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->setStiffness(5, joint_item.rotation_spring.z);
         }
 
-        // --- Joint Damping (CRITICAL FIX FOR TWISTING) ---
-        // BT_G6DOF_SPRING uses a unique damping scale. Standard MMD engines
-        // use higher rotation damping to stabilize long hair strands.
+        // --- Joint Damping (Modified for more natural flow) ---
         for (int i = 0; i < 3; i++) {
-            constraint->setDamping(i, 0.5f); // Linear
+            constraint->setDamping(i, 0.2f); // Linear - Lowered to let hair drape/fall better
         }
         for (int i = 3; i < 6; i++) {
-            constraint->setDamping(i, 0.8f); // Rotational - Higher to stop twisting
+            constraint->setDamping(i, 0.6f); // Rotational - Moderate to stop twisting without "freezing"
         }
 
         this->world->addConstraint(constraint.get(), false);

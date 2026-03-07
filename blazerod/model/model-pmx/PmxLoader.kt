@@ -1250,10 +1250,14 @@ class PmxLoader : ModelFileLoader {
                                         shapeSize = rigidBody.shapeSize,
                                         shapePosition = rigidBody.shapePosition,
                                         shapeRotation = rigidBody.shapeRotation,
-                                        mass = rigidBody.mass,
+                                        mass = if (isHair) rigidBody.mass * 0.8f else rigidBody.mass,
                                         moveAttenuation = finalMoveAttenuation,
                                         rotationDamping = finalRotationDamping,
-                                        repulsion = rigidBody.repulsion,
+                                        repulsion = when {
+                                            isBreast -> rigidBody.repulsion.coerceAtMost(0.02f)
+                                            isHair -> rigidBody.repulsion.coerceAtMost(0.1f)
+                                            else -> rigidBody.repulsion
+                                        },
                                         frictionForce = rigidBody.frictionForce,
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
