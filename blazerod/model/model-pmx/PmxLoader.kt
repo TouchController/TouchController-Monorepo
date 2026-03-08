@@ -1232,20 +1232,11 @@ class PmxLoader : ModelFileLoader {
                                      val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
 
                                      val collisionMask = if (isBreast) {
-                                         val safetyBodyMask = (1 shl 0) or (1 shl 1)
-                                         baseCollisionMask and garmentGroupMask.inv() and bodyGroupMask.inv() and safetyBodyMask.inv()
+                                         baseCollisionMask
                                      } else if (isHair) {
-                                         val headAndUpperBodyMask = rigidBodies.indices
-                                            .filter { i -> 
-                                                val n = rigidBodies[i].nameLocal.lowercase()
-                                                n.contains("head") || n.contains("頭") || n.contains("face") || n.contains("顔") ||
-                                                n.contains("body") || n.contains("体") || n.contains("neck") || n.contains("首")
-                                            }
-                                            .fold(0) { acc, i -> acc or (1 shl rigidBodies[i].groupId) }
-                                         
-                                         baseCollisionMask and headAndUpperBodyMask.inv()
+                                         baseCollisionMask
                                      } else if (isSkirt) {
-                                         baseCollisionMask and bodyGroupMask.inv()
+                                         baseCollisionMask
                                      } else {
                                          baseCollisionMask
                                      }
@@ -1304,12 +1295,12 @@ class PmxLoader : ModelFileLoader {
                                         } else if (isBreast) {
                                             0.5f // Increased damping for breaths to eliminate high-frequency jiggle
                                         } else finalRotationDamping,
-                                        repulsion = if (isBreast) 0.0f else rigidBody.repulsion,
-                                        frictionForce = if (isHair) 0.5f else rigidBody.frictionForce,
+                                        repulsion = 0.0f, 
+                                        frictionForce = if (isHair) 0.0f else rigidBody.frictionForce, // Frictionless sliding for hair
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
                                         ccdSweptSphereRadius = sweptRadius,
-                                        collisionMargin = if (isHair) 0.01f else if (isBreast) 0.005f else 0.04f
+                                        collisionMargin = if (isHair || isBreast || isSkirt) 0.008f else 0.04f
                                     )
                                 },
                             )
@@ -1500,6 +1491,17 @@ class PmxLoader : ModelFileLoader {
                                 Vector3f(joint.positionSpring.x, 14.0f, joint.positionSpring.z)
                             } else joint.positionSpring,
                             rotationSpring = joint.rotationSpring,
+                            softness = when {
+                                isBreastJoint -> 0.5f // Soft repositioning
+                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.8f
+                                else -> 1.0f
+                            },
+                            biasFactor = when {
+                                isBreastJoint -> 0.1f // Slow, heavy error correction to stop shaking
+                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.2f
+                                else -> 0.3f
+                            },
+                            relaxationFactor = 1.0f,
                         )
                     },
                     expressions = buildList {
