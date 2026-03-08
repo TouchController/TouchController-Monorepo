@@ -84,10 +84,10 @@ class ModelInstanceImpl(
                             }
                             override fun step(deltaTime: Float, maxSubSteps: Int, fixedTimeStep: Float) {
                                 // Adaptive Physics Solver
-                                // If the model is close (LOD < 10m), use High-Fidelity (50 iterations)
-                                // If far away, drop to 20 iterations to save CPU.
-                                val isHighQuality = lodDistance < 10f
-                                bulletWorld.setSolverIterations(if (isHighQuality) 50 else 20)
+                                 // If the model is close (LOD < 5m), use High-Fidelity (50 iterations)
+                                 // If far away, drop to 20 iterations to save CPU.
+                                 val isHighQuality = lodDistance < 5f
+                                 bulletWorld.setSolverIterations(if (isHighQuality) 50 else 20)
                                 
                                 bulletWorld.step(deltaTime, maxSubSteps, fixedTimeStep)
                             }
@@ -149,9 +149,9 @@ class ModelInstanceImpl(
         var debugStepCount: Int = 0
 
         companion object {
-            const val BUDGET_HIGH_MS = 4.0f
+            const val BUDGET_HIGH_MS = 2.0f
             const val BUDGET_LOW_MS = 1.0f
-            const val MIN_INTERVAL = 1f / 120f
+            const val MIN_INTERVAL = 1f / 60f
             const val MAX_INTERVAL = 1f / 15f
             const val SPEED_HISTORY_SIZE = 5
             const val SPRINT_SPEED_THRESHOLD = 0.04f  // ~squared dist for sprinting speed

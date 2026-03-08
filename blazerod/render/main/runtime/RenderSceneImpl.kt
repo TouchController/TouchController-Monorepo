@@ -41,8 +41,8 @@ class RenderSceneImpl(
 ) : AbstractRefCount(), RenderScene {
     override val attachments: Map<Class<*>, Any>
     companion object {
-        private const val PHYSICS_MAX_SUB_STEP_COUNT = 24
-        private const val PHYSICS_FPS = 240f
+        private const val PHYSICS_MAX_SUB_STEP_COUNT = 4
+        private const val PHYSICS_FPS = 120f
         private const val PHYSICS_TIME_STEP = 1f / PHYSICS_FPS
     }
 
