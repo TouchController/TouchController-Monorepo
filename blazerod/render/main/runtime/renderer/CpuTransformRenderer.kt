@@ -364,5 +364,6 @@ class CpuTransformRenderer private constructor() :
 
     override fun close() {
         dataPool.close()
+        cpuPool.close()
     }
 }

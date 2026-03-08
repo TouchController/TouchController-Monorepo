@@ -1225,8 +1225,10 @@ class PmxLoader : ModelFileLoader {
                                         .fold(0) { acc, i -> acc or (1 shl rigidBodies[i].groupId) }
                                      
                                      val name = rigidBody.nameLocal.lowercase()
-                                     val isBreast = name.contains("乳") || name.contains("胸")
-                                     val isHair = name.contains("髪") || name.contains("hair") || name.contains("side") || name.contains("tail")
+                                     val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast")
+                                     val isHair = name.contains("hair") || name.contains("发") || name.contains("髪") || 
+                                                  name.contains("bang") || name.contains("strand") || name.contains("front") || 
+                                                  name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
                                      val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
 
                                      val collisionMask = if (isBreast) {
@@ -1289,7 +1291,7 @@ class PmxLoader : ModelFileLoader {
                                             // Mass Gradient: Heavy at root, feather-light at tips (Expert setting)
                                             (rigidBody.mass * (1.0f / (depth + 1))).coerceAtLeast(0.0001f)
                                         } else if (isBreast) {
-                                            0.5f // Consistent mass for breasts to stabilize bounce
+                                            1.0f // Increased mass for better inertia and less shaking
                                         } else {
                                             rigidBody.mass
                                         },
@@ -1298,15 +1300,16 @@ class PmxLoader : ModelFileLoader {
                                             finalMoveAttenuation.coerceAtLeast(0.8f)
                                         } else finalMoveAttenuation,
                                         rotationDamping = if (isHair) {
-                                            // Crank rotation damping to 99% for hair to stop "drill" twisting
                                             0.99f
+                                        } else if (isBreast) {
+                                            0.5f // Increased damping for breaths to eliminate high-frequency jiggle
                                         } else finalRotationDamping,
                                         repulsion = if (isBreast) 0.0f else rigidBody.repulsion,
                                         frictionForce = if (isHair) 0.5f else rigidBody.frictionForce,
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
                                         ccdSweptSphereRadius = sweptRadius,
-                                        collisionMargin = if (isHair || isBreast) 0.005f else 0.04f
+                                        collisionMargin = if (isHair) 0.01f else if (isBreast) 0.005f else 0.04f
                                     )
                                 },
                             )
