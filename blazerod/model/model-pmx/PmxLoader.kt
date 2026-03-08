@@ -1215,18 +1215,39 @@ class PmxLoader : ModelFileLoader {
                                      // Enhanced keyword detection for Japanese and English models
                                      val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast")
                                      val isHair = name.contains("髪") || name.contains("hair") || name.contains("side") || name.contains("tail") || 
-                                                  name.contains("twin") || name.contains("pony") || name.contains("braid") || name.contains("毛")
-                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon") || name.contains("裾") || name.contains("勾")
+                                                  name.contains("twin") || name.contains("pony") || name.contains("braid") || name.contains("毛") ||
+                                                  name.contains("发") || name.contains("髮") || name.contains("髮")
+                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon") || name.contains("裾") || 
+                                                   name.contains("勾") || name.contains("裙") || name.contains("たれ")
 
                                      val baseGroup = 1 shl rigidBody.groupId
                                      val baseCollisionMask = (rigidBody.nonCollisionGroup.inv() and 0xFFFF).toInt()
                                      
+                                     // Identify all body-related rigid bodies to exclude from collision
+                                     val bodyGroupMask = rigidBodies.indices
+                                        .filter { i -> 
+                                            val n = rigidBodies[i].nameLocal.lowercase()
+                                            n.contains("body") || n.contains("体") || n.contains("腕") || n.contains("arm") || n.contains("肉") ||
+                                            n.contains("leg") || n.contains("足") || n.contains("hand") || n.contains("手") ||
+                                            n.contains("lower") || n.contains("upper") || n.contains("身") || n.contains("頭") || n.contains("首") ||
+                                            n.contains("膝") || n.contains("肘") || n.contains("肩") || n.contains("ひざ") || n.contains("しり") ||
+                                            n.contains("おしり") || n.contains("腰") || n.contains("センター") || n.contains("中心")
+                                        }
+                                        .fold(0) { acc, i -> acc or (1 shl rigidBodies[i].groupId) }
+                                     
                                      val collisionMask = if (isBreast) {
-                                         val bodyGroupMask = (1 shl 0) or (1 shl 1)
-                                         baseCollisionMask and garmentGroupMask.inv() and bodyGroupMask.inv()
+                                         val safetyBodyMask = (1 shl 0) or (1 shl 1)
+                                         baseCollisionMask and garmentGroupMask.inv() and bodyGroupMask.inv() and safetyBodyMask.inv()
                                      } else if (isHair) {
-                                         val headGroupMask = (1 shl 0)
-                                         baseCollisionMask and headGroupMask.inv()
+                                         val headAndUpperBodyMask = rigidBodies.indices
+                                            .filter { i -> 
+                                                val n = rigidBodies[i].nameLocal.lowercase()
+                                                n.contains("head") || n.contains("頭") || n.contains("face") || n.contains("顔") ||
+                                                n.contains("body") || n.contains("体") || n.contains("neck") || n.contains("首")
+                                            }
+                                            .fold(0) { acc, i -> acc or (1 shl rigidBodies[i].groupId) }
+                                         
+                                         baseCollisionMask and headAndUpperBodyMask.inv()
                                      } else {
                                          baseCollisionMask
                                      }
@@ -1236,7 +1257,6 @@ class PmxLoader : ModelFileLoader {
                                     val threshold = if (needsCCD) 0.001f else 0f
                                     val sweptRadius = if (needsCCD) 0.01f else 0f
                                     
-                                    // Safety: Ensure minimum damping for physics-driven bodies to prevent infinite jitter
                                     val safetyDamping = if (isPhysicsEnabled) 0.1f else 0f
                                     val finalMoveAttenuation = rigidBody.moveAttenuation.coerceAtLeast(safetyDamping)
                                     val finalRotationDamping = rigidBody.rotationDamping.coerceAtLeast(safetyDamping)
@@ -1263,15 +1283,15 @@ class PmxLoader : ModelFileLoader {
                                         moveAttenuation = finalMoveAttenuation,
                                         rotationDamping = finalRotationDamping,
                                         repulsion = when {
-                                            isBreast -> rigidBody.repulsion.coerceAtMost(0.01f) // Even lower repulsion for breasts
+                                            isBreast -> rigidBody.repulsion.coerceAtMost(0.01f)
                                             isHair -> rigidBody.repulsion.coerceAtMost(0.1f)
                                             else -> rigidBody.repulsion
                                         },
-                                        frictionForce = if (isHair) 0f else rigidBody.frictionForce,
+                                        frictionForce = if (isHair) 0.05f else rigidBody.frictionForce,
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
                                         ccdSweptSphereRadius = sweptRadius,
-                                        collisionMargin = if (isHair || isBreast) 0.005f else 0.04f // Increased margin slightly from 0.001 to 0.005
+                                        collisionMargin = if (isHair || isBreast) 0.005f else 0.04f 
                                     )
                                 },
                             )
