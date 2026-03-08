@@ -196,8 +196,8 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
     solver_info.m_numIterations = 50;
     solver_info.m_splitImpulse = 1;
     solver_info.m_splitImpulsePenetrationThreshold = -0.01f;
-    solver_info.m_erp = 0.2f;
-    solver_info.m_erp2 = 0.2f; 
+    solver_info.m_erp = 0.6f;
+    solver_info.m_erp2 = 0.6f; 
     solver_info.m_globalCfm = 0.00001f;
 
     this->ground_shape = std::make_unique<btStaticPlaneShape>(btVector3(0, 1, 0), 0.0f);

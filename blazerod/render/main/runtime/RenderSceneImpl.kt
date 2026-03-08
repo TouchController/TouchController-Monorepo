@@ -231,7 +231,8 @@ class RenderSceneImpl(
                 val distSq = rootPos.distanceSquared(data.lastRootPos)
                 
                 val avgSpeed = data.averageRecentSpeed()
-                if (distSq > 4.0f || (avgSpeed > ModelInstanceImpl.PhysicsData.SPRINT_SPEED_THRESHOLD && distSq < ModelInstanceImpl.PhysicsData.STOP_SPEED_THRESHOLD)) {
+                // If moved very far (teleport) OR stopped abruptly after sprinting, reset physics to avoid overshoot.
+                if (distSq > 4.0f || (avgSpeed > ModelInstanceImpl.PhysicsData.SPRINT_SPEED_THRESHOLD && distSq < ModelInstanceImpl.PhysicsData.STOP_SPEED_THRESHOLD * 2f)) {
                     val initPos = Vector3f()
                     val initRot = Quaternionf()
                     for ((nodeIndex, component) in rigidBodyComponents) {
