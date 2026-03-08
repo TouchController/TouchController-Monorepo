@@ -1116,12 +1116,12 @@ class PmxLoader : ModelFileLoader {
             val modelId = UUID.randomUUID()
             val rootNodes = mutableListOf<Node>()
 
-            fun addBone(index: Int, parentPosition: Vector3fc? = null): Node {
+            fun addBone(index: Int, parentPosition: Vector3fc? = null, depth: Int = 0): Node {
                 val bone = bones[index]
                 val boneNodeId = NodeId(modelId, index)
 
                 val children = childBoneMap[index]?.map {
-                    addBone(it, bone.position)
+                    addBone(it, bone.position, depth + 1)
                 } ?: listOf()
 
                 val components = buildList {
@@ -1285,15 +1285,28 @@ class PmxLoader : ModelFileLoader {
                                         shapeSize = rigidBody.shapeSize,
                                         shapePosition = rigidBody.shapePosition,
                                         shapeRotation = rigidBody.shapeRotation,
-                                        mass = rigidBody.mass,
-                                        moveAttenuation = finalMoveAttenuation,
-                                        rotationDamping = finalRotationDamping,
-                                        repulsion = rigidBody.repulsion,
-                                        frictionForce = rigidBody.frictionForce,
+                                        mass = if (isHair) {
+                                            // Mass Gradient: Heavy at root, feather-light at tips (Expert setting)
+                                            (rigidBody.mass * (1.0f / (depth + 1))).coerceAtLeast(0.0001f)
+                                        } else if (isBreast) {
+                                            0.5f // Consistent mass for breasts to stabilize bounce
+                                        } else {
+                                            rigidBody.mass
+                                        },
+                                        moveAttenuation = if (isHair) {
+                                            // Higher damping for hair to prevent "twist" and over-swing
+                                            finalMoveAttenuation.coerceAtLeast(0.8f)
+                                        } else finalMoveAttenuation,
+                                        rotationDamping = if (isHair) {
+                                            // Crank rotation damping to 99% for hair to stop "drill" twisting
+                                            0.99f
+                                        } else finalRotationDamping,
+                                        repulsion = if (isBreast) 0.0f else rigidBody.repulsion,
+                                        frictionForce = if (isHair) 0.5f else rigidBody.frictionForce,
                                         physicsMode = finalPhysicsMode,
-                                         ccdMotionThreshold = threshold,
-                                         ccdSweptSphereRadius = sweptRadius,
-                                         collisionMargin = if (isHair || isBreast) 0.005f else 0.04f
+                                        ccdMotionThreshold = threshold,
+                                        ccdSweptSphereRadius = sweptRadius,
+                                        collisionMargin = if (isHair || isBreast) 0.005f else 0.04f
                                     )
                                 },
                             )
@@ -1455,6 +1468,12 @@ class PmxLoader : ModelFileLoader {
                         if (joint.rigidBodyIndexB !in rigidBodies.indices) {
                             return@mapNotNull null
                         }
+                        val rbA = rigidBodies[joint.rigidBodyIndexA]
+                        val rbB = rigidBodies[joint.rigidBodyIndexB]
+                        val isBreastJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
+                            n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast")
+                        }
+
                         PhysicalJoint(
                             name = joint.nameLocal.takeIf(String::isNotBlank),
                             type = when (joint.type) {
@@ -1466,9 +1485,17 @@ class PmxLoader : ModelFileLoader {
                             rotation = joint.rotation,
                             positionMin = joint.positionMinimum,
                             positionMax = joint.positionMaximum,
-                            rotationMin = joint.rotationMinimum,
-                            rotationMax = joint.rotationMaximum,
-                            positionSpring = joint.positionSpring,
+                            rotationMin = if (isBreastJoint) {
+                                // Tighten breast rotation to prevent upside-down flips
+                                Vector3f(-0.17f, -0.17f, -0.17f) // ~10 degrees
+                            } else joint.rotationMinimum,
+                            rotationMax = if (isBreastJoint) {
+                                Vector3f(0.17f, 0.17f, 0.17f)
+                            } else joint.rotationMaximum,
+                            positionSpring = if (isBreastJoint) {
+                                // "Studio Quality" vertical bounce (Move Spring = 14.0f)
+                                Vector3f(joint.positionSpring.x, 14.0f, joint.positionSpring.z)
+                            } else joint.positionSpring,
                             rotationSpring = joint.rotationSpring,
                         )
                     },

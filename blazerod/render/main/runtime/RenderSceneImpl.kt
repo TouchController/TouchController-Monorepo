@@ -218,7 +218,8 @@ class RenderSceneImpl(
             val minInterval = ModelInstanceImpl.PhysicsData.MIN_INTERVAL / distanceFpsMultiplier
             val effectiveInterval = maxOf(data.currentPhysicsInterval, minInterval)
             val maxAccumulator = effectiveInterval * 2f
-            data.physicsAccumulator = minOf(data.physicsAccumulator + timeStep, maxAccumulator)
+            // Safety: Never accumulate more than 0.5 seconds of physics time.
+            data.physicsAccumulator = minOf(data.physicsAccumulator + timeStep, 0.5f)
 
             if (data.physicsAccumulator >= effectiveInterval) {
                 data.currentTransforms.copyInto(data.previousTransforms)
@@ -231,7 +232,6 @@ class RenderSceneImpl(
                 val distSq = rootPos.distanceSquared(data.lastRootPos)
                 
                 val avgSpeed = data.averageRecentSpeed()
-                // If moved very far (teleport) OR stopped abruptly after sprinting, reset physics to avoid overshoot.
                 if (distSq > 4.0f || (avgSpeed > ModelInstanceImpl.PhysicsData.SPRINT_SPEED_THRESHOLD && distSq < ModelInstanceImpl.PhysicsData.STOP_SPEED_THRESHOLD * 2f)) {
                     val initPos = Vector3f()
                     val initRot = Quaternionf()
