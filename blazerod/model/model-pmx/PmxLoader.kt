@@ -1231,14 +1231,14 @@ class PmxLoader : ModelFileLoader {
                                                   name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
                                      val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
 
-                                     val collisionMask = if (isBreast) {
-                                         baseCollisionMask
-                                     } else if (isHair) {
-                                         baseCollisionMask
-                                     } else if (isSkirt) {
-                                         baseCollisionMask
-                                     } else {
-                                         baseCollisionMask
+                                     val collisionMask = when {
+                                         isHair && depth <= 2 -> {
+                                             baseCollisionMask and bodyGroupMask.inv()
+                                         }
+                                         isBreast -> baseCollisionMask
+                                         isHair -> baseCollisionMask
+                                         isSkirt -> baseCollisionMask
+                                         else -> baseCollisionMask
                                      }
                                      val isPhysicsEnabled = adjustedPhysicsMode != RigidBody.PhysicsMode.FOLLOW_BONE
                                      
@@ -1293,10 +1293,10 @@ class PmxLoader : ModelFileLoader {
                                         rotationDamping = if (isHair) {
                                             0.99f
                                         } else if (isBreast) {
-                                            0.5f // Increased damping for breaths to eliminate high-frequency jiggle
+                                            0.5f
                                         } else finalRotationDamping,
                                         repulsion = 0.0f, 
-                                        frictionForce = if (isHair) 0.0f else rigidBody.frictionForce, // Frictionless sliding for hair
+                                        frictionForce = if (isHair) 0.1f else rigidBody.frictionForce, 
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
                                         ccdSweptSphereRadius = sweptRadius,
@@ -1498,7 +1498,7 @@ class PmxLoader : ModelFileLoader {
                             },
                             biasFactor = when {
                                 isBreastJoint -> 0.1f // Slow, heavy error correction to stop shaking
-                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.2f
+                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.25f // Faster correction for hair
                                 else -> 0.3f
                             },
                             relaxationFactor = 1.0f,

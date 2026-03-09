@@ -413,12 +413,6 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->setStiffness(5, joint_item.rotation_spring.z);
         }
 
-        for (int i = 0; i < 3; i++) {
-            constraint->setDamping(i, 0.2f);
-        }
-        for (int i = 3; i < 6; i++) {
-            constraint->setDamping(i, 0.6f);
-        }
 
         btTranslationalLimitMotor* transMotor = constraint->getTranslationalLimitMotor();
         transMotor->m_limitSoftness = joint_item.softness;
