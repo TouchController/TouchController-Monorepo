@@ -1235,7 +1235,7 @@ class PmxLoader : ModelFileLoader {
                                          isHair && depth <= 1 -> {
                                              baseCollisionMask and bodyGroupMask.inv()
                                          }
-                                         isBreast -> baseCollisionMask
+                                         isBreast -> baseCollisionMask and bodyGroupMask.inv()
                                          isHair -> baseCollisionMask or bodyGroupMask
                                          isSkirt -> baseCollisionMask
                                          else -> baseCollisionMask
