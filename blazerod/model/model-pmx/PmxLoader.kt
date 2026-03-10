@@ -1236,7 +1236,7 @@ class PmxLoader : ModelFileLoader {
                                              baseCollisionMask and bodyGroupMask.inv()
                                          }
                                          isBreast -> baseCollisionMask
-                                         isHair -> baseCollisionMask
+                                         isHair -> baseCollisionMask or bodyGroupMask
                                          isSkirt -> baseCollisionMask
                                          else -> baseCollisionMask
                                      }
@@ -1280,7 +1280,7 @@ class PmxLoader : ModelFileLoader {
                                         shapeRotation = rigidBody.shapeRotation,
                                         mass = if (isHair) {
                                             // Mass Gradient: Heavy at root, feather-light at tips (Expert setting)
-                                            (rigidBody.mass * (1.0f / (depth + 1))).coerceAtLeast(0.0001f)
+                                            (rigidBody.mass * (1.0f / (depth + 1))).coerceAtLeast(0.05f)
                                         } else if (isBreast) {
                                             1.0f // Increased mass for better inertia and less shaking
                                         } else {
@@ -1291,7 +1291,7 @@ class PmxLoader : ModelFileLoader {
                                             finalMoveAttenuation.coerceAtLeast(0.8f)
                                         } else finalMoveAttenuation,
                                         rotationDamping = if (isHair) {
-                                            0.99f
+                                            0.85f
                                         } else if (isBreast) {
                                             0.5f
                                         } else finalRotationDamping,
@@ -1498,7 +1498,7 @@ class PmxLoader : ModelFileLoader {
                             },
                             biasFactor = when {
                                 isBreastJoint -> 0.1f // Slow, heavy error correction to stop shaking
-                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.25f // Faster correction for hair
+                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.3f
                                 else -> 0.3f
                             },
                             relaxationFactor = 1.0f,

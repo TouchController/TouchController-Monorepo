@@ -375,19 +375,20 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
         btTransform inverse_a = body_a_transform.inverse() * transform;
         btTransform inverse_b = body_b_transform.inverse() * transform;
 
-        auto constraint = std::make_unique<btGeneric6DofSpringConstraint>(
-            *rigidbody_a.rigidbody, *rigidbody_b.rigidbody, inverse_a, inverse_b, true);
-        constraint->setLinearLowerLimit(
-            btVector3(joint_item.position_min.x, joint_item.position_min.y, joint_item.position_min.z));
-        constraint->setLinearUpperLimit(
-            btVector3(joint_item.position_max.x, joint_item.position_max.y, joint_item.position_max.z));
+        auto constraint = std::make_unique<btGeneric6DofSpring2Constraint>(
+            *rigidbody_a.rigidbody, *rigidbody_b.rigidbody, inverse_a, inverse_b);
 
-        // Apply angular limits directly from the preprocessed min/max values.
-        constraint->setAngularLowerLimit(
-            btVector3(joint_item.rotation_min.x, joint_item.rotation_min.y, joint_item.rotation_min.z));
-        constraint->setAngularUpperLimit(
-            btVector3(joint_item.rotation_max.x, joint_item.rotation_max.y, joint_item.rotation_max.z));
+        // Linear Limits
+        constraint->setLimit(0, joint_item.position_min.x, joint_item.position_max.x);
+        constraint->setLimit(1, joint_item.position_min.y, joint_item.position_max.y);
+        constraint->setLimit(2, joint_item.position_min.z, joint_item.position_max.z);
 
+        // Angular Limits
+        constraint->setLimit(3, joint_item.rotation_min.x, joint_item.rotation_max.x);
+        constraint->setLimit(4, joint_item.rotation_min.y, joint_item.rotation_max.y);
+        constraint->setLimit(5, joint_item.rotation_min.z, joint_item.rotation_max.z);
+
+        // Linear Springs
         if (joint_item.position_spring.x != 0.0f) {
             constraint->enableSpring(0, true);
             constraint->setStiffness(0, joint_item.position_spring.x);
@@ -400,6 +401,8 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->enableSpring(2, true);
             constraint->setStiffness(2, joint_item.position_spring.z);
         }
+
+        // Angular Springs
         if (joint_item.rotation_spring.x != 0.0f) {
             constraint->enableSpring(3, true);
             constraint->setStiffness(3, joint_item.rotation_spring.x);
@@ -413,14 +416,14 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->setStiffness(5, joint_item.rotation_spring.z);
         }
 
-
-        btTranslationalLimitMotor* transMotor = constraint->getTranslationalLimitMotor();
+        // Apply Stability Parameters (Softness, Bias, Relaxation)
+        btTranslationalLimitMotor2* transMotor = constraint->getTranslationalLimitMotor();
         transMotor->m_limitSoftness = joint_item.softness;
-        transMotor->m_stopERP.setValue(joint_item.bias_factor, joint_item.bias_factor, joint_item.bias_factor);
-        transMotor->m_normalCFM.setValue(joint_item.relaxation_factor, joint_item.relaxation_factor, joint_item.relaxation_factor);
+        transMotor->m_stopERP = joint_item.bias_factor;
+        transMotor->m_stopCFM = joint_item.relaxation_factor;
 
         for (int i = 0; i < 3; i++) {
-            btRotationalLimitMotor* rotMotor = constraint->getRotationalLimitMotor(i);
+            btRotationalLimitMotor2* rotMotor = constraint->getRotationalLimitMotor(i);
             rotMotor->m_limitSoftness = joint_item.softness;
             rotMotor->m_stopERP = joint_item.bias_factor;
             rotMotor->m_stopCFM = joint_item.relaxation_factor;
