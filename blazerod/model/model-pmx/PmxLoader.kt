@@ -1293,14 +1293,14 @@ class PmxLoader : ModelFileLoader {
                                         rotationDamping = if (isHair) {
                                             0.85f
                                         } else if (isBreast) {
-                                            0.5f
+                                            0.95f
                                         } else finalRotationDamping,
                                         repulsion = 0.0f, 
                                         frictionForce = if (isHair) 0.1f else rigidBody.frictionForce, 
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
                                         ccdSweptSphereRadius = sweptRadius,
-                                         collisionMargin = if (isHair || isBreast || isSkirt) 0.015f else 0.04f
+                                         collisionMargin = if (isHair || isBreast || isSkirt) 0.03f else 0.04f
                                     )
                                 },
                             )
@@ -1480,11 +1480,11 @@ class PmxLoader : ModelFileLoader {
                             positionMin = joint.positionMinimum,
                             positionMax = joint.positionMaximum,
                             rotationMin = if (isBreastJoint) {
-                                // Tighten breast rotation to prevent upside-down flips
-                                Vector3f(-0.17f, -0.17f, -0.17f) // ~10 degrees
+                                // Very tight rotation — eliminates visible oscillation
+                                Vector3f(-0.05f, -0.05f, -0.05f) // ~3 degrees
                             } else joint.rotationMinimum,
                             rotationMax = if (isBreastJoint) {
-                                Vector3f(0.17f, 0.17f, 0.17f)
+                                Vector3f(0.05f, 0.05f, 0.05f)
                             } else joint.rotationMaximum,
                             positionSpring = if (isBreastJoint) {
                                 // "Studio Quality" vertical bounce (Move Spring = 14.0f)
