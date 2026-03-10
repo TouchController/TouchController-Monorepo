@@ -429,10 +429,14 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             rotMotor->m_stopERP = joint_item.bias_factor;
             rotMotor->m_stopCFM = joint_item.relaxation_factor;
         }
-
         // Spring2 advantage: per-spring damping (0 = no damping, 1 = critical damping)
-        // Set equilibrium to current position so springs know where "rest" is
-        constraint->setEquilibriumPoint();
+        // Apply critical damping to all enabled spring axes to stop oscillation.
+        // Default equilibrium is 0 (springs pull toward aligned joint frames) which is
+        // correct for PMX. Do NOT call setEquilibriumPoint() — it captures incorrect
+        // body offsets during init and causes sideways drift.
+        for (int i = 0; i < 6; i++) {
+            constraint->setDamping(i, 1.0f);
+        }
 
         this->world->addConstraint(constraint.get(), false);
         this->joints.push_back(std::move(constraint));

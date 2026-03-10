@@ -1232,7 +1232,7 @@ class PmxLoader : ModelFileLoader {
                                      val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
 
                                      val collisionMask = when {
-                                         isHair && depth <= 2 -> {
+                                         isHair && depth <= 1 -> {
                                              baseCollisionMask and bodyGroupMask.inv()
                                          }
                                          isBreast -> baseCollisionMask
@@ -1300,7 +1300,7 @@ class PmxLoader : ModelFileLoader {
                                         physicsMode = finalPhysicsMode,
                                         ccdMotionThreshold = threshold,
                                         ccdSweptSphereRadius = sweptRadius,
-                                        collisionMargin = if (isHair || isBreast || isSkirt) 0.008f else 0.04f
+                                         collisionMargin = if (isHair || isBreast || isSkirt) 0.015f else 0.04f
                                     )
                                 },
                             )
@@ -1497,7 +1497,7 @@ class PmxLoader : ModelFileLoader {
                                 else -> 1.0f
                             },
                             biasFactor = when {
-                                isBreastJoint -> 0.1f // Slow, heavy error correction to stop shaking
+                                isBreastJoint -> 0.4f // Stiff error correction for Spring2 (was 0.1)
                                 (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.3f
                                 else -> 0.3f
                             },
