@@ -1,4 +1,5 @@
 #include "PhysicsWorld.h"
+#include <BulletDynamics/ConstraintSolver/btGeneric6DofSpring2Constraint.h>
 
 #include <cmath>
 #include <iostream>
@@ -416,18 +417,22 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             constraint->setStiffness(5, joint_item.rotation_spring.z);
         }
 
-        // Apply Stability Parameters (Softness, Bias, Relaxation)
+        // Apply Stability Parameters (ERP = Bias, CFM = Relaxation)
+        // Spring2's TranslationalLimitMotor2 has btVector3 for m_stopERP / m_stopCFM
         btTranslationalLimitMotor2* transMotor = constraint->getTranslationalLimitMotor();
-        transMotor->m_limitSoftness = joint_item.softness;
-        transMotor->m_stopERP = joint_item.bias_factor;
-        transMotor->m_stopCFM = joint_item.relaxation_factor;
+        transMotor->m_stopERP.setValue(joint_item.bias_factor, joint_item.bias_factor, joint_item.bias_factor);
+        transMotor->m_stopCFM.setValue(joint_item.relaxation_factor, joint_item.relaxation_factor, joint_item.relaxation_factor);
 
+        // Spring2's RotationalLimitMotor2 has btScalar for m_stopERP / m_stopCFM
         for (int i = 0; i < 3; i++) {
             btRotationalLimitMotor2* rotMotor = constraint->getRotationalLimitMotor(i);
-            rotMotor->m_limitSoftness = joint_item.softness;
             rotMotor->m_stopERP = joint_item.bias_factor;
             rotMotor->m_stopCFM = joint_item.relaxation_factor;
         }
+
+        // Spring2 advantage: per-spring damping (0 = no damping, 1 = critical damping)
+        // Set equilibrium to current position so springs know where "rest" is
+        constraint->setEquilibriumPoint();
 
         this->world->addConstraint(constraint.get(), false);
         this->joints.push_back(std::move(constraint));
