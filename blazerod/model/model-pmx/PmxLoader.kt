@@ -1235,7 +1235,7 @@ class PmxLoader : ModelFileLoader {
                                          isHair && depth <= 1 -> {
                                              baseCollisionMask and bodyGroupMask.inv()
                                          }
-                                         isBreast -> baseCollisionMask and bodyGroupMask.inv()
+                                         isBreast -> 0
                                          isHair -> baseCollisionMask or bodyGroupMask
                                          isSkirt -> baseCollisionMask
                                          else -> baseCollisionMask
@@ -1286,12 +1286,9 @@ class PmxLoader : ModelFileLoader {
                                         } else {
                                             rigidBody.mass
                                         },
-                                        moveAttenuation = if (isHair) {
-                                            // Higher damping for hair to prevent "twist" and over-swing
-                                            finalMoveAttenuation.coerceAtLeast(0.8f)
-                                        } else finalMoveAttenuation,
+                                        moveAttenuation = finalMoveAttenuation,
                                         rotationDamping = if (isHair) {
-                                            0.85f
+                                            0.1f
                                         } else if (isBreast) {
                                             0.95f
                                         } else finalRotationDamping,
@@ -1493,12 +1490,12 @@ class PmxLoader : ModelFileLoader {
                             rotationSpring = joint.rotationSpring,
                             softness = when {
                                 isBreastJoint -> 0.5f // Soft repositioning
-                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.8f
+                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.1f // Natural spring bounce
                                 else -> 1.0f
                             },
                             biasFactor = when {
                                 isBreastJoint -> 0.4f // Stiff error correction for Spring2 (was 0.1)
-                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.3f
+                                (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.1f // Stop violent solver "flicks"
                                 else -> 0.3f
                             },
                             relaxationFactor = 1.0f,
