@@ -1230,7 +1230,10 @@ class PmxLoader : ModelFileLoader {
                                                   name.contains("bang") || name.contains("strand") || name.contains("front") || 
                                                   name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
                                      val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
-                                     val isBodyPart = (bodyGroupMask and (1 shl rigidBody.groupId)) != 0
+                                     val isBodyPart = (bodyGroupMask and (1 shl rigidBody.groupId)) != 0 &&
+                                                      !name.contains("頭") && !name.contains("head") &&
+                                                      !name.contains("首") && !name.contains("neck") &&
+                                                      !name.contains("顔") && !name.contains("face")
 
                                      val collisionMask = when {
                                          isHair && depth <= 1 -> {
@@ -1478,8 +1481,8 @@ class PmxLoader : ModelFileLoader {
                             rigidBodyB = RigidBodyId(modelId, joint.rigidBodyIndexB),
                             position = joint.position,
                             rotation = joint.rotation,
-                            positionMin = joint.positionMinimum,
-                            positionMax = joint.positionMaximum,
+                            positionMin = if (isBreastJoint) Vector3f(0f, 0f, 0f) else joint.positionMinimum,
+                            positionMax = if (isBreastJoint) Vector3f(0f, 0f, 0f) else joint.positionMaximum,
                             rotationMin = if (isBreastJoint) {
                                 // Very tight rotation — eliminates visible oscillation
                                 Vector3f(-0.05f, -0.05f, -0.05f) // ~3 degrees
