@@ -419,7 +419,7 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
 
         // Apply Stability Parameters (ERP = Bias, CFM = Relaxation)
         btTranslationalLimitMotor2* transMotor = constraint->getTranslationalLimitMotor();
-        transMotor->m_stopERP.setValue(joint_item.bias_factor, joint_item.bias_factor, joint_item.bias_factor);
+        transMotor->m_stopERP.setValue(1.0f, 1.0f, 1.0f);
         transMotor->m_stopCFM.setValue(joint_item.relaxation_factor, joint_item.relaxation_factor, joint_item.relaxation_factor);
 
         // Spring2's RotationalLimitMotor2 has btScalar for m_stopERP / m_stopCFM
