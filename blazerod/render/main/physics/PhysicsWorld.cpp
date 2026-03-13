@@ -434,7 +434,7 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
         // correct for PMX. Do NOT call setEquilibriumPoint() — it captures incorrect
         // body offsets during init and causes sideways drift.
         for (int i = 0; i < 6; i++) {
-            constraint->setDamping(i, joint_item.softness);
+            constraint->setDamping(i, 0.99f);
         }
 
         this->world->addConstraint(constraint.get(), false);

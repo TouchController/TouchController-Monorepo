@@ -1487,10 +1487,7 @@ class PmxLoader : ModelFileLoader {
                             rotationMax = if (isBreastJoint) {
                                 Vector3f(0.05f, 0.05f, 0.05f)
                             } else joint.rotationMaximum,
-                            positionSpring = if (isBreastJoint) {
-                                // "Studio Quality" vertical bounce (Move Spring = 14.0f)
-                                Vector3f(joint.positionSpring.x, 14.0f, joint.positionSpring.z)
-                            } else joint.positionSpring,
+                            positionSpring = joint.positionSpring,
                             rotationSpring = joint.rotationSpring,
                             softness = when {
                                 isBreastJoint -> 0.5f // Soft repositioning
