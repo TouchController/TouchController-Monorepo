@@ -328,7 +328,7 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
         if (rigidbody_item.physics_mode != PhysicsMode::PHYSICS) {
             rigidbody->setActivationState(DISABLE_DEACTIVATION);
         }
-        if (rigidbody_item.physics_mode == PhysicsMode::FOLLOW_BONE) {
+        if (rigidbody_item.physics_mode == PhysicsMode::FOLLOW_BONE || rigidbody_item.physics_mode == PhysicsMode::PHYSICS_PLUS_BONE) {
             rigidbody->setCollisionFlags(rigidbody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
         }
 
@@ -496,8 +496,6 @@ void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_st
             rigidbody.motion_state->GetFromWorld(this, rigidbody_index);
             btTransform world_transform;
             rigidbody.motion_state->getWorldTransform(world_transform);
-            rigidbody.rigidbody->setWorldTransform(world_transform);
-            rigidbody.rigidbody->setInterpolationWorldTransform(world_transform);
             rigidbody.rigidbody->activate(true);
             this->world->updateSingleAabb(rigidbody.rigidbody.get());
         }

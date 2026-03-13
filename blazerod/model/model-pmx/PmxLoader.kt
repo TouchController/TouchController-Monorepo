@@ -1075,7 +1075,7 @@ class PmxLoader : ModelFileLoader {
                     -rotationMinimumOrig.y,
                     -rotationMinimumOrig.z,
                 )
-                val positionSpring = loadVector3f(buffer)
+                val positionSpring = loadVector3f(buffer).div(MMD_SCALE)
                 val rotationSpring = loadVector3f(buffer)
 
                 PmxJoint(
