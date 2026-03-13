@@ -1471,6 +1471,12 @@ class PmxLoader : ModelFileLoader {
                         val isBreastJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
                             n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast")
                         }
+                        val isHairJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
+                            n.contains("hair") || n.contains("发") || n.contains("髪") || 
+                            n.contains("bang") || n.contains("strand") || n.contains("front") || 
+                            n.contains("back") || n.contains("side") || n.contains("tail")
+                        }
+                        val isAhogeJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().contains("ahoge")
 
                         PhysicalJoint(
                             name = joint.nameLocal.takeIf(String::isNotBlank),
@@ -1491,7 +1497,11 @@ class PmxLoader : ModelFileLoader {
                                 Vector3f(0.05f, 0.05f, 0.05f)
                             } else joint.rotationMaximum,
                             positionSpring = joint.positionSpring,
-                            rotationSpring = joint.rotationSpring,
+                            rotationSpring = if (isHairJoint && !isAhogeJoint) {
+                                Vector3f(0f, 0f, 0f)
+                            } else {
+                                joint.rotationSpring
+                            },
                             softness = when {
                                 isBreastJoint -> 0.5f // Soft repositioning
                                 (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.1f // Natural spring bounce
