@@ -1252,12 +1252,12 @@ class PmxLoader : ModelFileLoader {
                                     val threshold = if (needsCCD) {
                                         // Set threshold based on the smallest dimension to catch tunneling
                                         val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
-                                        minSize * 0.5f // Trigger CCD if moved more than half its size in one step
+                                        minSize * 0.1f // Trigger CCD if moved more than half its size in one step
                                     } else 0f
 
                                     val sweptRadius = if (needsCCD) {
                                         val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
-                                        minSize * 0.2f // Internal swept sphere for collision detection
+                                        minSize * 0.4f // Internal swept sphere for collision detection
                                     } else 0f
                                     
                                     val safetyDamping = if (isPhysicsEnabled) 0.2f else 0f
@@ -1278,18 +1278,14 @@ class PmxLoader : ModelFileLoader {
                                             PmxRigidBody.ShapeType.BOX -> RigidBody.ShapeType.BOX
                                             PmxRigidBody.ShapeType.CAPSULE -> RigidBody.ShapeType.CAPSULE
                                         },
-                                         shapeSize = if (isBodyPart) {
-                                             Vector3f(rigidBody.shapeSize).mul(1.3f)
-                                         } else {
-                                             rigidBody.shapeSize
-                                         },
+                                         shapeSize = rigidBody.shapeSize,
                                         shapePosition = rigidBody.shapePosition,
                                         shapeRotation = rigidBody.shapeRotation,
                                         mass = if (isHair) {
                                             // Mass Gradient: Heavy at root, feather-light at tips (Expert setting)
                                             (rigidBody.mass * (1.0f / (depth + 1))).coerceAtLeast(0.05f)
                                         } else if (isBreast) {
-                                            1.0f // Increased mass for better inertia and less shaking
+                                            rigidBody.mass // Increased mass for better inertia and less shaking
                                         } else {
                                             rigidBody.mass
                                         },
@@ -1490,18 +1486,14 @@ class PmxLoader : ModelFileLoader {
                             positionMin = if (isBreastJoint) Vector3f(0f, 0f, 0f) else joint.positionMinimum,
                             positionMax = if (isBreastJoint) Vector3f(0f, 0f, 0f) else joint.positionMaximum,
                             rotationMin = if (isBreastJoint) {
-                                // Very tight rotation — eliminates visible oscillation
-                                Vector3f(-0.05f, -0.05f, -0.05f) // ~3 degrees
+                                // Extremely tight rotation - almost completely static
+                                Vector3f(-0.017f, -0.017f, -0.017f) // ~1 degree
                             } else joint.rotationMinimum,
                             rotationMax = if (isBreastJoint) {
-                                Vector3f(0.05f, 0.05f, 0.05f)
+                                Vector3f(0.017f, 0.017f, 0.017f)
                             } else joint.rotationMaximum,
                             positionSpring = joint.positionSpring,
-                            rotationSpring = if (isHairJoint && !isAhogeJoint) {
-                                Vector3f(0f, 0f, 0f)
-                            } else {
-                                joint.rotationSpring
-                            },
+                            rotationSpring = joint.rotationSpring, // Restore springs so hair holds its sculpted curve instead of acting like a heavy chain
                             softness = when {
                                 isBreastJoint -> 0.5f // Soft repositioning
                                 (rbA.nameLocal + rbB.nameLocal).lowercase().contains("hair") -> 0.1f // Natural spring bounce
