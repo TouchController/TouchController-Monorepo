@@ -1230,12 +1230,13 @@ class PmxLoader : ModelFileLoader {
                                                   name.contains("bang") || name.contains("strand") || name.contains("front") || 
                                                   name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
                                      val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
+                                     val isBodyPart = (bodyGroupMask and (1 shl rigidBody.groupId)) != 0
 
                                      val collisionMask = when {
                                          isHair && depth <= 1 -> {
                                              baseCollisionMask and bodyGroupMask.inv()
                                          }
-                                         isBreast -> 0
+                                         isBreast -> baseCollisionMask and bodyGroupMask.inv()
                                          isHair -> baseCollisionMask or bodyGroupMask
                                          isSkirt -> baseCollisionMask
                                          else -> baseCollisionMask
@@ -1259,8 +1260,7 @@ class PmxLoader : ModelFileLoader {
                                     val safetyDamping = if (isPhysicsEnabled) 0.2f else 0f
                                     val finalMoveAttenuation = rigidBody.moveAttenuation.coerceAtLeast(safetyDamping)
                                     val finalRotationDamping = rigidBody.rotationDamping.coerceAtLeast(safetyDamping)
-                                    
-                                    val finalPhysicsMode = if ((isBreast || isSkirt) && adjustedPhysicsMode == RigidBody.PhysicsMode.PHYSICS) {
+                                    val finalPhysicsMode = if (isSkirt && adjustedPhysicsMode == RigidBody.PhysicsMode.PHYSICS) {
                                         RigidBody.PhysicsMode.PHYSICS_PLUS_BONE
                                     } else {
                                         adjustedPhysicsMode
@@ -1275,7 +1275,11 @@ class PmxLoader : ModelFileLoader {
                                             PmxRigidBody.ShapeType.BOX -> RigidBody.ShapeType.BOX
                                             PmxRigidBody.ShapeType.CAPSULE -> RigidBody.ShapeType.CAPSULE
                                         },
-                                        shapeSize = rigidBody.shapeSize,
+                                         shapeSize = if (isBodyPart) {
+                                             Vector3f(rigidBody.shapeSize).mul(1.3f)
+                                         } else {
+                                             rigidBody.shapeSize
+                                         },
                                         shapePosition = rigidBody.shapePosition,
                                         shapeRotation = rigidBody.shapeRotation,
                                         mass = if (isHair) {
