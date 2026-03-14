@@ -87,7 +87,7 @@ class ModelInstanceImpl(
                                  // If the model is close (LOD < 5m), use High-Fidelity (50 iterations)
                                  // If far away, drop to 20 iterations to save CPU.
                                  val isHighQuality = lodDistance < 5f
-                                 bulletWorld.setSolverIterations(if (isHighQuality) 50 else 20)
+                                 bulletWorld.setSolverIterations(if (isHighQuality) 100 else 20)
                                 
                                 bulletWorld.step(deltaTime, maxSubSteps, fixedTimeStep)
                             }

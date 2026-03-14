@@ -1252,12 +1252,12 @@ class PmxLoader : ModelFileLoader {
                                     val threshold = if (needsCCD) {
                                         // Set threshold based on the smallest dimension to catch tunneling
                                         val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
-                                        minSize * 0.1f // Trigger CCD if moved more than half its size in one step
+                                        minSize * 0.5f 
                                     } else 0f
 
                                     val sweptRadius = if (needsCCD) {
                                         val minSize = listOf(rigidBody.shapeSize.x, rigidBody.shapeSize.y, rigidBody.shapeSize.z).minOrNull() ?: 1f
-                                        minSize * 0.4f // Internal swept sphere for collision detection
+                                        minSize * 0.2f
                                     } else 0f
                                     
                                     val safetyDamping = if (isPhysicsEnabled) 0.2f else 0f

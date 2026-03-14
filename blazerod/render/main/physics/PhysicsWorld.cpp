@@ -194,11 +194,11 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
     this->world->setGravity(btVector3(0, -98.0f, 0));
 
     btContactSolverInfo& solver_info = this->world->getSolverInfo();
-    solver_info.m_numIterations = 50;
+    solver_info.m_numIterations = 100;
     solver_info.m_splitImpulse = 1;
     solver_info.m_splitImpulsePenetrationThreshold = -0.001f;
-    solver_info.m_erp = 0.6f;
-    solver_info.m_erp2 = 0.6f; 
+    solver_info.m_erp = 0.8f;
+    solver_info.m_erp2 = 0.8f; 
     solver_info.m_globalCfm = 0.00001f;
 
     this->ground_shape = std::make_unique<btStaticPlaneShape>(btVector3(0, 1, 0), 0.0f);
@@ -497,41 +497,71 @@ void PhysicsWorld::ResetRigidBody(size_t rigidbody_index, float px, float py, fl
 }
 
 void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_step) {
+    if (delta_time <= 0) return;
+
+    struct KinematicUpdate {
+        size_t index;
+        btTransform start;
+        btTransform target;
+        btVector3 linVel;
+        btVector3 angVel;
+    };
+    std::vector<KinematicUpdate> updates;
+
     size_t rigidbody_index = 0;
     for (auto& rigidbody : this->rigidbodies) {
         if (rigidbody.physics_mode == PhysicsMode::FOLLOW_BONE || rigidbody.physics_mode == PhysicsMode::PHYSICS_PLUS_BONE) {
             rigidbody.motion_state->GetFromWorld(this, rigidbody_index);
             btTransform target_transform;
             rigidbody.motion_state->getWorldTransform(target_transform);
+            
             btTransform current_transform = rigidbody.rigidbody->getWorldTransform();
-            if (delta_time > 0) {
-                btVector3 lin_vel = (target_transform.getOrigin() - current_transform.getOrigin()) / delta_time;
-                rigidbody.rigidbody->setLinearVelocity(lin_vel);
-
-                btQuaternion q1 = current_transform.getRotation();
-                btQuaternion q2 = target_transform.getRotation();
-                btQuaternion q_diff = q2 * q1.inverse();
-                
-                btVector3 axis = q_diff.getAxis();
-                float angle = q_diff.getAngle();
-                if (std::abs(angle) > 0.0001f) {
-                    btVector3 ang_vel = (axis * angle) / delta_time;
-                    rigidbody.rigidbody->setAngularVelocity(ang_vel);
-                } else {
-                    rigidbody.rigidbody->setAngularVelocity(btVector3(0, 0, 0));
-                }
+            
+            btVector3 lin_vel = (target_transform.getOrigin() - current_transform.getOrigin()) / delta_time;
+            btVector3 ang_vel(0, 0, 0);
+            
+            btQuaternion q1 = current_transform.getRotation();
+            btQuaternion q2 = target_transform.getRotation();
+            btQuaternion q_diff = q2 * q1.inverse();
+            btVector3 axis = q_diff.getAxis();
+            float angle = q_diff.getAngle();
+            if (std::abs(angle) > 0.0001f) {
+                ang_vel = (axis * angle) / delta_time;
             }
 
-
-            rigidbody.rigidbody->setWorldTransform(current_transform);
-            rigidbody.rigidbody->setInterpolationWorldTransform(current_transform);
+            updates.push_back({rigidbody_index, current_transform, target_transform, lin_vel, ang_vel});
             
             rigidbody.rigidbody->activate(true);
-            this->world->updateSingleAabb(rigidbody.rigidbody.get());
         }
         rigidbody_index++;
     }
-    this->world->stepSimulation(delta_time, max_sub_steps, fixed_time_step);
+
+    int num_steps = std::min((int)std::ceil(delta_time / fixed_time_step), max_sub_steps);
+    float sub_dt = delta_time / (float)num_steps;
+
+    for (int step = 1; step <= num_steps; step++) {
+        float alpha = (float)step / (float)num_steps;
+        
+        for (auto& up : updates) {
+            auto& rb = this->rigidbodies[up.index];
+            
+            btVector3 pos = up.start.getOrigin().lerp(up.target.getOrigin(), alpha);
+            
+            btQuaternion rot = up.start.getRotation().slerp(up.target.getRotation(), alpha);
+            
+            btTransform sub_transform(rot, pos);
+            
+            rb.rigidbody->setWorldTransform(sub_transform);
+            rb.rigidbody->setInterpolationWorldTransform(sub_transform);
+            rb.rigidbody->setLinearVelocity(up.linVel);
+            rb.rigidbody->setAngularVelocity(up.angVel);
+            
+            this->world->updateSingleAabb(rb.rigidbody.get());
+        }
+
+        this->world->stepSimulation(sub_dt, 1, sub_dt);
+    }
+
     rigidbody_index = 0;
     for (auto& rigidbody : this->rigidbodies) {
         if (rigidbody.motion_state->IsDirty()) {
