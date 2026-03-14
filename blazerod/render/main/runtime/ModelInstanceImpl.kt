@@ -151,7 +151,7 @@ class ModelInstanceImpl(
         companion object {
             const val BUDGET_HIGH_MS = 2.0f
             const val BUDGET_LOW_MS = 1.0f
-            const val MIN_INTERVAL = 1f / 60f
+            const val MIN_INTERVAL = 1f / 120f
             const val MAX_INTERVAL = 1f / 15f
             const val SPEED_HISTORY_SIZE = 5
             const val SPRINT_SPEED_THRESHOLD = 0.04f  // ~squared dist for sprinting speed

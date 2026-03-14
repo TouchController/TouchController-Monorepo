@@ -196,7 +196,7 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
     btContactSolverInfo& solver_info = this->world->getSolverInfo();
     solver_info.m_numIterations = 50;
     solver_info.m_splitImpulse = 1;
-    solver_info.m_splitImpulsePenetrationThreshold = -0.01f;
+    solver_info.m_splitImpulsePenetrationThreshold = -0.001f;
     solver_info.m_erp = 0.6f;
     solver_info.m_erp2 = 0.6f; 
     solver_info.m_globalCfm = 0.00001f;
@@ -428,15 +428,22 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
             rotMotor->m_stopERP = joint_item.bias_factor;
             rotMotor->m_stopCFM = joint_item.relaxation_factor;
         }
-        // Apply PMX-defined damping/softness to all enabled spring axes.
-        // Default equilibrium is 0 (springs pull toward aligned joint frames) which is
-        // correct for PMX. Do NOT call setEquilibriumPoint() — it captures incorrect
-        // body offsets during init and causes sideways drift.
+
+        float mass = rigidbody_b.rigidbody->getInvMass() > 0 ? 1.0f / rigidbody_b.rigidbody->getInvMass() : 1.0f;
         for (int i = 0; i < 6; i++) {
-            if (i < 3) {
-                constraint->setDamping(i, 0.99f); 
+            float stiffness = 0.0f;
+            if (i == 0) stiffness = joint_item.position_spring.x;
+            else if (i == 1) stiffness = joint_item.position_spring.y;
+            else if (i == 2) stiffness = joint_item.position_spring.z;
+            else if (i == 3) stiffness = joint_item.rotation_spring.x;
+            else if (i == 4) stiffness = joint_item.rotation_spring.y;
+            else if (i == 5) stiffness = joint_item.rotation_spring.z;
+
+            if (stiffness > 0.0f) {
+                float critical_damping = 2.0f * std::sqrt(mass * stiffness);
+                constraint->setDamping(i, critical_damping * 0.95f);
             } else {
-                constraint->setDamping(i, joint_item.softness);
+                constraint->setDamping(i, i < 3 ? 0.99f : joint_item.softness);
             }
         }
 
@@ -496,9 +503,8 @@ void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_st
             rigidbody.motion_state->GetFromWorld(this, rigidbody_index);
             btTransform target_transform;
             rigidbody.motion_state->getWorldTransform(target_transform);
+            btTransform current_transform = rigidbody.rigidbody->getWorldTransform();
             if (delta_time > 0) {
-                btTransform current_transform = rigidbody.rigidbody->getWorldTransform();
-                
                 btVector3 lin_vel = (target_transform.getOrigin() - current_transform.getOrigin()) / delta_time;
                 rigidbody.rigidbody->setLinearVelocity(lin_vel);
 
@@ -516,8 +522,9 @@ void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_st
                 }
             }
 
-            rigidbody.rigidbody->setWorldTransform(target_transform);
-            rigidbody.rigidbody->setInterpolationWorldTransform(target_transform);
+
+            rigidbody.rigidbody->setWorldTransform(current_transform);
+            rigidbody.rigidbody->setInterpolationWorldTransform(current_transform);
             
             rigidbody.rigidbody->activate(true);
             this->world->updateSingleAabb(rigidbody.rigidbody.get());
