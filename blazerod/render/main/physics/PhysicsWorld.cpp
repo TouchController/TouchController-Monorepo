@@ -328,7 +328,7 @@ PhysicsWorld::PhysicsWorld(const PhysicsScene& scene, size_t initial_transform_c
         if (rigidbody_item.physics_mode != PhysicsMode::PHYSICS) {
             rigidbody->setActivationState(DISABLE_DEACTIVATION);
         }
-        if (rigidbody_item.physics_mode == PhysicsMode::FOLLOW_BONE || rigidbody_item.physics_mode == PhysicsMode::PHYSICS_PLUS_BONE) {
+        if (rigidbody_item.physics_mode == PhysicsMode::FOLLOW_BONE) {
             rigidbody->setCollisionFlags(rigidbody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
         }
 
@@ -494,8 +494,31 @@ void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_st
     for (auto& rigidbody : this->rigidbodies) {
         if (rigidbody.physics_mode == PhysicsMode::FOLLOW_BONE || rigidbody.physics_mode == PhysicsMode::PHYSICS_PLUS_BONE) {
             rigidbody.motion_state->GetFromWorld(this, rigidbody_index);
-            btTransform world_transform;
-            rigidbody.motion_state->getWorldTransform(world_transform);
+            btTransform target_transform;
+            rigidbody.motion_state->getWorldTransform(target_transform);
+            if (delta_time > 0) {
+                btTransform current_transform = rigidbody.rigidbody->getWorldTransform();
+                
+                btVector3 lin_vel = (target_transform.getOrigin() - current_transform.getOrigin()) / delta_time;
+                rigidbody.rigidbody->setLinearVelocity(lin_vel);
+
+                btQuaternion q1 = current_transform.getRotation();
+                btQuaternion q2 = target_transform.getRotation();
+                btQuaternion q_diff = q2 * q1.inverse();
+                
+                btVector3 axis = q_diff.getAxis();
+                float angle = q_diff.getAngle();
+                if (std::abs(angle) > 0.0001f) {
+                    btVector3 ang_vel = (axis * angle) / delta_time;
+                    rigidbody.rigidbody->setAngularVelocity(ang_vel);
+                } else {
+                    rigidbody.rigidbody->setAngularVelocity(btVector3(0, 0, 0));
+                }
+            }
+
+            rigidbody.rigidbody->setWorldTransform(target_transform);
+            rigidbody.rigidbody->setInterpolationWorldTransform(target_transform);
+            
             rigidbody.rigidbody->activate(true);
             this->world->updateSingleAabb(rigidbody.rigidbody.get());
         }
