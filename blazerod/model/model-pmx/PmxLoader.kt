@@ -1289,9 +1289,9 @@ class PmxLoader : ModelFileLoader {
                                         } else {
                                             rigidBody.mass
                                         },
-                                        moveAttenuation = finalMoveAttenuation,
+                                        moveAttenuation = if (isHair) 0.8f else finalMoveAttenuation,
                                         rotationDamping = if (isHair) {
-                                            0.1f
+                                            0.5f // Increased from 0.1f to kill jitter
                                         } else if (isBreast) {
                                             0.95f
                                         } else finalRotationDamping,

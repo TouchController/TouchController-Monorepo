@@ -520,6 +520,13 @@ void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_st
             btVector3 lin_vel = (target_transform.getOrigin() - current_transform.getOrigin()) / delta_time;
             btVector3 ang_vel(0, 0, 0);
             
+            const float MAX_KINEMATIC_LIN_VEL = 40.0f;
+            const float MAX_KINEMATIC_ANG_VEL = 10.0f;
+            
+            if (lin_vel.length2() > MAX_KINEMATIC_LIN_VEL * MAX_KINEMATIC_LIN_VEL) {
+                lin_vel = lin_vel.normalize() * MAX_KINEMATIC_LIN_VEL;
+            }
+
             btQuaternion q1 = current_transform.getRotation();
             btQuaternion q2 = target_transform.getRotation();
             btQuaternion q_diff = q2 * q1.inverse();
@@ -527,6 +534,9 @@ void PhysicsWorld::Step(float delta_time, int max_sub_steps, float fixed_time_st
             float angle = q_diff.getAngle();
             if (std::abs(angle) > 0.0001f) {
                 ang_vel = (axis * angle) / delta_time;
+                if (ang_vel.length2() > MAX_KINEMATIC_ANG_VEL * MAX_KINEMATIC_ANG_VEL) {
+                    ang_vel = ang_vel.normalize() * MAX_KINEMATIC_ANG_VEL;
+                }
             }
 
             updates.push_back({rigidbody_index, current_transform, target_transform, lin_vel, ang_vel});
