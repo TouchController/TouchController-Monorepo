@@ -1198,7 +1198,9 @@ class PmxLoader : ModelFileLoader {
                                             nameLocal.startsWith("Ribbon_Braid_") -> basePhysicsMode
                                             nameLocal.startsWith("Ribbon_") ||
                                                 nameLocal.startsWith("Pocket Watch_") ||
-                                                nameLocal.startsWith("Strap_") ->
+                                            nameLocal.startsWith("Strap_") ||
+                                            nameLocal.startsWith("cf_j_", ignoreCase = true) ||
+                                            nameLocal.startsWith("cf_s_", ignoreCase = true) ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
                                             nameLocal.startsWith("Skirt_") &&
                                                 basePhysicsMode == RigidBody.PhysicsMode.PHYSICS ->
