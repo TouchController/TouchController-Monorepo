@@ -1477,6 +1477,12 @@ class PmxLoader : ModelFileLoader {
                             n.contains("back") || n.contains("side") || n.contains("tail")
                         }
                         val isAhogeJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().contains("ahoge")
+                        val isSkirtJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
+                            n.contains("skirt") || n.contains("スカート") || n.contains("ribbon")
+                        }
+                        if (isKoikatsu && (isBreastJoint || isHairJoint || isSkirtJoint)) {
+                            return@mapNotNull null
+                        }
 
                         PhysicalJoint(
                             name = joint.nameLocal.takeIf(String::isNotBlank),
