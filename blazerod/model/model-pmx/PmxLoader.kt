@@ -1183,7 +1183,8 @@ class PmxLoader : ModelFileLoader {
                             NodeComponent.RigidBodyComponent(
                                 rigidBodyId = RigidBodyId(modelId, index),
                                 rigidBody = rigidBodies[index].let { rigidBody ->
-                                    val enableNameBasedOverrides = false
+                                    val isKoikatsu = bones.any { it.nameLocal.startsWith("cf_", ignoreCase = true) }
+                                    val enableNameBasedOverrides = isKoikatsu
                                     val basePhysicsMode = when (rigidBody.physicsMode) {
                                         PmxRigidBody.PhysicsMode.FOLLOW_BONE -> RigidBody.PhysicsMode.FOLLOW_BONE
                                         PmxRigidBody.PhysicsMode.PHYSICS -> RigidBody.PhysicsMode.PHYSICS
@@ -1191,8 +1192,15 @@ class PmxLoader : ModelFileLoader {
                                     }
 
                                     val nameLocal = rigidBody.nameLocal
+                                    val name = nameLocal.lowercase()
+                                    val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast")
+                                    val isHair = name.contains("hair") || name.contains("发") || name.contains("髪") || name.contains("bang") || name.contains("strand") || name.contains("front") || name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
+                                    val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
+
                                     val adjustedPhysicsMode = if (enableNameBasedOverrides) {
                                         when {
+                                            isBreast || isHair || isSkirt ->
+                                                RigidBody.PhysicsMode.FOLLOW_BONE
                                             nameLocal.startsWith("Skirt_D_") ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
                                             nameLocal.startsWith("Ribbon_Braid_") -> basePhysicsMode
@@ -1226,12 +1234,6 @@ class PmxLoader : ModelFileLoader {
                                         }
                                         .fold(0) { acc, i -> acc or (1 shl rigidBodies[i].groupId) }
                                      
-                                     val name = rigidBody.nameLocal.lowercase()
-                                     val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast")
-                                     val isHair = name.contains("hair") || name.contains("发") || name.contains("髪") || 
-                                                  name.contains("bang") || name.contains("strand") || name.contains("front") || 
-                                                  name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
-                                     val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
                                      val isBodyPart = (bodyGroupMask and (1 shl rigidBody.groupId)) != 0 &&
                                                       !name.contains("頭") && !name.contains("head") &&
                                                       !name.contains("首") && !name.contains("neck") &&
