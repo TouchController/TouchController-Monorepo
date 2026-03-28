@@ -398,7 +398,13 @@ class PmxLoader : ModelFileLoader {
                 when (weightDeformType) {
                     // BDEF1
                     0 -> {
-                        val index1 = readBoneIndex()
+                        var index1 = readBoneIndex()
+                        if (isKoikatsu && index1 == 0) {
+                            // Weight scrubbing: If a vertex is weighted to Bone 0, it stays at world origin.
+                            // We don't have per-vertex bone names, so we can't be ultra-selective here,
+                            // but usually only "floating" parts or incorrectly ported ones have this issue.
+                            // In this loader, we just let it be, but BDEF2/4 are more surgical.
+                        }
                         outputBuffer.putInt(outputPosition, index1)
                         if (index1 != -1) {
                             outputBuffer.putFloat(outputPosition + 16, 1f)
@@ -406,9 +412,17 @@ class PmxLoader : ModelFileLoader {
                     }
                     // BDEF2
                     1 -> {
-                        val index1 = readBoneIndex()
-                        val index2 = readBoneIndex()
+                        var index1 = readBoneIndex()
+                        var index2 = readBoneIndex()
                         val weight1 = readWeight()
+
+                        if (isKoikatsu) {
+                            // If weight 1 is Bone 0 and weight 2 is something else, or vice-versa
+                            // Redirect Bone 0 to the other bone to prevent vertex anchor stretching.
+                            if (index1 == 0 && index2 > 0) index1 = index2
+                            else if (index2 == 0 && index1 > 0) index2 = index1
+                        }
+
                         outputBuffer.putInt(outputPosition, index1)
                         outputBuffer.putInt(outputPosition + 4, index2)
                         if (index1 != -1) {
@@ -420,14 +434,24 @@ class PmxLoader : ModelFileLoader {
                     }
                     // BDEF4, or not really supported QDEF
                     2, 4 -> {
-                        val index1 = readBoneIndex()
-                        val index2 = readBoneIndex()
-                        val index3 = readBoneIndex()
-                        val index4 = readBoneIndex()
+                        var index1 = readBoneIndex()
+                        var index2 = readBoneIndex()
+                        var index3 = readBoneIndex()
+                        var index4 = readBoneIndex()
                         val weight1 = readWeight()
                         val weight2 = readWeight()
                         val weight3 = readWeight()
                         val weight4 = readWeight()
+
+                        if (isKoikatsu) {
+                            // Find first non-zero bone to replace any Bone 0 weights
+                            val fallback = listOf(index1, index2, index3, index4).firstOrNull { it > 0 } ?: 0
+                            if (index1 == 0) index1 = fallback
+                            if (index2 == 0) index2 = fallback
+                            if (index3 == 0) index3 = fallback
+                            if (index4 == 0) index4 = fallback
+                        }
+
                         outputBuffer.putInt(outputPosition, index1)
                         outputBuffer.putInt(outputPosition + 4, index2)
                         outputBuffer.putInt(outputPosition + 8, index3)
@@ -448,9 +472,15 @@ class PmxLoader : ModelFileLoader {
 
                     3 -> {
                         // SDEF, not really supported, just treat as BDEF2
-                        val index1 = readBoneIndex()
-                        val index2 = readBoneIndex()
+                        var index1 = readBoneIndex()
+                        var index2 = readBoneIndex()
                         val weight1 = readWeight()
+
+                        if (isKoikatsu) {
+                            if (index1 == 0 && index2 > 0) index1 = index2
+                            else if (index2 == 0 && index1 > 0) index2 = index1
+                        }
+
                         outputBuffer.putInt(outputPosition, index1)
                         outputBuffer.putInt(outputPosition + 4, index2)
                         if (index1 != -1) {
@@ -908,6 +938,11 @@ class PmxLoader : ModelFileLoader {
                         
                         // Update childBoneMap for consistency
                         childBoneMap.getOrPut(newParent) { mutableListOf() }.add(index)
+                        
+                        // CRITICAL: Remove from old parent child map
+                        if (currentParent != -1) {
+                            childBoneMap[currentParent]?.remove(index)
+                        }
                         
                         // Update rootBones - remove the bone from root list since it now has a parent
                         rootBones.removeIf { it == index }
