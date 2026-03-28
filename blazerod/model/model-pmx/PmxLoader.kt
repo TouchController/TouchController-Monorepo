@@ -91,8 +91,10 @@ class PmxLoader : ModelFileLoader {
         private val rootBones = mutableListOf<Int>()
         private lateinit var rigidBodies: List<PmxRigidBody>
         private var boneToRigidBodyMap = mutableMapOf<Int, MutableList<Int>>()
-        private lateinit var joints: List<PmxJoint>
+        private var joints: List<PmxJoint>
         private var isKoikatsu: Boolean = false
+        internal var spineIndex: Int = -1
+        internal var pelvisIndex: Int = -1
 
         private fun loadRgbColor(buffer: ByteBuffer): RgbColor {
             if (buffer.remaining() < 3 * 4) {
@@ -420,10 +422,10 @@ class PmxLoader : ModelFileLoader {
                             // Origin Weight Scrubber: If heavily weighted to Bone 0, redirect to skeleton anchors
                             // to prevent vertices sticking to (0,0,0) world origin.
                             if (index1 == 0 && weight1 > 0.9f) {
-                                index1 = if (vy > 1.25f) context.spineIndex else if (vy > 0.8f) context.pelvisIndex else 0
+                                index1 = if (y > 1.25f) this.spineIndex else if (y > 0.8f) this.pelvisIndex else 0
                             }
                             if (index2 == 0 && (1f - weight1) > 0.9f) {
-                                index2 = if (vy > 1.25f) context.spineIndex else if (vy > 0.8f) context.pelvisIndex else 0
+                                index2 = if (y > 1.25f) this.spineIndex else if (y > 0.8f) this.pelvisIndex else 0
                             }
                             
                             // Normal redirection for mixed weights
@@ -453,7 +455,13 @@ class PmxLoader : ModelFileLoader {
 
                         if (isKoikatsu) {
                             // Find first non-zero bone to replace any Bone 0 weights
-                            val fallback = listOf(index1, index2, index3, index4).firstOrNull { it > 0 } ?: 0
+                            var fallback = listOf(index1, index2, index3, index4).firstOrNull { it > 0 } ?: 0
+                            
+                            // If everything is Bone 0, use skeletal anchors
+                            if (fallback == 0) {
+                                fallback = if (y > 1.25f) this.spineIndex else if (y > 0.8f) this.pelvisIndex else 0
+                            }
+
                             if (index1 == 0) index1 = fallback
                             if (index2 == 0) index2 = fallback
                             if (index3 == 0) index3 = fallback
@@ -933,12 +941,8 @@ class PmxLoader : ModelFileLoader {
                 else -> -1
             }
             
-            val pelvisIndex = when {
-                hipsIndex != -1 -> hipsIndex
-                pelvisIndex_alt != -1 -> pelvisIndex_alt
-                waistIndex != -1 -> waistIndex
-                else -> -1
-            }
+            this.spineIndex = upperBodyIndex
+            this.pelvisIndex = pelvisIndex
 
             val headAnchorIndex = when {
                 headIndex != -1 -> headIndex
