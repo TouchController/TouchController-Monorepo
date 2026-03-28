@@ -859,6 +859,7 @@ class PmxLoader : ModelFileLoader {
         private fun repairKoikatsuHierarchy() {
             if (!isKoikatsu) return
 
+            // PASS 1: Discovery. Find anchor bones regardless of their position in the file.
             val spine03Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine03", ignoreCase = true) }
             val spine02Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine02", ignoreCase = true) }
             val spine01Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine01", ignoreCase = true) }
@@ -868,6 +869,7 @@ class PmxLoader : ModelFileLoader {
             val hipsIndex = bones.indexOfFirst { it.nameLocal.equals("cf_j_hips", ignoreCase = true) }
             val hipsSubIndex = bones.indexOfFirst { it.nameLocal.equals("cf_s_hips", ignoreCase = true) }
             val hipsAllIndex = bones.indexOfFirst { it.nameLocal.contains("hips", ignoreCase = true) || it.nameLocal.contains("下半身", ignoreCase = true) }
+            val waistIndex = bones.indexOfFirst { it.nameLocal.contains("腰", ignoreCase = true) || it.nameLocal.contains("waist", ignoreCase = true) }
 
             val headIndex = bones.indexOfFirst { it.nameLocal.contains("head", ignoreCase = true) || it.nameLocal.contains("頭", ignoreCase = true) }
             val neckIndex = bones.indexOfFirst { it.nameLocal.contains("neck", ignoreCase = true) || it.nameLocal.contains("首", ignoreCase = true) }
@@ -885,6 +887,7 @@ class PmxLoader : ModelFileLoader {
                 hipsIndex != -1 -> hipsIndex
                 hipsSubIndex != -1 -> hipsSubIndex
                 hipsAllIndex != -1 -> hipsAllIndex
+                waistIndex != -1 -> waistIndex
                 else -> -1
             }
 
@@ -897,10 +900,13 @@ class PmxLoader : ModelFileLoader {
 
             if (upperBodyIndex == -1 && pelvisIndex == -1) {
                 logger.warn("[HIERARCHY-REPAIR] Koikatsu model detected but no anchor bones (spine/hips) found. Repair might be incomplete.")
+            } else {
+                logger.info("[HIERARCHY-REPAIR] Anchor bones found: Spine=$upperBodyIndex, Hips=$pelvisIndex, Head=$headAnchorIndex")
             }
 
-            logger.info("[HIERARCHY-REPAIR] Koikatsu model detected. Identifying and repairing dangling bones...")
+            logger.info("[HIERARCHY-REPAIR] Identifying and repairing dangling bones...")
             
+            // PASS 2: Repair. Use the pre-discovered anchors to reparent orphan/anchor-locked bones.
             val newBones = bones.mapIndexed { index, bone ->
                 val currentParent = bone.parentBoneIndex ?: -1
                 val name = bone.nameLocal.lowercase()
