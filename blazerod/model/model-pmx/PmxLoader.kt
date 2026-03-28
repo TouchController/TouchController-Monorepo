@@ -1227,7 +1227,6 @@ class PmxLoader : ModelFileLoader {
             loadTextures(buffer)
             loadMaterials(buffer)
             loadBones(buffer)
-            isKoikatsu = bones.any { it.nameLocal.contains("cf_", ignoreCase = true) }
             repairKoikatsuHierarchy()
             loadMorphTargets(buffer)
             loadDisplayFrames(buffer)
