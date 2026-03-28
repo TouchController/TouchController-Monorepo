@@ -813,6 +813,12 @@ class PmxLoader : ModelFileLoader {
                     }
                 }
             }
+            
+            // isKoikatsu detection - broaden to catch all major prefixes
+            isKoikatsu = bones.any { 
+                val n = it.nameLocal.lowercase()
+                n.startsWith("cf_") || n.startsWith("ct_") || n.contains("k_f_") || n.contains("k_t_")
+            }
         }
 
         private fun repairKoikatsuHierarchy() {
@@ -822,21 +828,35 @@ class PmxLoader : ModelFileLoader {
             val spine02Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine02", ignoreCase = true) }
             val spine01Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine01", ignoreCase = true) }
             val spineSub01Index = bones.indexOfFirst { it.nameLocal.equals("cf_s_spine01", ignoreCase = true) }
+            val spineAllIndex = bones.indexOfFirst { it.nameLocal.contains("spine", ignoreCase = true) || it.nameLocal.contains("脊髄", ignoreCase = true) }
             
             val hipsIndex = bones.indexOfFirst { it.nameLocal.equals("cf_j_hips", ignoreCase = true) }
             val hipsSubIndex = bones.indexOfFirst { it.nameLocal.equals("cf_s_hips", ignoreCase = true) }
+            val hipsAllIndex = bones.indexOfFirst { it.nameLocal.contains("hips", ignoreCase = true) || it.nameLocal.contains("下半身", ignoreCase = true) }
+
+            val headIndex = bones.indexOfFirst { it.nameLocal.contains("head", ignoreCase = true) || it.nameLocal.contains("頭", ignoreCase = true) }
+            val neckIndex = bones.indexOfFirst { it.nameLocal.contains("neck", ignoreCase = true) || it.nameLocal.contains("首", ignoreCase = true) }
 
             val upperBodyIndex = when {
                 spine03Index != -1 -> spine03Index
                 spine02Index != -1 -> spine02Index
                 spine01Index != -1 -> spine01Index
                 spineSub01Index != -1 -> spineSub01Index
+                spineAllIndex != -1 -> spineAllIndex
                 else -> -1
             }
             
             val pelvisIndex = when {
                 hipsIndex != -1 -> hipsIndex
                 hipsSubIndex != -1 -> hipsSubIndex
+                hipsAllIndex != -1 -> hipsAllIndex
+                else -> -1
+            }
+
+            val headAnchorIndex = when {
+                headIndex != -1 -> headIndex
+                neckIndex != -1 -> neckIndex
+                upperBodyIndex != -1 -> upperBodyIndex
                 else -> -1
             }
 
@@ -844,26 +864,34 @@ class PmxLoader : ModelFileLoader {
                 logger.warn("[HIERARCHY-REPAIR] Koikatsu model detected but no anchor bones (spine/hips) found. Repair might be incomplete.")
             }
 
-            logger.info("[HIERARCHY-REPAIR] Koikatsu model detected. Attempting to repair dangling bones...")
+            logger.info("[HIERARCHY-REPAIR] Koikatsu model detected. Identifying and repairing dangling bones...")
             
             val newBones = bones.mapIndexed { index, bone ->
                 if (bone.parentBoneIndex == null || bone.parentBoneIndex == -1) {
                     val name = bone.nameLocal.lowercase()
                     val newParent = when {
-                        // Breasts usually attach to the upper torso
-                        (name.contains("cf_s_bust") || name.contains("cf_j_bust")) && upperBodyIndex != -1 -> upperBodyIndex
+                        // Universal body part matching for all Koikatsu prefixes (cf_s, cf_j, cf_d, cf_m, ct_)
+                        (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳")) && upperBodyIndex != -1 -> upperBodyIndex
                         
-                        // Skirts and lower body dynamics attach to the hips
-                        (name.contains("cf_s_skirt") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && pelvisIndex != -1 -> pelvisIndex
+                        // Skirts and lower body dynamics
+                        (name.contains("skirt") || name.contains("スカート") || name.contains("腰") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && pelvisIndex != -1 -> pelvisIndex
                         
-                        // Auxiliary bones (twist, shoulder helpers) should follow the main hips if they are dangling
-                        // This prevents them from staying at 0,0,0
-                        (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("捩")) && pelvisIndex != -1 && !name.contains("spine") -> pelvisIndex
+                        // Hair and face accessories
+                        (name.contains("hair") || name.contains("髪") || name.contains("ribbon") || name.contains("ct_")) && headAnchorIndex != -1 -> headAnchorIndex
+
+                        // General dynamic adjustment bones and twist helpers
+                        (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("cf_m_") || name.contains("捩") || name.contains("肩")) -> {
+                            when {
+                                name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") -> upperBodyIndex
+                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") -> pelvisIndex
+                                else -> upperBodyIndex // Fallback to upper body
+                            }
+                        }
                         
                         else -> null
-                    }
+                    }?.takeIf { it != -1 && it != index }
 
-                    if (newParent != null && newParent != index) {
+                    if (newParent != null) {
                         logger.info("[HIERARCHY-REPAIR] Reparenting dangling bone ${bone.nameLocal} (index $index) to parent index $newParent")
                         
                         // Update childBoneMap for consistency
@@ -881,6 +909,16 @@ class PmxLoader : ModelFileLoader {
                 }
             }
             bones = newBones
+            
+            // Task 3: Verification - Log any remaining root bones for diagnostic purposes
+            val remainingRoots = bones.indices.filter { bones[it].parentBoneIndex == null || bones[it].parentBoneIndex == -1 }
+            if (remainingRoots.isNotEmpty()) {
+                val rootNames = remainingRoots.take(10).joinToString { bones[it].nameLocal }
+                val more = if (remainingRoots.size > 10) "... and ${remainingRoots.size - 10} more" else ""
+                logger.info("[HIERARCHY-REPAIR] Repair complete. $remainingRoots.size bones remain as roots: $rootNames$more")
+            } else {
+                logger.info("[HIERARCHY-REPAIR] Repair complete. Zero root bones remain.")
+            }
         }
 
         private fun loadMorphTargets(buffer: ByteBuffer) {
@@ -1256,8 +1294,10 @@ class PmxLoader : ModelFileLoader {
                         val isHair = name.contains("hair") || name.contains("发") || name.contains("髪") || name.contains("bang") || name.contains("strand") || name.contains("front") || name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
                         val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
 
-                        if (isKoikatsu && (isBreast || isHair || isSkirt)) return@forEach
-
+                        // Task 2: Refine physics loading logic.
+                        // Instead of skipping, we allow the component creation but force FOLLOW_BONE mode.
+                        // This ensures the mesh has its associated physics metadata but doesn't fly away.
+                        
                         add(
                             NodeComponent.RigidBodyComponent(
                                 rigidBodyId = RigidBodyId(modelId, index),
@@ -1269,24 +1309,23 @@ class PmxLoader : ModelFileLoader {
                                         PmxRigidBody.PhysicsMode.PHYSICS_PLUS_BONE -> RigidBody.PhysicsMode.PHYSICS_PLUS_BONE
                                     }
 
-                                    val nameLocal = rigidBody.nameLocal
+                                    val nameLocal = rigidBody.nameLocal.lowercase()
 
                                     val adjustedPhysicsMode = if (enableNameBasedOverrides) {
                                         when {
                                             isBreast || isHair || isSkirt ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
-                                            nameLocal.startsWith("Skirt_D_") ->
+                                            nameLocal.contains("skirt") || nameLocal.contains("スカート") || nameLocal.contains("腰") ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
-                                            nameLocal.startsWith("Ribbon_Braid_") -> basePhysicsMode
-                                            nameLocal.startsWith("Ribbon_") ||
-                                                nameLocal.startsWith("Pocket Watch_") ||
-                                            nameLocal.startsWith("Strap_") ||
+                                            nameLocal.contains("hair") || nameLocal.contains("髪") || nameLocal.contains("ribbon") || nameLocal.contains("ct_") ->
+                                                RigidBody.PhysicsMode.FOLLOW_BONE
+                                            nameLocal.contains("bust") || nameLocal.contains("breast") || nameLocal.contains("胸") || nameLocal.contains("乳") ->
+                                                RigidBody.PhysicsMode.FOLLOW_BONE
                                             nameLocal.startsWith("cf_j_", ignoreCase = true) ||
-                                            nameLocal.startsWith("cf_s_", ignoreCase = true) ->
+                                            nameLocal.startsWith("cf_s_", ignoreCase = true) ||
+                                            nameLocal.startsWith("cf_d_", ignoreCase = true) ||
+                                            nameLocal.startsWith("cf_m_", ignoreCase = true) ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
-                                            nameLocal.startsWith("Skirt_") &&
-                                                basePhysicsMode == RigidBody.PhysicsMode.PHYSICS ->
-                                                RigidBody.PhysicsMode.PHYSICS_PLUS_BONE
                                             else -> basePhysicsMode
                                         }
                                     } else {
@@ -1542,16 +1581,21 @@ class PmxLoader : ModelFileLoader {
                         }
                         val rbA = rigidBodies[joint.rigidBodyIndexA]
                         val rbB = rigidBodies[joint.rigidBodyIndexB]
-                        val isBreastJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
+                        val nameCombo = (rbA.nameLocal + rbB.nameLocal).lowercase()
+                        val isBreastJoint = nameCombo.let { n ->
                             n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast") || n.contains("cf_s_bust")
                         }
-                        val isHairJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
-                            n.contains("hair") || n.contains("发") || n.contains("髪") || n.contains("bang") || n.contains("strand") || n.contains("front") || n.contains("back") || n.contains("side") || n.contains("tail") || n.contains("ahoge")
+                        val isHairJoint = nameCombo.let { n ->
+                            n.contains("hair") || n.contains("发") || n.contains("髪") || n.contains("bang") || n.contains("strand") || n.contains("front") || n.contains("back") || n.contains("side") || n.contains("tail") || n.contains("ahoge") || n.contains("ct_") || n.contains("ribbon")
                         }
-                        val isSkirtJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
-                            n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_skirt") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("ribbon")
+                        val isSkirtJoint = nameCombo.let { n ->
+                            n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_skirt") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("腰")
                         }
-                        if (isKoikatsu && (isBreastJoint || isHairJoint || isSkirtJoint)) {
+                        val isHelperJoint = nameCombo.let { n ->
+                            n.contains("cf_m_") || n.contains("cf_t_") || n.contains("捩") || n.contains("肩")
+                        }
+                        
+                        if (isKoikatsu && (isBreastJoint || isHairJoint || isSkirtJoint || isHelperJoint)) {
                             return@mapNotNull null
                         }
 
