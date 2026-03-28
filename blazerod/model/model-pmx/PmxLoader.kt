@@ -861,24 +861,31 @@ class PmxLoader : ModelFileLoader {
 
             // PASS 1: Discovery. Find anchor bones regardless of their position in the file.
             // Priority: Explicit cf_j joints first, then any bone with the name (case-insensitive)
-            // CRITICAL: We only accept anchors from index > 50 to avoid early-file nipple/helper "decoys"
-            fun findAnchor(patterns: List<String>, ignorePatterns: List<String> = listOf("bnip", "tw", "adj")): Int {
+            // CRITICAL: We only accept anchors from index > 150 to avoid early-file "decoys" 
+            // (nipples, helpers, muscles) that are often locked to origin in variants like Arslan_Leila.
+            fun findAnchor(patterns: List<String>, ignorePatterns: List<String> = listOf("bnip", "tw", "adj", "bust")): Int {
                 // Try cf_j_ prefix first as it's the most reliable for skeleton anchors. 
                 // Use indexOfLast to get the most articulated joint (e.g. spine03 vs spine01)
                 val prioritized = bones.indices.reversed().firstOrNull { i ->
                     val bone = bones[i]
                     val n = bone.nameLocal.lowercase()
-                    i > 50 && patterns.any { p -> n.startsWith("cf_j_$p") } && !ignorePatterns.any { pattern -> n.contains(pattern) }
+                    i > 150 && patterns.any { p -> n.startsWith("cf_j_$p") } && !ignorePatterns.any { pattern -> n.contains(pattern) }
                 } ?: -1
                 
                 if (prioritized != -1) return prioritized
 
-                // Fallback to name contains (with the same index constraint)
+                // Fallback to name contains (with the same 150+ index constraint)
                 return bones.indices.reversed().firstOrNull { i ->
                     val bone = bones[i]
                     val n = bone.nameLocal.lowercase()
-                    i > 50 && patterns.any { p -> n.contains(p) } && !ignorePatterns.any { pattern -> n.contains(pattern) }
+                    i > 150 && patterns.any { p -> n.contains(p) } && !ignorePatterns.any { pattern -> n.contains(pattern) }
                 } ?: -1
+            }
+
+            // Diagnostic: Dump the skeletal range if in Koikatsu mode to detect ghost bones
+            for (i in 150..minOf(bones.size - 1, 280)) {
+                val b = bones[i]
+                logger.debug("[HIERARCHY-DIAG] Bone $i: ${b.nameLocal} (Parent: ${b.parentBoneIndex})")
             }
 
             val spine03Index = findAnchor(listOf("spine03"))
