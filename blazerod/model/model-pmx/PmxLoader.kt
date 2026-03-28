@@ -864,17 +864,25 @@ class PmxLoader : ModelFileLoader {
             // CRITICAL: We only accept anchors from index > 150 to avoid early-file "decoys" 
             // (nipples, helpers, muscles) that are often locked to origin in variants like Arslan_Leila.
             fun findAnchor(patterns: List<String>, ignorePatterns: List<String> = listOf("bnip", "tw", "adj", "bust")): Int {
-                // Try cf_j_ prefix first as it's the most reliable for skeleton anchors. 
-                // Use indexOfLast to get the most articulated joint (e.g. spine03 vs spine01)
+                // Step 1: Strict Prefix + Exact Name Search (Best for Koikatsu cf_j_joints)
                 val prioritized = bones.indices.reversed().firstOrNull { i ->
                     val bone = bones[i]
                     val n = bone.nameLocal.lowercase()
-                    i > 150 && patterns.any { p -> n.startsWith("cf_j_$p") } && !ignorePatterns.any { pattern -> n.contains(pattern) }
+                    i > 150 && patterns.any { p -> n == "cf_j_$p" } && !ignorePatterns.any { pattern -> n.contains(pattern) }
                 } ?: -1
                 
                 if (prioritized != -1) return prioritized
 
-                // Fallback to name contains (with the same 150+ index constraint)
+                // Step 2: Fallback to cf_j_ startsWith (for spine variants)
+                val secondary = bones.indices.reversed().firstOrNull { i ->
+                    val bone = bones[i]
+                    val n = bone.nameLocal.lowercase()
+                    i > 150 && patterns.any { p -> n.startsWith("cf_j_$p") } && !ignorePatterns.any { pattern -> n.contains(pattern) }
+                } ?: -1
+
+                if (secondary != -1) return secondary
+
+                // Final Fallback: Name contains (with strict index 150+ constraint)
                 return bones.indices.reversed().firstOrNull { i ->
                     val bone = bones[i]
                     val n = bone.nameLocal.lowercase()
