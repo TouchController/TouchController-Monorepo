@@ -417,8 +417,16 @@ class PmxLoader : ModelFileLoader {
                         val weight1 = readWeight()
 
                         if (isKoikatsu) {
-                            // If weight 1 is Bone 0 and weight 2 is something else, or vice-versa
-                            // Redirect Bone 0 to the other bone to prevent vertex anchor stretching.
+                            // Origin Weight Scrubber: If heavily weighted to Bone 0, redirect to skeleton anchors
+                            // to prevent vertices sticking to (0,0,0) world origin.
+                            if (index1 == 0 && weight1 > 0.9f) {
+                                index1 = if (vy > 1.25f) context.spineIndex else if (vy > 0.8f) context.pelvisIndex else 0
+                            }
+                            if (index2 == 0 && (1f - weight1) > 0.9f) {
+                                index2 = if (vy > 1.25f) context.spineIndex else if (vy > 0.8f) context.pelvisIndex else 0
+                            }
+                            
+                            // Normal redirection for mixed weights
                             if (index1 == 0 && index2 > 0) index1 = index2
                             else if (index2 == 0 && index1 > 0) index2 = index1
                         }
@@ -860,34 +868,42 @@ class PmxLoader : ModelFileLoader {
             if (!isKoikatsu) return
 
             // PASS 1: Discovery. Find anchor bones regardless of their position in the file.
-            // Priority: Explicit cf_j joints first, then any bone with the name (case-insensitive)
-            // CRITICAL: We only accept anchors from index > 150 to avoid early-file "decoys" 
-            // (nipples, helpers, muscles) that are often locked to origin in variants like Arslan_Leila.
+            // Using a scoring system to prioritize core Joints (cf_j_) over Sub-bones (cf_s_)
+            // even if the Sub-bones are at a higher index.
             fun findAnchor(patterns: List<String>, ignorePatterns: List<String> = listOf("bnip", "tw", "adj", "bust")): Int {
-                // Step 1: Strict Prefix + Exact Name Search (Best for Koikatsu cf_j_joints)
-                val prioritized = bones.indices.reversed().firstOrNull { i ->
+                var bestIndex = -1
+                var bestScore = -1.0
+
+                for (i in bones.indices) {
                     val bone = bones[i]
                     val n = bone.nameLocal.lowercase()
-                    i > 150 && patterns.any { p -> n == "cf_j_$p" } && !ignorePatterns.any { pattern -> n.contains(pattern) }
-                } ?: -1
-                
-                if (prioritized != -1) return prioritized
-
-                // Step 2: Fallback to cf_j_ startsWith (for spine variants)
-                val secondary = bones.indices.reversed().firstOrNull { i ->
-                    val bone = bones[i]
-                    val n = bone.nameLocal.lowercase()
-                    i > 150 && patterns.any { p -> n.startsWith("cf_j_$p") } && !ignorePatterns.any { pattern -> n.contains(pattern) }
-                } ?: -1
-
-                if (secondary != -1) return secondary
-
-                // Final Fallback: Name contains (with strict index 150+ constraint)
-                return bones.indices.reversed().firstOrNull { i ->
-                    val bone = bones[i]
-                    val n = bone.nameLocal.lowercase()
-                    i > 150 && patterns.any { p -> n.contains(p) } && !ignorePatterns.any { pattern -> n.contains(pattern) }
-                } ?: -1
+                    
+                    // Still ignore early decoys (expression/eye bones usually < 100)
+                    if (i < 100) continue 
+                    
+                    // Check if name matches any pattern
+                    if ((patterns.any { p -> n.contains(p) }) && !ignorePatterns.any { it in n }) {
+                        var score = 0.0
+                        
+                        // Tier 1: Core Joints (cf_j_) are the highest priority for moving skeleton
+                        if (n.startsWith("cf_j_")) score += 1000.0
+                        
+                        // Tier 2: Exact name match (prevents thigh matching spine)
+                        if (patterns.any { p -> n == "cf_j_$p" || n == p }) score += 500.0
+                        
+                        // Tier 3: Sub joints or Dynamic bones (cf_s_ / cf_d_)
+                        if (n.startsWith("cf_s_") || n.startsWith("cf_d_")) score += 100.0
+                        
+                        // Tiebreaker: Higher index is usually a more specific joint (spine03 > spine01)
+                        score += i.toDouble() / 10000.0
+                        
+                        if (score > bestScore) {
+                            bestScore = score
+                            bestIndex = i
+                        }
+                    }
+                }
+                return bestIndex
             }
 
             // Diagnostic: Dump the skeletal range if in Koikatsu mode to detect ghost bones
@@ -899,11 +915,11 @@ class PmxLoader : ModelFileLoader {
             val spine03Index = findAnchor(listOf("spine03"))
             val spine02Index = findAnchor(listOf("spine02"))
             val spine01Index = findAnchor(listOf("spine01"))
-            val spineAllIndex = findAnchor(listOf("spine", "脊髄"))
+            val spineIndex = findAnchor(listOf("spine", "脊髄"))
 
             val hipsIndex = findAnchor(listOf("hips"))
             val waistIndex = findAnchor(listOf("waist", "腰"))
-            val hipsAllIndex = findAnchor(listOf("hips", "下半身"))
+            val pelvisIndex_alt = findAnchor(listOf("pelvis", "下半身"))
 
             val headIndex = findAnchor(listOf("head", "頭"))
             val neckIndex = findAnchor(listOf("neck", "首"))
@@ -912,14 +928,15 @@ class PmxLoader : ModelFileLoader {
                 spine03Index != -1 -> spine03Index
                 spine02Index != -1 -> spine02Index
                 spine01Index != -1 -> spine01Index
-                spineAllIndex != -1 -> spineAllIndex
+                spineIndex != -1 -> spineIndex
+                neckIndex != -1 -> neckIndex
                 else -> -1
             }
             
             val pelvisIndex = when {
                 hipsIndex != -1 -> hipsIndex
+                pelvisIndex_alt != -1 -> pelvisIndex_alt
                 waistIndex != -1 -> waistIndex
-                hipsAllIndex != -1 -> hipsAllIndex
                 else -> -1
             }
 
