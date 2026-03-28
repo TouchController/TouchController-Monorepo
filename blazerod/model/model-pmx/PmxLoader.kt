@@ -92,6 +92,7 @@ class PmxLoader : ModelFileLoader {
         private lateinit var rigidBodies: List<PmxRigidBody>
         private var boneToRigidBodyMap = mutableMapOf<Int, MutableList<Int>>()
         private lateinit var joints: List<PmxJoint>
+        private var isKoikatsu: Boolean = false
 
         private fun loadRgbColor(buffer: ByteBuffer): RgbColor {
             if (buffer.remaining() < 3 * 4) {
@@ -814,6 +815,74 @@ class PmxLoader : ModelFileLoader {
             }
         }
 
+        private fun repairKoikatsuHierarchy() {
+            if (!isKoikatsu) return
+
+            val spine03Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine03", ignoreCase = true) }
+            val spine02Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine02", ignoreCase = true) }
+            val spine01Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine01", ignoreCase = true) }
+            val spineSub01Index = bones.indexOfFirst { it.nameLocal.equals("cf_s_spine01", ignoreCase = true) }
+            
+            val hipsIndex = bones.indexOfFirst { it.nameLocal.equals("cf_j_hips", ignoreCase = true) }
+            val hipsSubIndex = bones.indexOfFirst { it.nameLocal.equals("cf_s_hips", ignoreCase = true) }
+
+            val upperBodyIndex = when {
+                spine03Index != -1 -> spine03Index
+                spine02Index != -1 -> spine02Index
+                spine01Index != -1 -> spine01Index
+                spineSub01Index != -1 -> spineSub01Index
+                else -> -1
+            }
+            
+            val pelvisIndex = when {
+                hipsIndex != -1 -> hipsIndex
+                hipsSubIndex != -1 -> hipsSubIndex
+                else -> -1
+            }
+
+            if (upperBodyIndex == -1 && pelvisIndex == -1) {
+                logger.warn("[HIERARCHY-REPAIR] Koikatsu model detected but no anchor bones (spine/hips) found. Repair might be incomplete.")
+            }
+
+            logger.info("[HIERARCHY-REPAIR] Koikatsu model detected. Attempting to repair dangling bones...")
+            
+            val newBones = bones.mapIndexed { index, bone ->
+                if (bone.parentBoneIndex == null || bone.parentBoneIndex == -1) {
+                    val name = bone.nameLocal.lowercase()
+                    val newParent = when {
+                        // Breasts usually attach to the upper torso
+                        (name.contains("cf_s_bust") || name.contains("cf_j_bust")) && upperBodyIndex != -1 -> upperBodyIndex
+                        
+                        // Skirts and lower body dynamics attach to the hips
+                        (name.contains("cf_s_skirt") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && pelvisIndex != -1 -> pelvisIndex
+                        
+                        // Auxiliary bones (twist, shoulder helpers) should follow the main hips if they are dangling
+                        // This prevents them from staying at 0,0,0
+                        (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("捩")) && pelvisIndex != -1 && !name.contains("spine") -> pelvisIndex
+                        
+                        else -> null
+                    }
+
+                    if (newParent != null && newParent != index) {
+                        logger.info("[HIERARCHY-REPAIR] Reparenting dangling bone ${bone.nameLocal} (index $index) to parent index $newParent")
+                        
+                        // Update childBoneMap for consistency
+                        childBoneMap.getOrPut(newParent) { mutableListOf() }.add(index)
+                        
+                        // Update rootBones - remove the bone from root list since it now has a parent
+                        rootBones.removeIf { it == index }
+                        
+                        bone.copy(parentBoneIndex = newParent)
+                    } else {
+                        bone
+                    }
+                } else {
+                    bone
+                }
+            }
+            bones = newBones
+        }
+
         private fun loadMorphTargets(buffer: ByteBuffer) {
             val morphTargetCount = buffer.getInt()
             if (morphTargetCount < 0) {
@@ -1108,7 +1177,8 @@ class PmxLoader : ModelFileLoader {
             loadTextures(buffer)
             loadMaterials(buffer)
             loadBones(buffer)
-            val isKoikatsu = bones.any { it.nameLocal.startsWith("cf_", ignoreCase = true) }
+            isKoikatsu = bones.any { it.nameLocal.contains("cf_", ignoreCase = true) }
+            repairKoikatsuHierarchy()
             loadMorphTargets(buffer)
             loadDisplayFrames(buffer)
             loadRigidBodies(buffer)
@@ -1473,16 +1543,13 @@ class PmxLoader : ModelFileLoader {
                         val rbA = rigidBodies[joint.rigidBodyIndexA]
                         val rbB = rigidBodies[joint.rigidBodyIndexB]
                         val isBreastJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
-                            n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast")
+                            n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast") || n.contains("cf_s_bust")
                         }
                         val isHairJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
-                            n.contains("hair") || n.contains("发") || n.contains("髪") || 
-                            n.contains("bang") || n.contains("strand") || n.contains("front") || 
-                            n.contains("back") || n.contains("side") || n.contains("tail")
+                            n.contains("hair") || n.contains("发") || n.contains("髪") || n.contains("bang") || n.contains("strand") || n.contains("front") || n.contains("back") || n.contains("side") || n.contains("tail") || n.contains("ahoge")
                         }
-                        val isAhogeJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().contains("ahoge")
                         val isSkirtJoint = (rbA.nameLocal + rbB.nameLocal).lowercase().let { n ->
-                            n.contains("skirt") || n.contains("スカート") || n.contains("ribbon")
+                            n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_skirt") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("ribbon")
                         }
                         if (isKoikatsu && (isBreastJoint || isHairJoint || isSkirtJoint)) {
                             return@mapNotNull null
