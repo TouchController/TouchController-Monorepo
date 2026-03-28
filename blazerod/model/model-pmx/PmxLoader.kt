@@ -860,34 +860,46 @@ class PmxLoader : ModelFileLoader {
             if (!isKoikatsu) return
 
             // PASS 1: Discovery. Find anchor bones regardless of their position in the file.
-            val spine03Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine03", ignoreCase = true) }
-            val spine02Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine02", ignoreCase = true) }
-            val spine01Index = bones.indexOfFirst { it.nameLocal.equals("cf_j_spine01", ignoreCase = true) }
-            val spineSub01Index = bones.indexOfFirst { it.nameLocal.equals("cf_s_spine01", ignoreCase = true) }
-            val spineAllIndex = bones.indexOfFirst { it.nameLocal.contains("spine", ignoreCase = true) || it.nameLocal.contains("脊髄", ignoreCase = true) }
-            
-            val hipsIndex = bones.indexOfFirst { it.nameLocal.equals("cf_j_hips", ignoreCase = true) }
-            val hipsSubIndex = bones.indexOfFirst { it.nameLocal.equals("cf_s_hips", ignoreCase = true) }
-            val hipsAllIndex = bones.indexOfFirst { it.nameLocal.contains("hips", ignoreCase = true) || it.nameLocal.contains("下半身", ignoreCase = true) }
-            val waistIndex = bones.indexOfFirst { it.nameLocal.contains("腰", ignoreCase = true) || it.nameLocal.contains("waist", ignoreCase = true) }
+            // Priority: Explicit cf_j joints first, then any bone with the name (case-insensitive)
+            fun findAnchor(patterns: List<String>, ignorePatterns: List<String> = listOf("bnip", "tw", "adj")): Int {
+                // Try cf_j_ prefix first as it's the most reliable for skeleton anchors
+                val prioritized = bones.indexOfFirst { bone ->
+                    val n = bone.nameLocal.lowercase()
+                    patterns.any { p -> n.startsWith("cf_j_$p") } && !ignorePatterns.any { i -> n.contains(i) }
+                }
+                if (prioritized != -1) return prioritized
 
-            val headIndex = bones.indexOfFirst { it.nameLocal.contains("head", ignoreCase = true) || it.nameLocal.contains("頭", ignoreCase = true) }
-            val neckIndex = bones.indexOfFirst { it.nameLocal.contains("neck", ignoreCase = true) || it.nameLocal.contains("首", ignoreCase = true) }
+                // Fallback to name contains (standard skeleton protection)
+                return bones.indexOfFirst { bone ->
+                    val n = bone.nameLocal.lowercase()
+                    patterns.any { p -> n.contains(p) } && !ignorePatterns.any { i -> n.contains(i) }
+                }
+            }
+
+            val spine03Index = findAnchor(listOf("spine03"))
+            val spine02Index = findAnchor(listOf("spine02"))
+            val spine01Index = findAnchor(listOf("spine01"))
+            val spineAllIndex = findAnchor(listOf("spine", "脊髄"))
+
+            val hipsIndex = findAnchor(listOf("hips"))
+            val waistIndex = findAnchor(listOf("waist", "腰"))
+            val hipsAllIndex = findAnchor(listOf("hips", "下半身"))
+
+            val headIndex = findAnchor(listOf("head", "頭"))
+            val neckIndex = findAnchor(listOf("neck", "首"))
 
             val upperBodyIndex = when {
                 spine03Index != -1 -> spine03Index
                 spine02Index != -1 -> spine02Index
                 spine01Index != -1 -> spine01Index
-                spineSub01Index != -1 -> spineSub01Index
                 spineAllIndex != -1 -> spineAllIndex
                 else -> -1
             }
             
             val pelvisIndex = when {
                 hipsIndex != -1 -> hipsIndex
-                hipsSubIndex != -1 -> hipsSubIndex
-                hipsAllIndex != -1 -> hipsAllIndex
                 waistIndex != -1 -> waistIndex
+                hipsAllIndex != -1 -> hipsAllIndex
                 else -> -1
             }
 
@@ -901,7 +913,10 @@ class PmxLoader : ModelFileLoader {
             if (upperBodyIndex == -1 && pelvisIndex == -1) {
                 logger.warn("[HIERARCHY-REPAIR] Koikatsu model detected but no anchor bones (spine/hips) found. Repair might be incomplete.")
             } else {
-                logger.info("[HIERARCHY-REPAIR] Anchor bones found: Spine=$upperBodyIndex, Hips=$pelvisIndex, Head=$headAnchorIndex")
+                val spineName = if (upperBodyIndex != -1) bones[upperBodyIndex].nameLocal else "NONE"
+                val hipsName = if (pelvisIndex != -1) bones[pelvisIndex].nameLocal else "NONE"
+                val headName = if (headAnchorIndex != -1) bones[headAnchorIndex].nameLocal else "NONE"
+                logger.info("[HIERARCHY-REPAIR] Anchor bones found: Spine=$upperBodyIndex ($spineName), Hips=$pelvisIndex ($hipsName), Head=$headAnchorIndex ($headName)")
             }
 
             logger.info("[HIERARCHY-REPAIR] Identifying and repairing dangling bones...")
