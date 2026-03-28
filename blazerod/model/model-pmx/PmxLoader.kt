@@ -814,10 +814,15 @@ class PmxLoader : ModelFileLoader {
                 }
             }
             
-            // isKoikatsu detection - broaden to catch all major prefixes
+            // isKoikatsu detection - broaden to catch all major prefixes and common Koikatsu naming patterns
             isKoikatsu = bones.any { 
                 val n = it.nameLocal.lowercase()
-                n.startsWith("cf_") || n.startsWith("ct_") || n.contains("k_f_") || n.contains("k_t_")
+                n.startsWith("cf_") || n.startsWith("ct_") || n.contains("k_f_") || n.contains("k_t_") ||
+                n.contains("bust") || n.contains("breast") || n.contains("skirt") ||
+                n.contains("胸") || n.contains("乳") || n.contains("髪") || n.contains("スカート")
+            }
+            if (isKoikatsu) {
+                logger.info("[HIERARCHY-REPAIR] Koikatsu-style bone naming detected. Hierarchy repair active.")
             }
         }
 
