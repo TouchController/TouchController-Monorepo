@@ -1108,6 +1108,7 @@ class PmxLoader : ModelFileLoader {
             loadTextures(buffer)
             loadMaterials(buffer)
             loadBones(buffer)
+            val isKoikatsu = bones.any { it.nameLocal.startsWith("cf_", ignoreCase = true) }
             loadMorphTargets(buffer)
             loadDisplayFrames(buffer)
             loadRigidBodies(buffer)
@@ -1183,7 +1184,6 @@ class PmxLoader : ModelFileLoader {
                             NodeComponent.RigidBodyComponent(
                                 rigidBodyId = RigidBodyId(modelId, index),
                                 rigidBody = rigidBodies[index].let { rigidBody ->
-                                    val isKoikatsu = bones.any { it.nameLocal.startsWith("cf_", ignoreCase = true) }
                                     val enableNameBasedOverrides = isKoikatsu
                                     val basePhysicsMode = when (rigidBody.physicsMode) {
                                         PmxRigidBody.PhysicsMode.FOLLOW_BONE -> RigidBody.PhysicsMode.FOLLOW_BONE
