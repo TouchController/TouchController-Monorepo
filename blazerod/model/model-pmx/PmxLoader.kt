@@ -867,8 +867,15 @@ class PmxLoader : ModelFileLoader {
             logger.info("[HIERARCHY-REPAIR] Koikatsu model detected. Identifying and repairing dangling bones...")
             
             val newBones = bones.mapIndexed { index, bone ->
-                if (bone.parentBoneIndex == null || bone.parentBoneIndex == -1) {
-                    val name = bone.nameLocal.lowercase()
+                val currentParent = bone.parentBoneIndex ?: -1
+                val name = bone.nameLocal.lowercase()
+                
+                // Skeleton protection: Don't reparent the main movement roots (Center, Groove, Waist)
+                val isCoreSkeleton = name.contains("センター") || name.contains("center") || 
+                                     name.contains("グルーブ") || name.contains("groove") ||
+                                     name.contains("腰") || name.contains("waist") || name.contains("全ての親")
+                                     
+                if ((currentParent == -1 || currentParent == 0) && !isCoreSkeleton) {
                     val newParent = when {
                         // Universal body part matching for all Koikatsu prefixes (cf_s, cf_j, cf_d, cf_m, ct_)
                         (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳")) && upperBodyIndex != -1 -> upperBodyIndex
@@ -889,10 +896,10 @@ class PmxLoader : ModelFileLoader {
                         }
                         
                         else -> null
-                    }?.takeIf { it != -1 && it != index }
+                    }?.takeIf { it != -1 && it != index && it != currentParent }
 
                     if (newParent != null) {
-                        logger.info("[HIERARCHY-REPAIR] Reparenting dangling bone ${bone.nameLocal} (index $index) to parent index $newParent")
+                        logger.info("[HIERARCHY-REPAIR] Reparenting anchor-locked bone ${bone.nameLocal} (index $index, parent $currentParent) to parent index $newParent")
                         
                         // Update childBoneMap for consistency
                         childBoneMap.getOrPut(newParent) { mutableListOf() }.add(index)
@@ -915,7 +922,7 @@ class PmxLoader : ModelFileLoader {
             if (remainingRoots.isNotEmpty()) {
                 val rootNames = remainingRoots.take(10).joinToString { bones[it].nameLocal }
                 val more = if (remainingRoots.size > 10) "... and ${remainingRoots.size - 10} more" else ""
-                logger.info("[HIERARCHY-REPAIR] Repair complete. $remainingRoots.size bones remain as roots: $rootNames$more")
+                logger.info("[HIERARCHY-REPAIR] Repair complete. ${remainingRoots.size} bones remain as roots: $rootNames$more")
             } else {
                 logger.info("[HIERARCHY-REPAIR] Repair complete. Zero root bones remain.")
             }
