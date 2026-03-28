@@ -91,7 +91,7 @@ class PmxLoader : ModelFileLoader {
         private val rootBones = mutableListOf<Int>()
         private lateinit var rigidBodies: List<PmxRigidBody>
         private var boneToRigidBodyMap = mutableMapOf<Int, MutableList<Int>>()
-        private var joints: List<PmxJoint>
+        private lateinit var joints: List<PmxJoint>
         private var isKoikatsu: Boolean = false
         internal var spineIndex: Int = -1
         internal var pelvisIndex: Int = -1
