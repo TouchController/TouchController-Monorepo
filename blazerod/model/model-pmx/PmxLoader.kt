@@ -929,76 +929,97 @@ class PmxLoader : ModelFileLoader {
             val spineIndex = findAnchor(listOf("spine", "脊髄"))
 
             val hipsIndex = findAnchor(listOf("hips"))
+            val waist02Index = findAnchor(listOf("waist02"))
+            val waist01Index = findAnchor(listOf("waist01"))
             val waistIndex = findAnchor(listOf("waist", "腰"))
-            val pelvisIndex_alt = findAnchor(listOf("pelvis", "下半身"))
+            val pelvisIndex_alt = findAnchor(listOf("pelvis", "下半身", "lower"))
 
             val headIndex = findAnchor(listOf("head", "頭"))
             val neckIndex = findAnchor(listOf("neck", "首"))
 
-            val upperBodyIndex = when {
+            this.spineIndex = when {
                 spine03Index != -1 -> spine03Index
                 spine02Index != -1 -> spine02Index
                 spine01Index != -1 -> spine01Index
                 spineIndex != -1 -> spineIndex
-                neckIndex != -1 -> neckIndex
                 else -> -1
             }
             
-            this.spineIndex = upperBodyIndex
-            this.pelvisIndex = pelvisIndex
+            this.pelvisIndex = when {
+                hipsIndex != -1 -> hipsIndex
+                waist02Index != -1 -> waist02Index
+                waist01Index != -1 -> waist01Index
+                waistIndex != -1 -> waistIndex
+                pelvisIndex_alt != -1 -> pelvisIndex_alt
+                else -> -1
+            }
+
+            // PASS 2: Hierarchical Fallbacks. If anchors are still missing, look at parents of known extremities.
+            if (this.pelvisIndex == -1) {
+                val legFirst = findAnchor(listOf("leg_l", "足_l", "leg_r", "足_r"))
+                if (legFirst != -1) {
+                    this.pelvisIndex = bones[legFirst].parentBoneIndex ?: -1
+                    logger.info("[HIERARCHY-REPAIR] Pelvis fallback to Leg Parent: ${this.pelvisIndex}")
+                }
+            }
+            if (this.spineIndex == -1) {
+                val neckFirst = findAnchor(listOf("neck", "首"))
+                if (neckFirst != -1) {
+                    this.spineIndex = bones[neckFirst].parentBoneIndex ?: -1
+                    logger.info("[HIERARCHY-REPAIR] Spine fallback to Neck Parent: ${this.spineIndex}")
+                }
+            }
 
             val headAnchorIndex = when {
                 headIndex != -1 -> headIndex
                 neckIndex != -1 -> neckIndex
-                upperBodyIndex != -1 -> upperBodyIndex
+                this.spineIndex != -1 -> this.spineIndex
                 else -> -1
             }
 
-            if (upperBodyIndex == -1 && pelvisIndex == -1) {
+            if (this.spineIndex == -1 && this.pelvisIndex == -1) {
                 logger.warn("[HIERARCHY-REPAIR] Koikatsu model detected but no anchor bones (spine/hips) found. Repair might be incomplete.")
             } else {
-                val spineName = if (upperBodyIndex != -1) bones[upperBodyIndex].nameLocal else "NONE"
-                val hipsName = if (pelvisIndex != -1) bones[pelvisIndex].nameLocal else "NONE"
+                val spineName = if (this.spineIndex != -1) bones[this.spineIndex].nameLocal else "NONE"
+                val hipsName = if (this.pelvisIndex != -1) bones[this.pelvisIndex].nameLocal else "NONE"
                 val headName = if (headAnchorIndex != -1) bones[headAnchorIndex].nameLocal else "NONE"
-                logger.info("[HIERARCHY-REPAIR] Anchor bones found: Spine=$upperBodyIndex ($spineName), Hips=$pelvisIndex ($hipsName), Head=$headAnchorIndex ($headName)")
+                logger.info("[HIERARCHY-REPAIR] Anchor bones found: Spine=${this.spineIndex} ($spineName), Hips=${this.pelvisIndex} ($hipsName), Head=$headAnchorIndex ($headName)")
             }
 
             logger.info("[HIERARCHY-REPAIR] Identifying and repairing dangling bones...")
             
-            // PASS 2: Repair. Use the pre-discovered anchors to reparent orphan/anchor-locked bones.
+            // PASS 3: Repair. Use the pre-discovered anchors to reparent orphan/anchor-locked bones.
             val newBones = bones.mapIndexed { index, bone ->
                 val currentParent = bone.parentBoneIndex ?: -1
                 val name = bone.nameLocal.lowercase()
                 
-                // Skeleton protection: Don't reparent the main movement roots (Center, Groove, Waist)
+                // Skeleton protection: Don't reparent the main movement roots
                 val isCoreSkeleton = name.contains("センター") || name.contains("center") || 
                                      name.contains("グルーブ") || name.contains("groove") ||
                                      name.contains("腰") || name.contains("waist") || name.contains("全ての親")
                                      
                 if ((currentParent == -1 || currentParent == 0) && !isCoreSkeleton) {
                     val newParent = when {
-                        // Universal body part matching for all Koikatsu prefixes (cf_s, cf_j, cf_d, cf_m, ct_)
-                        (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳")) && upperBodyIndex != -1 -> upperBodyIndex
+                        // Universal body part matching
+                        (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳")) && this.spineIndex != -1 -> this.spineIndex
                         
                         // Skirts and lower body dynamics
-                        (name.contains("skirt") || name.contains("スカート") || name.contains("腰") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && pelvisIndex != -1 -> pelvisIndex
+                        (name.contains("skirt") || name.contains("スカート") || name.contains("腰") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && this.pelvisIndex != -1 -> this.pelvisIndex
                         
                         // Hair and face accessories
                         (name.contains("hair") || name.contains("髪") || name.contains("ribbon") || name.contains("ct_")) && headAnchorIndex != -1 -> headAnchorIndex
-
+ 
                         // General dynamic adjustment bones and twist helpers
                         (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("cf_m_") || name.contains("捩") || name.contains("肩")) -> {
                             when {
-                                name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") -> upperBodyIndex
-                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") -> pelvisIndex
-                                else -> upperBodyIndex // Fallback to upper body
+                                name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") -> this.spineIndex
+                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") -> this.pelvisIndex
+                                else -> this.spineIndex // Fallback to upper body
                             }
                         }
-                        
-                        else -> null
-                    }?.takeIf { it != -1 && it != index && it != currentParent }
-
-                    if (newParent != null) {
+                        else -> -1
+                    }
+                    if (newParent != -1 && newParent != index && newParent != currentParent) {
                         logger.info("[HIERARCHY-REPAIR] Reparenting anchor-locked bone ${bone.nameLocal} (index $index, parent $currentParent) to parent index $newParent")
                         
                         // Update childBoneMap for consistency
