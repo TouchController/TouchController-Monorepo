@@ -877,7 +877,7 @@ class PmxLoader : ModelFileLoader {
 
             // PASS 1: Discovery. Find anchor bones regardless of their position in the file.
             // Using a scoring system to prioritize core Joints (cf_j_) over Sub-bones (cf_s_)
-            // even if the Sub-bones are at a higher index.
+            // and honoring the "Early Skeleton" range found in Arslan/Koikatsu ports.
             fun findAnchor(patterns: List<String>, ignorePatterns: List<String> = listOf("bnip", "tw", "adj", "bust")): Int {
                 var bestIndex = -1
                 var bestScore = -1.0
@@ -886,8 +886,8 @@ class PmxLoader : ModelFileLoader {
                     val bone = bones[i]
                     val n = bone.nameLocal.lowercase()
                     
-                    // Still ignore early decoys (expression/eye bones usually < 100)
-                    if (i < 100) continue 
+                    // Search all bones except index 0 (World Root)
+                    if (i == 0) continue 
                     
                     // Check if name matches any pattern
                     if ((patterns.any { p -> n.contains(p) }) && !ignorePatterns.any { it in n }) {
@@ -899,10 +899,13 @@ class PmxLoader : ModelFileLoader {
                         // Tier 2: Exact name match (prevents thigh matching spine)
                         if (patterns.any { p -> n == "cf_j_$p" || n == p }) score += 500.0
                         
-                        // Tier 3: Sub joints or Dynamic bones (cf_s_ / cf_d_)
+                        // Tier 3: Early-Model Bonus (Indices 1-100) - Real skeleton often lives here
+                        if (i in 1..100) score += 300.0
+
+                        // Tier 4: Sub joints or Dynamic bones (cf_s_ / cf_d_)
                         if (n.startsWith("cf_s_") || n.startsWith("cf_d_")) score += 100.0
                         
-                        // Tiebreaker: Higher index is usually a more specific joint (spine03 > spine01)
+                        // Tiebreaker: Higher index usually means a more specific joint (spine03)
                         score += i.toDouble() / 10000.0
                         
                         if (score > bestScore) {
