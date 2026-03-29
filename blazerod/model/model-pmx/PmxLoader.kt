@@ -1003,20 +1003,20 @@ class PmxLoader : ModelFileLoader {
                 // If it's already part of the character skeleton (Parent > 100), leave it alone!
                 if (currentParent <= 0 && !isCoreSkeleton) {
                     val newParent = when {
-                        // Universal body part matching
-                        (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳")) && this.spineIndex != -1 -> this.spineIndex
+                        // V16: Specialized body part matching for Arslan/Kisara control nodes
+                        (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳") || name.contains("胸操作")) && this.spineIndex != -1 -> this.spineIndex
                         
                         // Skirts and lower body dynamics
-                        (name.contains("skirt") || name.contains("スカート") || name.contains("腰") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && this.pelvisIndex != -1 -> this.pelvisIndex
+                        (name.contains("skirt") || name.contains("スカート") || name.contains("腰") || name.contains("腰操作") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && this.pelvisIndex != -1 -> this.pelvisIndex
                         
-                        // Hair and face accessories
-                        (name.contains("hair") || name.contains("髪") || name.contains("ribbon") || name.contains("ct_")) && headAnchorIndex != -1 -> headAnchorIndex
+                        // Hair and face accessories (including hair-operation nodes)
+                        (name.contains("hair") || name.contains("髪") || name.contains("髪操作") || name.contains("ribbon") || name.contains("ct_")) && headAnchorIndex != -1 -> headAnchorIndex
  
                         // General dynamic adjustment bones and twist helpers
                         (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("cf_m_") || name.contains("捩") || name.contains("肩")) -> {
                             when {
-                                name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") -> this.spineIndex
-                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") -> this.pelvisIndex
+                                name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") || name.contains("breast") || name.contains("胸") -> this.spineIndex
+                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") || name.contains("腰") -> this.pelvisIndex
                                 else -> this.spineIndex // Fallback to upper body
                             }
                         }
