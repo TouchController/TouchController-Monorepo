@@ -999,9 +999,17 @@ class PmxLoader : ModelFileLoader {
                                      name.contains("グルーブ") || name.contains("groove") ||
                                      name.contains("全ての親")
                                      
-                // V17 Bypass: Reparent if bone is stuck to a stationary "Ghost Root" (Indices 1-10)
-                // If it's already part of the HIGH character skeleton (> 100), leave it alone!
-                if (currentParent <= 10 && !isCoreSkeleton) {
+                // V18 Logical Character Protection: 
+                // Only reparent if: 
+                // 1. It is a known dynamic part (Hair, Breast, Skirt, Operation/Adjustment)
+                // 2. OR it is in the early ghost root region (< 100)
+                // 3. AND its parent is currently a stationary ghost root (< 100)
+                val isDynamicPart = name.contains("skirt") || name.contains("hair") || name.contains("bust") || 
+                                     name.contains("breast") || name.contains("操作") || name.contains("胸") || 
+                                     name.contains("髪") || name.contains("腰") || name.contains("ct_") ||
+                                     name.startsWith("cf_s_") || name.startsWith("cf_d_") || name.startsWith("cf_m_")
+                
+                if ((index < 100 || isDynamicPart) && (currentParent >= 0 && currentParent <= 100) && !isCoreSkeleton) {
                     val newParent = when {
                         // V16: Specialized body part matching for Arslan/Kisara control nodes
                         (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳") || name.contains("胸操作")) && this.spineIndex != -1 -> this.spineIndex
