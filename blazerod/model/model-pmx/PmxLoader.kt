@@ -877,7 +877,7 @@ class PmxLoader : ModelFileLoader {
 
             // PASS 1: Discovery. Find anchor bones regardless of their position in the file.
             // Using a scoring system to prioritize core Joints (cf_j_) over Sub-bones (cf_s_)
-            // and honoring the "Early Skeleton" range found in Arslan/Koikatsu ports.
+            // and prioritizing the "Animated Skeleton" (Indices 150+) over "Root Skeleton" (Indices 1-100).
             fun findAnchor(patterns: List<String>, ignorePatterns: List<String> = listOf("bnip", "tw", "adj", "bust")): Int {
                 var bestIndex = -1
                 var bestScore = -1.0
@@ -896,17 +896,18 @@ class PmxLoader : ModelFileLoader {
                         // Tier 1: Core Joints (cf_j_) are the highest priority for moving skeleton
                         if (n.startsWith("cf_j_")) score += 1000.0
                         
-                        // Tier 2: Exact name match (prevents thigh matching spine)
+                        // Tier 2: Exact name match
                         if (patterns.any { p -> n == "cf_j_$p" || n == p }) score += 500.0
                         
-                        // Tier 3: Early-Model Bonus (Indices 1-100) - Real skeleton often lives here
-                        if (i in 1..100) score += 300.0
+                        // Tier 3: Animated Skeleton Bonus (Indices 100-350) 
+                        // In Arslan ports, the character skeleton is often a secondary entity later in the file.
+                        if (i > 100) score += 300.0
 
                         // Tier 4: Sub joints or Dynamic bones (cf_s_ / cf_d_)
                         if (n.startsWith("cf_s_") || n.startsWith("cf_d_")) score += 100.0
                         
-                        // Tiebreaker: Higher index usually means a more specific joint (spine03)
-                        score += i.toDouble() / 10000.0
+                        // Tiebreaker: Higher index usually means the more specific/animated joint (waist02 vs hips)
+                        score += i.toDouble() / 1000.0
                         
                         if (score > bestScore) {
                             bestScore = score
@@ -946,9 +947,9 @@ class PmxLoader : ModelFileLoader {
             }
             
             this.pelvisIndex = when {
-                hipsIndex != -1 -> hipsIndex
                 waist02Index != -1 -> waist02Index
                 waist01Index != -1 -> waist01Index
+                hipsIndex != -1 -> hipsIndex
                 waistIndex != -1 -> waistIndex
                 pelvisIndex_alt != -1 -> pelvisIndex_alt
                 else -> -1
@@ -996,9 +997,9 @@ class PmxLoader : ModelFileLoader {
                 // Skeleton protection: Don't reparent the main movement roots
                 val isCoreSkeleton = name.contains("センター") || name.contains("center") || 
                                      name.contains("グルーブ") || name.contains("groove") ||
-                                     name.contains("腰") || name.contains("waist") || name.contains("全ての親")
+                                     name.contains("全ての親")
                                      
-                if ((currentParent == -1 || currentParent == 0) && !isCoreSkeleton) {
+                if ((currentParent == -1 || currentParent <= 10) && !isCoreSkeleton) {
                     val newParent = when {
                         // Universal body part matching
                         (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳")) && this.spineIndex != -1 -> this.spineIndex
