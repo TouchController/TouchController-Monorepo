@@ -999,7 +999,9 @@ class PmxLoader : ModelFileLoader {
                                      name.contains("グルーブ") || name.contains("groove") ||
                                      name.contains("全ての親")
                                      
-                if ((currentParent == -1 || currentParent <= 10) && !isCoreSkeleton) {
+                // V15 Surgical Check: Only reparent if bone is a true orphan (Parent <= 0)
+                // If it's already part of the character skeleton (Parent > 100), leave it alone!
+                if (currentParent <= 0 && !isCoreSkeleton) {
                     val newParent = when {
                         // Universal body part matching
                         (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳")) && this.spineIndex != -1 -> this.spineIndex
