@@ -1000,21 +1000,16 @@ class PmxLoader : ModelFileLoader {
                                      name.contains("グルーブ") || name.contains("groove") ||
                                      name.contains("全ての親")
                                      
-                // V19 Root-Elimination Protection: 
-                // Only reparent if it is a truly orphaned dynamic part (Hair, Breast, Skirt, Operation)
-                // OR if it is in the early ghost root region (< 100).
-                // We MUST let high-index character bones (> 100) like cf_s_spine01 remain safely untouched so the animation chain survives.
-                val isDynamicPart = name.contains("skirt") || name.contains("hair") || name.contains("bust") || 
-                                     name.contains("breast") || name.contains("操作") || name.contains("胸") || 
-                                     name.contains("髪") || name.contains("腰") || name.contains("ct_")
-                
-                val isEarlyGhostBone = index < 100
+                // V20 Total Migration: 
+                // Any bone that is stuck on an early Ghost Root (< 100) MUST be migrated to the animated anchors.
+                // This includes the entire internal character skeleton (Spine01, etc.) which is otherwise disconnected
+                // from the Minecraft animation system.
                 val isParentedToGhostRoot = currentParent >= 0 && currentParent < 100
 
                 // Do not allow an anchor bone to be reparented to itself or its identical twin
                 val isMainAnchor = index == this.spineIndex || index == this.pelvisIndex || index == headAnchorIndex
 
-                if ((isEarlyGhostBone || isDynamicPart) && isParentedToGhostRoot && !isCoreSkeleton && !isMainAnchor) {
+                if (isParentedToGhostRoot && !isCoreSkeleton && !isMainAnchor) {
                     val newParent = when {
                         // V16: Specialized body part matching for Arslan/Kisara control nodes
                         (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳") || name.contains("胸操作")) && this.spineIndex != -1 -> this.spineIndex
@@ -1026,10 +1021,11 @@ class PmxLoader : ModelFileLoader {
                         (name.contains("hair") || name.contains("髪") || name.contains("髪操作") || name.contains("ribbon") || name.contains("ct_")) && headAnchorIndex != -1 -> headAnchorIndex
  
                         // General dynamic adjustment bones and twist helpers
-                        (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("cf_m_") || name.contains("捩") || name.contains("肩")) -> {
+                        (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("cf_m_") || name.contains("捩") || name.contains("肩") || name.contains("首") || name.contains("頭")) -> {
                             when {
-                                name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") || name.contains("breast") || name.contains("胸") -> this.spineIndex
-                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") || name.contains("腰") -> this.pelvisIndex
+                                name.contains("head") || name.contains("neck") || name.contains("首") || name.contains("頭") -> headAnchorIndex
+                                name.contains("spine") || name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") || name.contains("breast") || name.contains("胸") -> this.spineIndex
+                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") || name.contains("pelvis") || name.contains("腰") -> this.pelvisIndex
                                 else -> this.spineIndex // Fallback to upper body
                             }
                         }
