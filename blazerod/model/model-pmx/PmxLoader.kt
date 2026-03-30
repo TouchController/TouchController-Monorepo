@@ -900,9 +900,9 @@ class PmxLoader : ModelFileLoader {
                         if (patterns.any { p -> n == "cf_j_$p" || n == p }) score += 500.0
                         
                         // Tier 3: Animated Skeleton Bonus (Indices 100-350) 
-                        // In Arslan ports, the character skeleton is a secondary entity later in the file.
-                        // We give it a MASSIVE OVERRIDE (+5000) so it beats the +1000 bonus of the stationary early ghost roots.
-                        if (i > 100) score += 5000.0
+                        // In Arslan ports, the character skeleton is often a secondary entity later in the file.
+                        // V21 REVERT: 300.0 (Safe fallback) - Do not overpower cf_j_ True Skeleton.
+                        if (i > 100) score += 300.0
 
                         // Tier 4: Sub joints or Dynamic bones (cf_s_ / cf_d_)
                         if (n.startsWith("cf_s_") || n.startsWith("cf_d_")) score += 100.0
@@ -999,17 +999,19 @@ class PmxLoader : ModelFileLoader {
                 val isCoreSkeleton = name.contains("センター") || name.contains("center") || 
                                      name.contains("グルーブ") || name.contains("groove") ||
                                      name.contains("全ての親")
-                                     
-                // V20 Total Migration: 
-                // Any bone that is stuck on an early Ghost Root (< 100) MUST be migrated to the animated anchors.
-                // This includes the entire internal character skeleton (Spine01, etc.) which is otherwise disconnected
-                // from the Minecraft animation system.
-                val isParentedToGhostRoot = currentParent >= 0 && currentParent < 100
+
+                // V21 Ground-Root Accessory Migration
+                // Only safe reparenting: If an ACCESSORY (skirt/bust/hair) is stuck to a Ground Root (World, Center, Groove)
+                // then pull it to the Spine/Pelvis. Do NOT touch the `cf_j_` or `cf_s_` core character skeleton!
+                val isParentedToGroundRoot = currentParent >= 0 && currentParent <= 4
+                val isAccessoryPart = name.contains("skirt") || name.contains("hair") || name.contains("bust") || 
+                                      name.contains("breast") || name.contains("ct_") || name.contains("捩") || 
+                                      name.contains("スカート") || name.contains("胸") || name.contains("髪") || name.contains("操作")
 
                 // Do not allow an anchor bone to be reparented to itself or its identical twin
                 val isMainAnchor = index == this.spineIndex || index == this.pelvisIndex || index == headAnchorIndex
 
-                if (isParentedToGhostRoot && !isCoreSkeleton && !isMainAnchor) {
+                if (isAccessoryPart && isParentedToGroundRoot && !isCoreSkeleton && !isMainAnchor) {
                     val newParent = when {
                         // V16: Specialized body part matching for Arslan/Kisara control nodes
                         (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳") || name.contains("胸操作")) && this.spineIndex != -1 -> this.spineIndex
@@ -1018,17 +1020,7 @@ class PmxLoader : ModelFileLoader {
                         (name.contains("skirt") || name.contains("スカート") || name.contains("腰") || name.contains("腰操作") || name.contains("cf_j_sk_") || name.contains("cf_d_sk_")) && this.pelvisIndex != -1 -> this.pelvisIndex
                         
                         // Hair and face accessories (including hair-operation nodes)
-                        (name.contains("hair") || name.contains("髪") || name.contains("髪操作") || name.contains("ribbon") || name.contains("ct_")) && headAnchorIndex != -1 -> headAnchorIndex
- 
-                        // General dynamic adjustment bones and twist helpers
-                        (name.contains("cf_s_") || name.contains("cf_d_") || name.contains("cf_m_") || name.contains("捩") || name.contains("肩") || name.contains("首") || name.contains("頭")) -> {
-                            when {
-                                name.contains("head") || name.contains("neck") || name.contains("首") || name.contains("頭") -> headAnchorIndex
-                                name.contains("spine") || name.contains("arm") || name.contains("shoulder") || name.contains("hand") || name.contains("bust") || name.contains("breast") || name.contains("胸") -> this.spineIndex
-                                name.contains("leg") || name.contains("foot") || name.contains("skirt") || name.contains("hips") || name.contains("pelvis") || name.contains("腰") -> this.pelvisIndex
-                                else -> this.spineIndex // Fallback to upper body
-                            }
-                        }
+                        (name.contains("hair") || name.contains("髪") || name.contains("髪操作") || name.contains("ribbon") || name.contains("ct_") || name.contains("head") || name.contains("neck") || name.contains("首") || name.contains("頭")) && headAnchorIndex != -1 -> headAnchorIndex
                         else -> -1
                     }
                     if (newParent != -1 && newParent != index && newParent != currentParent) {
