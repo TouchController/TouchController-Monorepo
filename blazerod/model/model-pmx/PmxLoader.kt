@@ -868,7 +868,7 @@ class PmxLoader : ModelFileLoader {
                 n.contains("胸") || n.contains("乳") || n.contains("髪") || n.contains("スカート")
             }
             if (isKoikatsu) {
-                logger.info("[HIERARCHY-REPAIR] Koikatsu-style bone naming detected. Hierarchy repair active.")
+                // HIERARCHY-REPAIR logs suppressed
             }
         }
 
@@ -921,8 +921,7 @@ class PmxLoader : ModelFileLoader {
 
             // Diagnostic: Dump the skeletal range if in Koikatsu mode to detect ghost bones
             for (i in 150..minOf(bones.size - 1, 280)) {
-                val b = bones[i]
-                logger.debug("[HIERARCHY-DIAG] Bone $i: ${b.nameLocal} (Parent: ${b.parentBoneIndex})")
+                // val b = bones[i]
             }
 
             val spine03Index = findAnchor(listOf("spine03"))
@@ -961,14 +960,12 @@ class PmxLoader : ModelFileLoader {
                 val legFirst = findAnchor(listOf("leg_l", "足_l", "leg_r", "足_r"))
                 if (legFirst != -1) {
                     this.pelvisIndex = bones[legFirst].parentBoneIndex ?: -1
-                    logger.info("[HIERARCHY-REPAIR] Pelvis fallback to Leg Parent: ${this.pelvisIndex}")
                 }
             }
             if (this.spineIndex == -1) {
                 val neckFirst = findAnchor(listOf("neck", "首"))
                 if (neckFirst != -1) {
                     this.spineIndex = bones[neckFirst].parentBoneIndex ?: -1
-                    logger.info("[HIERARCHY-REPAIR] Spine fallback to Neck Parent: ${this.spineIndex}")
                 }
             }
 
@@ -982,14 +979,9 @@ class PmxLoader : ModelFileLoader {
             if (this.spineIndex == -1 && this.pelvisIndex == -1) {
                 logger.warn("[HIERARCHY-REPAIR] Koikatsu model detected but no anchor bones (spine/hips) found. Repair might be incomplete.")
             } else {
-                val spineName = if (this.spineIndex != -1) bones[this.spineIndex].nameLocal else "NONE"
-                val hipsName = if (this.pelvisIndex != -1) bones[this.pelvisIndex].nameLocal else "NONE"
-                val headName = if (headAnchorIndex != -1) bones[headAnchorIndex].nameLocal else "NONE"
-                logger.info("[HIERARCHY-REPAIR] Anchor bones found: Spine=${this.spineIndex} ($spineName), Hips=${this.pelvisIndex} ($hipsName), Head=$headAnchorIndex ($headName)")
+                // logs removed
             }
 
-            logger.info("[HIERARCHY-REPAIR] Identifying and repairing dangling bones...")
-            
             // PASS 3: Repair. Use the pre-discovered anchors to reparent orphan/anchor-locked bones.
             val newBones = bones.mapIndexed { index, bone ->
                 val currentParent = bone.parentBoneIndex ?: -1
@@ -1024,8 +1016,6 @@ class PmxLoader : ModelFileLoader {
                         else -> -1
                     }
                     if (newParent != -1 && newParent != index && newParent != currentParent) {
-                        logger.info("[HIERARCHY-REPAIR] Reparenting anchor-locked bone ${bone.nameLocal} (index $index, parent $currentParent) to parent index $newParent")
-                        
                         // Update childBoneMap for consistency
                         childBoneMap.getOrPut(newParent) { mutableListOf() }.add(index)
                         
@@ -1046,16 +1036,7 @@ class PmxLoader : ModelFileLoader {
                 }
             }
             bones = newBones
-            
-            // Task 3: Verification - Log any remaining root bones for diagnostic purposes
-            val remainingRoots = bones.indices.filter { bones[it].parentBoneIndex == null || bones[it].parentBoneIndex == -1 }
-            if (remainingRoots.isNotEmpty()) {
-                val rootNames = remainingRoots.take(10).joinToString { bones[it].nameLocal }
-                val more = if (remainingRoots.size > 10) "... and ${remainingRoots.size - 10} more" else ""
-                logger.info("[HIERARCHY-REPAIR] Repair complete. ${remainingRoots.size} bones remain as roots: $rootNames$more")
-            } else {
-                logger.info("[HIERARCHY-REPAIR] Repair complete. Zero root bones remain.")
-            }
+            bones = newBones
         }
 
         private fun loadMorphTargets(buffer: ByteBuffer) {
