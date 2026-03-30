@@ -900,8 +900,9 @@ class PmxLoader : ModelFileLoader {
                         if (patterns.any { p -> n == "cf_j_$p" || n == p }) score += 500.0
                         
                         // Tier 3: Animated Skeleton Bonus (Indices 100-350) 
-                        // In Arslan ports, the character skeleton is often a secondary entity later in the file.
-                        if (i > 100) score += 300.0
+                        // In Arslan ports, the character skeleton is a secondary entity later in the file.
+                        // We give it a MASSIVE OVERRIDE (+5000) so it beats the +1000 bonus of the stationary early ghost roots.
+                        if (i > 100) score += 5000.0
 
                         // Tier 4: Sub joints or Dynamic bones (cf_s_ / cf_d_)
                         if (n.startsWith("cf_s_") || n.startsWith("cf_d_")) score += 100.0
@@ -999,17 +1000,21 @@ class PmxLoader : ModelFileLoader {
                                      name.contains("グルーブ") || name.contains("groove") ||
                                      name.contains("全ての親")
                                      
-                // V18 Logical Character Protection: 
-                // Only reparent if: 
-                // 1. It is a known dynamic part (Hair, Breast, Skirt, Operation/Adjustment)
-                // 2. OR it is in the early ghost root region (< 100)
-                // 3. AND its parent is currently a stationary ghost root (< 100)
+                // V19 Root-Elimination Protection: 
+                // Only reparent if it is a truly orphaned dynamic part (Hair, Breast, Skirt, Operation)
+                // OR if it is in the early ghost root region (< 100).
+                // We MUST let high-index character bones (> 100) like cf_s_spine01 remain safely untouched so the animation chain survives.
                 val isDynamicPart = name.contains("skirt") || name.contains("hair") || name.contains("bust") || 
                                      name.contains("breast") || name.contains("操作") || name.contains("胸") || 
-                                     name.contains("髪") || name.contains("腰") || name.contains("ct_") ||
-                                     name.startsWith("cf_s_") || name.startsWith("cf_d_") || name.startsWith("cf_m_")
+                                     name.contains("髪") || name.contains("腰") || name.contains("ct_")
                 
-                if ((index < 100 || isDynamicPart) && (currentParent >= 0 && currentParent <= 100) && !isCoreSkeleton) {
+                val isEarlyGhostBone = index < 100
+                val isParentedToGhostRoot = currentParent >= 0 && currentParent < 100
+
+                // Do not allow an anchor bone to be reparented to itself or its identical twin
+                val isMainAnchor = index == this.spineIndex || index == this.pelvisIndex || index == headAnchorIndex
+
+                if ((isEarlyGhostBone || isDynamicPart) && isParentedToGhostRoot && !isCoreSkeleton && !isMainAnchor) {
                     val newParent = when {
                         // V16: Specialized body part matching for Arslan/Kisara control nodes
                         (name.contains("bust") || name.contains("breast") || name.contains("胸") || name.contains("乳") || name.contains("胸操作")) && this.spineIndex != -1 -> this.spineIndex
