@@ -1426,7 +1426,7 @@ class PmxLoader : ModelFileLoader {
                     boneToRigidBodyMap[index]?.forEach { index ->
                         val rigidBody = rigidBodies[index]
                         val name = rigidBody.nameLocal.lowercase()
-                        val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast")
+                        val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast") || name.contains("ah1") || name.contains("ah2") || name.contains("ah3")
                         val isHair = name.contains("hair") || name.contains("发") || name.contains("髪") || name.contains("bang") || name.contains("strand") || name.contains("front") || name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
                         val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
 
