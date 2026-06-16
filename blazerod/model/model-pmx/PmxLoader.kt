@@ -1341,6 +1341,31 @@ class PmxLoader : ModelFileLoader {
 
             val modelId = UUID.randomUUID()
             val rootNodes = mutableListOf<Node>()
+            val rigidBodyModeStats = linkedMapOf<String, Int>()
+            val rigidBodyModeExamples = mutableListOf<String>()
+            val jointStats = linkedMapOf<String, Int>()
+
+            fun bumpStat(stats: MutableMap<String, Int>, key: String) {
+                stats[key] = (stats[key] ?: 0) + 1
+            }
+
+            fun physicsModeName(mode: RigidBody.PhysicsMode) = when (mode) {
+                RigidBody.PhysicsMode.FOLLOW_BONE -> "FOLLOW_BONE"
+                RigidBody.PhysicsMode.PHYSICS -> "PHYSICS"
+                RigidBody.PhysicsMode.PHYSICS_PLUS_BONE -> "PHYSICS_PLUS_BONE"
+            }
+
+            fun accessoryCategory(name: String): String {
+                val n = name.lowercase()
+                return when {
+                    n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast") || n.contains("ah1") || n.contains("ah2") || n.contains("ah3") -> "breast"
+                    n.contains("hair") || n.contains("发") || n.contains("髪") || n.contains("bang") || n.contains("strand") || n.contains("front") || n.contains("back") || n.contains("ahoge") || n.contains("side") || n.contains("tail") || n.contains("ribbon") -> "hair"
+                    n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_sk_") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("ribbon") -> "skirt"
+                    n.contains("vest") || n.contains("shirt") || n.contains("coat") || n.contains("jacket") || n.contains("suit") || n.contains("dress") || n.contains("inner") || n.contains("outer") || n.contains("服") || n.contains("衣") -> "garment"
+                    n.contains("cf_m_") || n.contains("cf_t_") || n.contains("捩") || n.contains("肩") -> "helper"
+                    else -> "other"
+                }
+            }
 
             fun addBone(index: Int, parentPosition: Vector3fc? = null, depth: Int = 0): Node {
                 val bone = bones[index]
@@ -1407,14 +1432,16 @@ class PmxLoader : ModelFileLoader {
                     boneToRigidBodyMap[index]?.forEach { index ->
                         val rigidBody = rigidBodies[index]
                         val name = rigidBody.nameLocal.lowercase()
-                        val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast") || name.contains("ah1") || name.contains("ah2") || name.contains("ah3")
-                        val isHair = name.contains("hair") || name.contains("发") || name.contains("髪") || name.contains("bang") || name.contains("strand") || name.contains("front") || name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
-                        val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
+                        val relatedBoneName = bones.getOrNull(rigidBody.relatedBoneIndex)?.nameLocal?.lowercase() ?: ""
+                        val classificationName = "$name $relatedBoneName"
+                        val isBreast = classificationName.contains("乳") || classificationName.contains("胸") || classificationName.contains("bust") || classificationName.contains("breast") || classificationName.contains("ah1") || classificationName.contains("ah2") || classificationName.contains("ah3")
+                        val isHair = classificationName.contains("hair") || classificationName.contains("发") || classificationName.contains("髪") || classificationName.contains("bang") || classificationName.contains("strand") || classificationName.contains("front") || classificationName.contains("back") || classificationName.contains("ahoge") || classificationName.contains("side") || classificationName.contains("tail")
+                        val isSkirt = classificationName.contains("skirt") || classificationName.contains("スカート") || classificationName.contains("ribbon") || classificationName.contains("cf_s_sk_") || classificationName.contains("cf_j_sk_") || classificationName.contains("cf_d_sk_")
                         val isGarment = isSkirt ||
-                            name.contains("vest") || name.contains("shirt") || name.contains("coat") ||
-                            name.contains("jacket") || name.contains("suit") || name.contains("dress") ||
-                            name.contains("inner") || name.contains("outer") ||
-                            name.contains("服") || name.contains("衣")
+                            classificationName.contains("vest") || classificationName.contains("shirt") || classificationName.contains("coat") ||
+                            classificationName.contains("jacket") || classificationName.contains("suit") || classificationName.contains("dress") ||
+                            classificationName.contains("inner") || classificationName.contains("outer") ||
+                            classificationName.contains("服") || classificationName.contains("衣")
 
                         // Task 2: Refine physics loading logic.
                         // Koikatsu models can contain unstable helper/breast bodies that fly away.
@@ -1438,7 +1465,7 @@ class PmxLoader : ModelFileLoader {
                                             isHair || isGarment -> basePhysicsMode
                                             isBreast ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
-                                            nameLocal.contains("skirt") || nameLocal.contains("スカート") || nameLocal.contains("ribbon") ->
+                                            nameLocal.contains("skirt") || nameLocal.contains("スカート") || nameLocal.contains("ribbon") || nameLocal.contains("cf_s_sk_") || nameLocal.contains("cf_j_sk_") || nameLocal.contains("cf_d_sk_") ->
                                                 basePhysicsMode
                                             nameLocal.contains("hair") || nameLocal.contains("髪") ->
                                                 basePhysicsMode
@@ -1507,6 +1534,12 @@ class PmxLoader : ModelFileLoader {
                                         RigidBody.PhysicsMode.PHYSICS_PLUS_BONE
                                     } else {
                                         adjustedPhysicsMode
+                                    }
+                                    val category = accessoryCategory(classificationName)
+                                    val modeTransition = "${physicsModeName(basePhysicsMode)}->${physicsModeName(finalPhysicsMode)}"
+                                    bumpStat(rigidBodyModeStats, "$category:$modeTransition")
+                                    if (category != "other" && rigidBodyModeExamples.size < 32) {
+                                        rigidBodyModeExamples.add("rb#$index ${rigidBody.nameLocal} bone=${bones.getOrNull(rigidBody.relatedBoneIndex)?.nameLocal ?: "?"} category=$category $modeTransition")
                                     }
 
                                     RigidBody(
@@ -1697,14 +1730,18 @@ class PmxLoader : ModelFileLoader {
                     skins = listOf(skin),
                     physicalJoints = this.joints.mapNotNull { joint ->
                         if (joint.rigidBodyIndexA !in rigidBodies.indices) {
+                            bumpStat(jointStats, "drop:invalid")
                             return@mapNotNull null
                         }
                         if (joint.rigidBodyIndexB !in rigidBodies.indices) {
+                            bumpStat(jointStats, "drop:invalid")
                             return@mapNotNull null
                         }
                         val rbA = rigidBodies[joint.rigidBodyIndexA]
                         val rbB = rigidBodies[joint.rigidBodyIndexB]
-                        val nameCombo = (rbA.nameLocal + rbB.nameLocal).lowercase()
+                        val rbABone = bones.getOrNull(rbA.relatedBoneIndex)?.nameLocal ?: ""
+                        val rbBBone = bones.getOrNull(rbB.relatedBoneIndex)?.nameLocal ?: ""
+                        val nameCombo = "${rbA.nameLocal} ${rbB.nameLocal} $rbABone $rbBBone".lowercase()
                         val isBreastJoint = nameCombo.let { n ->
                             n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast") || n.contains("cf_s_bust")
                         }
@@ -1712,7 +1749,7 @@ class PmxLoader : ModelFileLoader {
                             n.contains("hair") || n.contains("发") || n.contains("髪") || n.contains("bang") || n.contains("strand") || n.contains("front") || n.contains("back") || n.contains("side") || n.contains("tail") || n.contains("ahoge") || n.contains("ribbon")
                         }
                         val isSkirtJoint = nameCombo.let { n ->
-                            n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_skirt") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("ribbon")
+                            n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_skirt") || n.contains("cf_s_sk_") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("ribbon")
                         }
                         val isGarmentJoint = isSkirtJoint || nameCombo.let { n ->
                             n.contains("vest") || n.contains("shirt") || n.contains("coat") ||
@@ -1725,8 +1762,10 @@ class PmxLoader : ModelFileLoader {
                         }
                         
                         if (isKoikatsu && (isBreastJoint || (isHelperJoint && !isHairJoint && !isGarmentJoint))) {
+                            bumpStat(jointStats, "drop:${accessoryCategory(nameCombo)}")
                             return@mapNotNull null
                         }
+                        bumpStat(jointStats, "keep:${accessoryCategory(nameCombo)}")
 
                         PhysicalJoint(
                             name = joint.nameLocal.takeIf(String::isNotBlank),
@@ -1760,6 +1799,14 @@ class PmxLoader : ModelFileLoader {
                             },
                             relaxationFactor = 1.0f,
                         )
+                    }.also { physicalJoints ->
+                        if (isKoikatsu) {
+                            logger.info("[PMX-PHYSICS] Koikatsu rigid body mode transitions: {}", rigidBodyModeStats.entries.joinToString { "${it.key}=${it.value}" })
+                            logger.info("[PMX-PHYSICS] Koikatsu physical joints kept: {} / {} ({})", physicalJoints.size, this.joints.size, jointStats.entries.joinToString { "${it.key}=${it.value}" })
+                            rigidBodyModeExamples.forEach { example ->
+                                logger.info("[PMX-PHYSICS] {}", example)
+                            }
+                        }
                     },
                     expressions = buildList {
                         for ((index, target) in morphTargets.withIndex()) {
