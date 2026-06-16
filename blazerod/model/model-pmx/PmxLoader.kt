@@ -1410,10 +1410,15 @@ class PmxLoader : ModelFileLoader {
                         val isBreast = name.contains("乳") || name.contains("胸") || name.contains("bust") || name.contains("breast") || name.contains("ah1") || name.contains("ah2") || name.contains("ah3")
                         val isHair = name.contains("hair") || name.contains("发") || name.contains("髪") || name.contains("bang") || name.contains("strand") || name.contains("front") || name.contains("back") || name.contains("ahoge") || name.contains("side") || name.contains("tail")
                         val isSkirt = name.contains("skirt") || name.contains("スカート") || name.contains("ribbon")
+                        val isGarment = isSkirt ||
+                            name.contains("vest") || name.contains("shirt") || name.contains("coat") ||
+                            name.contains("jacket") || name.contains("suit") || name.contains("dress") ||
+                            name.contains("inner") || name.contains("outer") ||
+                            name.contains("服") || name.contains("衣")
 
                         // Task 2: Refine physics loading logic.
-                        // Instead of skipping, we allow the component creation but force FOLLOW_BONE mode.
-                        // This ensures the mesh has its associated physics metadata but doesn't fly away.
+                        // Koikatsu models can contain unstable helper/breast bodies that fly away.
+                        // Keep dynamic PMX physics only for the accessory groups we intentionally support.
                         
                         add(
                             NodeComponent.RigidBodyComponent(
@@ -1430,12 +1435,13 @@ class PmxLoader : ModelFileLoader {
 
                                     val adjustedPhysicsMode = if (enableNameBasedOverrides) {
                                         when {
-                                            isBreast || isHair || isSkirt ->
+                                            isHair || isGarment -> basePhysicsMode
+                                            isBreast ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
-                                            nameLocal.contains("skirt") || nameLocal.contains("スカート") || nameLocal.contains("腰") ->
-                                                RigidBody.PhysicsMode.FOLLOW_BONE
-                                            nameLocal.contains("hair") || nameLocal.contains("髪") || nameLocal.contains("ribbon") || nameLocal.contains("ct_") ->
-                                                RigidBody.PhysicsMode.FOLLOW_BONE
+                                            nameLocal.contains("skirt") || nameLocal.contains("スカート") || nameLocal.contains("ribbon") ->
+                                                basePhysicsMode
+                                            nameLocal.contains("hair") || nameLocal.contains("髪") ->
+                                                basePhysicsMode
                                             nameLocal.contains("bust") || nameLocal.contains("breast") || nameLocal.contains("胸") || nameLocal.contains("乳") ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
                                             nameLocal.startsWith("cf_j_", ignoreCase = true) ||
@@ -1703,16 +1709,22 @@ class PmxLoader : ModelFileLoader {
                             n.contains("乳") || n.contains("胸") || n.contains("bust") || n.contains("breast") || n.contains("cf_s_bust")
                         }
                         val isHairJoint = nameCombo.let { n ->
-                            n.contains("hair") || n.contains("发") || n.contains("髪") || n.contains("bang") || n.contains("strand") || n.contains("front") || n.contains("back") || n.contains("side") || n.contains("tail") || n.contains("ahoge") || n.contains("ct_") || n.contains("ribbon")
+                            n.contains("hair") || n.contains("发") || n.contains("髪") || n.contains("bang") || n.contains("strand") || n.contains("front") || n.contains("back") || n.contains("side") || n.contains("tail") || n.contains("ahoge") || n.contains("ribbon")
                         }
                         val isSkirtJoint = nameCombo.let { n ->
-                            n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_skirt") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("腰")
+                            n.contains("skirt") || n.contains("スカート") || n.contains("cf_s_skirt") || n.contains("cf_j_sk_") || n.contains("cf_d_sk_") || n.contains("ribbon")
+                        }
+                        val isGarmentJoint = isSkirtJoint || nameCombo.let { n ->
+                            n.contains("vest") || n.contains("shirt") || n.contains("coat") ||
+                            n.contains("jacket") || n.contains("suit") || n.contains("dress") ||
+                            n.contains("inner") || n.contains("outer") ||
+                            n.contains("服") || n.contains("衣")
                         }
                         val isHelperJoint = nameCombo.let { n ->
                             n.contains("cf_m_") || n.contains("cf_t_") || n.contains("捩") || n.contains("肩")
                         }
                         
-                        if (isKoikatsu && (isBreastJoint || isHairJoint || isSkirtJoint || isHelperJoint)) {
+                        if (isKoikatsu && (isBreastJoint || (isHelperJoint && !isHairJoint && !isGarmentJoint))) {
                             return@mapNotNull null
                         }
 
