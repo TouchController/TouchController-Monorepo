@@ -26,6 +26,7 @@ import top.fifthlight.blazerod.runtime.node.component.RigidBodyComponent
 import top.fifthlight.blazerod.runtime.node.forEach
 import top.fifthlight.blazerod.runtime.resource.RenderPhysicsJoint
 import top.fifthlight.blazerod.runtime.resource.RenderSkin
+import org.slf4j.LoggerFactory
 
 import kotlin.time.measureTime
 
@@ -41,6 +42,7 @@ class RenderSceneImpl(
 ) : AbstractRefCount(), RenderScene {
     override val attachments: Map<Class<*>, Any>
     companion object {
+        private val logger = LoggerFactory.getLogger(RenderSceneImpl::class.java)
         private const val PHYSICS_MAX_SUB_STEP_COUNT = 12
         private const val PHYSICS_FPS = 120f
         private const val PHYSICS_TIME_STEP = 1f / PHYSICS_FPS
@@ -136,6 +138,46 @@ class RenderSceneImpl(
         for (node in sortedNodes) {
             node.update(phase, node, instance)
         }
+    }
+
+    fun resetPhysics(instance: ModelInstanceImpl, time: Float) {
+        val data = instance.physicsData ?: return
+
+        instance.updateWorldTransformsNoPhysics()
+        executePhase(instance, UpdatePhase.PhysicsUpdatePre)
+
+        val initPos = Vector3f()
+        val initRot = Quaternionf()
+        for ((nodeIndex, component) in rigidBodyComponents) {
+            val nodeWorld = instance.modelData.worldTransformsNoPhysics[nodeIndex]
+            nodeWorld.getTranslation(initPos)
+            nodeWorld.getUnnormalizedRotation(initRot)
+            data.world.resetRigidBody(component.rigidBodyIndex, initPos, initRot)
+        }
+
+        instance.modelData.worldTransformsNoPhysics[rootNode.nodeIndex].getTranslation(data.lastRootPos)
+        data.world.pullTransforms(data.transformArray)
+        data.transformArray.copyInto(data.previousTransforms)
+        data.transformArray.copyInto(data.currentTransforms)
+        data.lastPhysicsTime = time
+        data.physicsAccumulator = 0f
+        data.physicsStepTimeMs = 0f
+        data.currentPhysicsInterval = ModelInstanceImpl.PhysicsData.MIN_INTERVAL
+        data.lastFrameDistSq = 0f
+        data.clearSpeedHistory()
+        data.resetCount++
+
+        executePhase(instance, UpdatePhase.PhysicsUpdatePost)
+        executePhase(instance, UpdatePhase.GlobalTransformPropagation)
+
+        logger.info(
+            "[PMX-PHYSICS-RUNTIME] resetPhysics count={} bodies={} joints={} time={} interval={}",
+            data.resetCount,
+            rigidBodyComponents.size,
+            physicsJoints.size,
+            time,
+            data.currentPhysicsInterval,
+        )
     }
 
 
@@ -253,6 +295,7 @@ class RenderSceneImpl(
                 val stepStart = System.nanoTime()
                 data.world.step(data.physicsAccumulator, PHYSICS_MAX_SUB_STEP_COUNT, PHYSICS_TIME_STEP)
                 val stepTimeMs = (System.nanoTime() - stepStart) / 1_000_000f
+                data.debugStepCount++
 
                 data.world.pullTransforms(data.transformArray)
                 data.transformArray.copyInto(data.currentTransforms)
@@ -260,6 +303,20 @@ class RenderSceneImpl(
 
                 // Adapt physics rate based on step cost (EMA with hysteresis)
                 data.physicsStepTimeMs = 0.8f * data.physicsStepTimeMs + 0.2f * stepTimeMs
+                if (data.debugStepCount % 120 == 0 || stepTimeMs > ModelInstanceImpl.PhysicsData.BUDGET_HIGH_MS) {
+                    logger.info(
+                        "[PMX-PHYSICS-RUNTIME] step count={} bodies={} joints={} stepMs={} emaMs={} interval={} distance={} maxSubSteps={} fixedDt={}",
+                        data.debugStepCount,
+                        rigidBodyComponents.size,
+                        physicsJoints.size,
+                        stepTimeMs,
+                        data.physicsStepTimeMs,
+                        data.currentPhysicsInterval,
+                        distance,
+                        PHYSICS_MAX_SUB_STEP_COUNT,
+                        PHYSICS_TIME_STEP,
+                    )
+                }
                 if (data.physicsStepTimeMs > ModelInstanceImpl.PhysicsData.BUDGET_HIGH_MS) {
                     data.currentPhysicsInterval = minOf(
                         data.currentPhysicsInterval * 2f,

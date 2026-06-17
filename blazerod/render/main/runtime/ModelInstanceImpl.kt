@@ -123,6 +123,12 @@ class ModelInstanceImpl(
             speedHistoryIndex = (speedHistoryIndex + 1) % SPEED_HISTORY_SIZE
             if (speedHistoryIndex == 0) speedHistoryFilled = true
         }
+
+        fun clearSpeedHistory() {
+            speedHistory.fill(0f)
+            speedHistoryIndex = 0
+            speedHistoryFilled = false
+        }
         
         fun averageRecentSpeed(): Float {
             val count = if (speedHistoryFilled) SPEED_HISTORY_SIZE else speedHistoryIndex
@@ -147,6 +153,7 @@ class ModelInstanceImpl(
         var currentPhysicsInterval: Float = MIN_INTERVAL
         var explosionLogCount: Int = 0
         var debugStepCount: Int = 0
+        var resetCount: Int = 0
 
         companion object {
             const val BUDGET_HIGH_MS = 2.0f
@@ -236,6 +243,10 @@ class ModelInstanceImpl(
             modelData.transformMaps[i].clearFrom(TransformId.ABSOLUTE.next)
             modelData.transformDirty[i] = true
         }
+    }
+
+    override fun resetPhysics(time: Float) {
+        scene.resetPhysics(this, time)
     }
 
     override fun setTransformMatrix(nodeIndex: Int, transformId: TransformId, matrix: Matrix4f) {

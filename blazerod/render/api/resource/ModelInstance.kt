@@ -15,6 +15,7 @@ interface ModelInstance : RefCount {
     var lodDistance: Float
 
     fun clearTransform()
+    fun resetPhysics(time: Float)
     fun setTransformMatrix(nodeIndex: Int, transformId: TransformId, matrix: Matrix4f)
     fun setTransformMatrix(nodeIndex: Int, transformId: TransformId, updater: Consumer<NodeTransform.Matrix>)
     fun setTransformMatrix(nodeIndex: Int, transformId: TransformId, updater: NodeTransform.Matrix.() -> Unit)
