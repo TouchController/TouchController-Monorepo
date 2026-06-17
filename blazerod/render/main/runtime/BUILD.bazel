@@ -26,5 +26,6 @@ kt_merge_library(
         "@maven//:it_unimi_dsi_fastutil",
         "@maven//:org_joml_joml",
         "@maven//:org_lwjgl_lwjgl",
+        "@minecraft//1.21.8:client_libraries",
     ],
 )
