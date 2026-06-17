@@ -1476,7 +1476,7 @@ class PmxLoader : ModelFileLoader {
                                             nameLocal.startsWith("cf_d_", ignoreCase = true) ||
                                             nameLocal.startsWith("cf_m_", ignoreCase = true) ->
                                                 RigidBody.PhysicsMode.FOLLOW_BONE
-                                            else -> basePhysicsMode
+                                            else -> RigidBody.PhysicsMode.FOLLOW_BONE
                                         }
                                     } else {
                                         basePhysicsMode
@@ -1762,6 +1762,10 @@ class PmxLoader : ModelFileLoader {
                         }
                         
                         if (isKoikatsu && (isBreastJoint || (isHelperJoint && !isHairJoint && !isGarmentJoint))) {
+                            bumpStat(jointStats, "drop:${accessoryCategory(nameCombo)}")
+                            return@mapNotNull null
+                        }
+                        if (isKoikatsu && !isHairJoint && !isGarmentJoint) {
                             bumpStat(jointStats, "drop:${accessoryCategory(nameCombo)}")
                             return@mapNotNull null
                         }

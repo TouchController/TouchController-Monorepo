@@ -300,6 +300,17 @@ class RenderSceneImpl(
                 data.debugStepCount++
 
                 data.world.pullTransforms(data.transformArray)
+                if (hasNonFiniteTransforms(data)) {
+                    logPhysicsAnomalies(instance, data, "step")
+                    logger.warn(
+                        "[PMX-PHYSICS-RUNTIME] recreating physics world after non-finite step output count={} time={}",
+                        data.debugStepCount,
+                        time,
+                    )
+                    data.recreateWorldFromCurrentPose()
+                    resetPhysics(instance, time)
+                    return@let
+                }
                 data.transformArray.copyInto(data.currentTransforms)
                 data.physicsAccumulator = 0f
 
@@ -425,6 +436,24 @@ class RenderSceneImpl(
                 samples.joinToString("; "),
             )
         }
+    }
+
+    private fun hasNonFiniteTransforms(data: ModelInstanceImpl.PhysicsData): Boolean {
+        val count = rigidBodyComponents.size
+        for (i in 0 until count) {
+            val offset = i * 7
+            if (!data.transformArray[offset + 0].isFinite() ||
+                !data.transformArray[offset + 1].isFinite() ||
+                !data.transformArray[offset + 2].isFinite() ||
+                !data.transformArray[offset + 3].isFinite() ||
+                !data.transformArray[offset + 4].isFinite() ||
+                !data.transformArray[offset + 5].isFinite() ||
+                !data.transformArray[offset + 6].isFinite()
+            ) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun updateRenderData(instance: ModelInstanceImpl, time: Float, allowPhysics: Boolean) {

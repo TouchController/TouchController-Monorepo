@@ -55,6 +55,7 @@ class ModelInstanceImpl(
         for (i in scene.nodes.indices) {
             updateNodeTransform(i)
         }
+        updateWorldTransformsNoPhysics()
         if (physicsData != null) {
             top.fifthlight.blazerod.api.physics.PhysicsEngine.register(
                 this,
@@ -63,7 +64,7 @@ class ModelInstanceImpl(
                         val bulletWorld = MemoryStack.stackPush().use { stack ->
                             val initialTransform = stack.malloc(scene.rigidBodyComponents.size * 64)
                             scene.rigidBodyComponents.forEach { (nodeIndex, component) ->
-                                val nodeWorldTransform = modelData.worldTransforms[nodeIndex]
+                                val nodeWorldTransform = modelData.worldTransformsNoPhysics[nodeIndex]
                                 nodeWorldTransform.get(component.rigidBodyIndex * 64, initialTransform)
                             }
                             top.fifthlight.blazerod.physics.PhysicsWorld(physicsData.physicsScene, initialTransform)
@@ -133,6 +134,18 @@ class ModelInstanceImpl(
             var sum = 0f
             for (i in 0 until count) sum += speedHistory[i]
             return sum / count
+        }
+
+        fun recreateWorldFromCurrentPose() {
+            instance.updateWorldTransformsNoPhysics()
+            top.fifthlight.blazerod.api.physics.PhysicsEngine.recreate(instance)
+            initialize()
+            lastPhysicsTime = -1f
+            physicsAccumulator = 0f
+            physicsStepTimeMs = 0f
+            currentPhysicsInterval = MIN_INTERVAL
+            lastFrameDistSq = 0f
+            clearSpeedHistory()
         }
         
         val world: top.fifthlight.blazerod.api.physics.PhysicsWorld

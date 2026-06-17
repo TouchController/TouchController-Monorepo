@@ -4,19 +4,30 @@ import top.fifthlight.blazerod.api.resource.ModelInstance
 
 object PhysicsEngine {
     private val activeWorlds = mutableMapOf<ModelInstance, PhysicsWorld>()
+    private val providers = mutableMapOf<ModelInstance, PhysicsProvider>()
     
     fun register(instance: ModelInstance, provider: PhysicsProvider) {
+        providers[instance] = provider
         if (!activeWorlds.containsKey(instance)) {
             activeWorlds[instance] = provider.createWorld(instance)
         }
     }
 
     fun unregister(instance: ModelInstance) {
+        providers.remove(instance)
         activeWorlds.remove(instance)?.dispose()
     }
 
     fun getWorld(instance: ModelInstance): PhysicsWorld? {
         return activeWorlds[instance]
+    }
+
+    fun recreate(instance: ModelInstance): PhysicsWorld? {
+        val provider = providers[instance] ?: return null
+        activeWorlds.remove(instance)?.dispose()
+        val world = provider.createWorld(instance)
+        activeWorlds[instance] = world
+        return world
     }
 
     fun update(time: Float) {

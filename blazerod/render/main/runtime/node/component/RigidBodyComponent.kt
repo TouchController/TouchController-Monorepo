@@ -84,6 +84,14 @@ class RigidBodyComponent(
                         val qy = array[offset + 4]
                         val qz = array[offset + 5]
                         val qw = array[offset + 6]
+                        if (!px.isFinite() || !py.isFinite() || !pz.isFinite() ||
+                            !qx.isFinite() || !qy.isFinite() || !qz.isFinite() || !qw.isFinite()
+                        ) {
+                            instance.setTransformMatrix(node.nodeIndex, TransformId.PHYSICS) {
+                                this.matrix.identity()
+                            }
+                            return
+                        }
                         physicsMatrix.translationRotate(px, py, pz, qx, qy, qz, qw)
 
                         val localBase = instance.getTransformMap(node).getSum(TransformId.EXTERNAL_PARENT_DEFORM)
