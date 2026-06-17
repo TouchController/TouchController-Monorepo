@@ -32,6 +32,7 @@ interface ModelInstance : RefCount {
 
     fun debugRender(viewProjectionMatrix: Matrix4fc, bufferSource: MultiBufferSource, time: Float)
     fun updateRenderData(time: Float)
+    fun updateRenderDataNoPhysics(time: Float)
 
     fun createRenderTask(
         modelMatrix: Matrix4fc,

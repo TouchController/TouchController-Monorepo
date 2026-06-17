@@ -83,11 +83,8 @@ class ModelInstanceImpl(
                                 bulletWorld.pushTransforms(src)
                             }
                             override fun step(deltaTime: Float, maxSubSteps: Int, fixedTimeStep: Float) {
-                                // Adaptive Physics Solver
-                                 // If the model is close (LOD < 5m), use High-Fidelity (50 iterations)
-                                 // If far away, drop to 20 iterations to save CPU.
-                                 val isHighQuality = lodDistance < 5f
-                                 bulletWorld.setSolverIterations(if (isHighQuality) 100 else 20)
+                                val isHighQuality = lodDistance < 5f
+                                bulletWorld.setSolverIterations(if (isHighQuality) 32 else 12)
                                 
                                 bulletWorld.step(deltaTime, maxSubSteps, fixedTimeStep)
                             }
@@ -154,6 +151,8 @@ class ModelInstanceImpl(
         var explosionLogCount: Int = 0
         var debugStepCount: Int = 0
         var resetCount: Int = 0
+        var lastStepLogNanos: Long = 0L
+        var severeStepLogCount: Int = 0
 
         companion object {
             const val BUDGET_HIGH_MS = 2.0f
@@ -350,6 +349,10 @@ class ModelInstanceImpl(
 
     override fun updateRenderData(time: Float) {
         scene.updateRenderData(this, time)
+    }
+
+    override fun updateRenderDataNoPhysics(time: Float) {
+        scene.updateRenderDataNoPhysics(this, time)
     }
 
     internal fun updateNodeTransform(nodeIndex: Int) {

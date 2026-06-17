@@ -43,9 +43,10 @@ class RenderSceneImpl(
     override val attachments: Map<Class<*>, Any>
     companion object {
         private val logger = LoggerFactory.getLogger(RenderSceneImpl::class.java)
-        private const val PHYSICS_MAX_SUB_STEP_COUNT = 12
+        private const val PHYSICS_MAX_SUB_STEP_COUNT = 4
         private const val PHYSICS_FPS = 120f
         private const val PHYSICS_TIME_STEP = 1f / PHYSICS_FPS
+        private const val PHYSICS_ANOMALY_DISTANCE = 8.0f
     }
 
     override val typeId: String
@@ -169,6 +170,7 @@ class RenderSceneImpl(
 
         executePhase(instance, UpdatePhase.PhysicsUpdatePost)
         executePhase(instance, UpdatePhase.GlobalTransformPropagation)
+        logPhysicsAnomalies(instance, data, "reset")
 
         logger.info(
             "[PMX-PHYSICS-RUNTIME] resetPhysics count={} bodies={} joints={} time={} interval={}",
@@ -303,7 +305,15 @@ class RenderSceneImpl(
 
                 // Adapt physics rate based on step cost (EMA with hysteresis)
                 data.physicsStepTimeMs = 0.8f * data.physicsStepTimeMs + 0.2f * stepTimeMs
-                if (data.debugStepCount % 120 == 0 || stepTimeMs > ModelInstanceImpl.PhysicsData.BUDGET_HIGH_MS) {
+                val nowNanos = System.nanoTime()
+                val logByCadence = data.debugStepCount % 120 == 0
+                val logByTime = nowNanos - data.lastStepLogNanos >= 5_000_000_000L
+                val logBySevereCost = stepTimeMs > 50f && data.severeStepLogCount < 5
+                if (logByCadence || logByTime || logBySevereCost) {
+                    data.lastStepLogNanos = nowNanos
+                    if (logBySevereCost) {
+                        data.severeStepLogCount++
+                    }
                     logger.info(
                         "[PMX-PHYSICS-RUNTIME] step count={} bodies={} joints={} stepMs={} emaMs={} interval={} distance={} maxSubSteps={} fixedDt={}",
                         data.debugStepCount,
@@ -316,6 +326,7 @@ class RenderSceneImpl(
                         PHYSICS_MAX_SUB_STEP_COUNT,
                         PHYSICS_TIME_STEP,
                     )
+                    logPhysicsAnomalies(instance, data, "step")
                 }
                 if (data.physicsStepTimeMs > ModelInstanceImpl.PhysicsData.BUDGET_HIGH_MS) {
                     data.currentPhysicsInterval = minOf(
@@ -371,23 +382,76 @@ class RenderSceneImpl(
         }
     }
 
-    fun updateRenderData(instance: ModelInstanceImpl, time: Float) {
+    private fun logPhysicsAnomalies(
+        instance: ModelInstanceImpl,
+        data: ModelInstanceImpl.PhysicsData,
+        phase: String,
+    ) {
+        var nonFinite = 0
+        var farCount = 0
+        val samples = mutableListOf<String>()
+        val noPhysicsPos = Vector3f()
+        for ((nodeIndex, component) in rigidBodyComponents) {
+            val offset = component.rigidBodyIndex * 7
+            val px = data.transformArray[offset + 0]
+            val py = data.transformArray[offset + 1]
+            val pz = data.transformArray[offset + 2]
+            if (!px.isFinite() || !py.isFinite() || !pz.isFinite()) {
+                nonFinite++
+                if (samples.size < 3) {
+                    samples.add("body=${component.rigidBodyIndex} node=${nodes[nodeIndex].nodeName} rb=${component.rigidBodyData.name} mode=${component.rigidBodyData.physicsMode} pos=($px,$py,$pz)")
+                }
+                continue
+            }
+            instance.modelData.worldTransformsNoPhysics[nodeIndex].getTranslation(noPhysicsPos)
+            val dx = px - noPhysicsPos.x
+            val dy = py - noPhysicsPos.y
+            val dz = pz - noPhysicsPos.z
+            val dist = sqrt(dx * dx + dy * dy + dz * dz)
+            if (dist > PHYSICS_ANOMALY_DISTANCE) {
+                farCount++
+                if (samples.size < 3) {
+                    samples.add("body=${component.rigidBodyIndex} node=${nodes[nodeIndex].nodeName} rb=${component.rigidBodyData.name} mode=${component.rigidBodyData.physicsMode} dist=$dist pos=($px,$py,$pz) bone=(${noPhysicsPos.x},${noPhysicsPos.y},${noPhysicsPos.z})")
+                }
+            }
+        }
+        if (nonFinite > 0 || farCount > 0) {
+            logger.warn(
+                "[PMX-PHYSICS-RUNTIME] anomaly phase={} nonFinite={} farBodies={} threshold={} samples={}",
+                phase,
+                nonFinite,
+                farCount,
+                PHYSICS_ANOMALY_DISTANCE,
+                samples.joinToString("; "),
+            )
+        }
+    }
+
+    private fun updateRenderData(instance: ModelInstanceImpl, time: Float, allowPhysics: Boolean) {
         if (instance.modelData.undirtyNodeCount != nodes.size) {
             executePhase(instance, UpdatePhase.GlobalTransformPropagation)
             executePhase(instance, UpdatePhase.IkUpdate)
             executePhase(instance, UpdatePhase.InfluenceTransformUpdate)
             executePhase(instance, UpdatePhase.GlobalTransformPropagation)
-            if (instance.physicsData != null) {
+            if (allowPhysics && instance.physicsData != null) {
                 updatePhysics(instance, time)
                 executePhase(instance, UpdatePhase.GlobalTransformPropagation)
             }
             executePhase(instance, UpdatePhase.RenderDataUpdate)
             executePhase(instance, UpdatePhase.CameraUpdate)
-        } else if (instance.physicsData != null) {
+        } else if (allowPhysics && instance.physicsData != null) {
             executePhase(instance, UpdatePhase.GlobalTransformPropagation)
             updatePhysics(instance, time)
             executePhase(instance, UpdatePhase.RenderDataUpdate)
         }
+    }
+
+    fun updateRenderData(instance: ModelInstanceImpl, time: Float) {
+        updateRenderData(instance, time, allowPhysics = true)
+    }
+
+    fun updateRenderDataNoPhysics(instance: ModelInstanceImpl, time: Float) {
+        updateRenderData(instance, time, allowPhysics = false)
     }
 
     internal fun attachToInstance(instance: ModelInstanceImpl) {
