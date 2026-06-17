@@ -163,9 +163,6 @@ class ModelInstanceImpl(
         var currentPhysicsInterval: Float = MIN_INTERVAL
         var explosionLogCount: Int = 0
         var debugStepCount: Int = 0
-        var resetCount: Int = 0
-        var lastStepLogNanos: Long = 0L
-        var severeStepLogCount: Int = 0
 
         companion object {
             const val BUDGET_HIGH_MS = 2.0f

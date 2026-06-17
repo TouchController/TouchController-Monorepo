@@ -166,20 +166,10 @@ class RenderSceneImpl(
         data.currentPhysicsInterval = ModelInstanceImpl.PhysicsData.MIN_INTERVAL
         data.lastFrameDistSq = 0f
         data.clearSpeedHistory()
-        data.resetCount++
 
         executePhase(instance, UpdatePhase.PhysicsUpdatePost)
         executePhase(instance, UpdatePhase.GlobalTransformPropagation)
         logPhysicsAnomalies(instance, data, "reset")
-
-        logger.info(
-            "[PMX-PHYSICS-RUNTIME] resetPhysics count={} bodies={} joints={} time={} interval={}",
-            data.resetCount,
-            rigidBodyComponents.size,
-            physicsJoints.size,
-            time,
-            data.currentPhysicsInterval,
-        )
     }
 
 
@@ -316,29 +306,6 @@ class RenderSceneImpl(
 
                 // Adapt physics rate based on step cost (EMA with hysteresis)
                 data.physicsStepTimeMs = 0.8f * data.physicsStepTimeMs + 0.2f * stepTimeMs
-                val nowNanos = System.nanoTime()
-                val logByCadence = data.debugStepCount % 120 == 0
-                val logByTime = nowNanos - data.lastStepLogNanos >= 5_000_000_000L
-                val logBySevereCost = stepTimeMs > 50f && data.severeStepLogCount < 5
-                if (logByCadence || logByTime || logBySevereCost) {
-                    data.lastStepLogNanos = nowNanos
-                    if (logBySevereCost) {
-                        data.severeStepLogCount++
-                    }
-                    logger.info(
-                        "[PMX-PHYSICS-RUNTIME] step count={} bodies={} joints={} stepMs={} emaMs={} interval={} distance={} maxSubSteps={} fixedDt={}",
-                        data.debugStepCount,
-                        rigidBodyComponents.size,
-                        physicsJoints.size,
-                        stepTimeMs,
-                        data.physicsStepTimeMs,
-                        data.currentPhysicsInterval,
-                        distance,
-                        PHYSICS_MAX_SUB_STEP_COUNT,
-                        PHYSICS_TIME_STEP,
-                    )
-                    logPhysicsAnomalies(instance, data, "step")
-                }
                 if (data.physicsStepTimeMs > ModelInstanceImpl.PhysicsData.BUDGET_HIGH_MS) {
                     data.currentPhysicsInterval = minOf(
                         data.currentPhysicsInterval * 2f,
