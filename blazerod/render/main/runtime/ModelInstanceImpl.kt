@@ -108,33 +108,6 @@ class ModelInstanceImpl(
         val physicsScene: PhysicsScene,
     ) : AutoCloseable {
         var lastPhysicsTime: Float = -1f
-        var lastRootPos = org.joml.Vector3f()
-        var lastFrameDistSq: Float = 0f
-        
-        // Speed history ring buffer for deceleration detection
-        private val speedHistory = FloatArray(SPEED_HISTORY_SIZE)
-        private var speedHistoryIndex = 0
-        private var speedHistoryFilled = false
-        
-        fun recordSpeed(distSq: Float) {
-            speedHistory[speedHistoryIndex] = distSq
-            speedHistoryIndex = (speedHistoryIndex + 1) % SPEED_HISTORY_SIZE
-            if (speedHistoryIndex == 0) speedHistoryFilled = true
-        }
-
-        fun clearSpeedHistory() {
-            speedHistory.fill(0f)
-            speedHistoryIndex = 0
-            speedHistoryFilled = false
-        }
-        
-        fun averageRecentSpeed(): Float {
-            val count = if (speedHistoryFilled) SPEED_HISTORY_SIZE else speedHistoryIndex
-            if (count == 0) return 0f
-            var sum = 0f
-            for (i in 0 until count) sum += speedHistory[i]
-            return sum / count
-        }
 
         fun recreateWorldFromCurrentPose() {
             instance.updateWorldTransformsNoPhysics()
@@ -144,8 +117,6 @@ class ModelInstanceImpl(
             physicsAccumulator = 0f
             physicsStepTimeMs = 0f
             currentPhysicsInterval = MIN_INTERVAL
-            lastFrameDistSq = 0f
-            clearSpeedHistory()
         }
         
         val world: top.fifthlight.blazerod.api.physics.PhysicsWorld
@@ -169,9 +140,6 @@ class ModelInstanceImpl(
             const val BUDGET_LOW_MS = 1.0f
             const val MIN_INTERVAL = 1f / 120f
             const val MAX_INTERVAL = 1f / 15f
-            const val SPEED_HISTORY_SIZE = 5
-            const val SPRINT_SPEED_THRESHOLD = 0.04f  // ~squared dist for sprinting speed
-            const val STOP_SPEED_THRESHOLD = 0.002f   // ~squared dist for "stopped"
         }
 
         fun initialize() {
