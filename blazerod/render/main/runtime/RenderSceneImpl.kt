@@ -14,6 +14,7 @@ import top.fifthlight.blazerod.model.Camera
 import top.fifthlight.blazerod.model.HumanoidTag
 import top.fifthlight.blazerod.model.NodeId
 import top.fifthlight.blazerod.model.NodeTransform
+import top.fifthlight.blazerod.model.RigidBody
 import top.fifthlight.blazerod.physics.PhysicsInterface
 import top.fifthlight.blazerod.physics.PhysicsScene
 import top.fifthlight.blazerod.runtime.node.RenderNodeImpl
@@ -47,6 +48,7 @@ class RenderSceneImpl(
         private const val PHYSICS_FPS = 120f
         private const val PHYSICS_TIME_STEP = 1f / PHYSICS_FPS
         private const val PHYSICS_ANOMALY_DISTANCE = 8.0f
+        private const val PHYSICS_POSE_JUMP_DISTANCE = 0.35f
     }
 
     override val typeId: String
@@ -145,31 +147,52 @@ class RenderSceneImpl(
         val data = instance.physicsData ?: return
 
         instance.updateWorldTransformsNoPhysics()
-        executePhase(instance, UpdatePhase.PhysicsUpdatePre)
-
-        val initPos = Vector3f()
-        val initRot = Quaternionf()
-        for ((nodeIndex, component) in rigidBodyComponents) {
-            val nodeWorld = instance.modelData.worldTransformsNoPhysics[nodeIndex]
-            nodeWorld.getTranslation(initPos)
-            nodeWorld.getUnnormalizedRotation(initRot)
-            data.world.resetRigidBody(component.rigidBodyIndex, initPos, initRot)
-        }
-
-        instance.modelData.worldTransformsNoPhysics[rootNode.nodeIndex].getTranslation(data.lastRootPos)
-        data.world.pullTransforms(data.transformArray)
-        data.transformArray.copyInto(data.previousTransforms)
-        data.transformArray.copyInto(data.currentTransforms)
+        resetRigidBodiesToCurrentPose(instance, data)
         data.lastPhysicsTime = time
         data.physicsAccumulator = 0f
         data.physicsStepTimeMs = 0f
         data.currentPhysicsInterval = ModelInstanceImpl.PhysicsData.MIN_INTERVAL
-        data.lastFrameDistSq = 0f
-        data.clearSpeedHistory()
 
         executePhase(instance, UpdatePhase.PhysicsUpdatePost)
         executePhase(instance, UpdatePhase.GlobalTransformPropagation)
         logPhysicsAnomalies(instance, data, "reset")
+    }
+
+    private fun resetRigidBodiesToCurrentPose(
+        instance: ModelInstanceImpl,
+        data: ModelInstanceImpl.PhysicsData,
+    ) {
+        val position = Vector3f()
+        val rotation = Quaternionf()
+        for ((nodeIndex, component) in rigidBodyComponents) {
+            val nodeWorld = instance.modelData.worldTransformsNoPhysics[nodeIndex]
+            nodeWorld.getTranslation(position)
+            nodeWorld.getUnnormalizedRotation(rotation)
+            data.world.resetRigidBody(component.rigidBodyIndex, position, rotation)
+        }
+
+        executePhase(instance, UpdatePhase.PhysicsUpdatePre)
+        data.world.pullTransforms(data.transformArray)
+        data.transformArray.copyInto(data.previousTransforms)
+        data.transformArray.copyInto(data.currentTransforms)
+    }
+
+    private fun hasAbruptKinematicPoseChange(data: ModelInstanceImpl.PhysicsData): Boolean {
+        val thresholdSq = PHYSICS_POSE_JUMP_DISTANCE * PHYSICS_POSE_JUMP_DISTANCE
+        for ((_, component) in rigidBodyComponents) {
+            if (component.rigidBodyData.physicsMode == RigidBody.PhysicsMode.PHYSICS) {
+                continue
+            }
+
+            val offset = component.rigidBodyIndex * 7
+            val dx = data.transformArray[offset] - data.currentTransforms[offset]
+            val dy = data.transformArray[offset + 1] - data.currentTransforms[offset + 1]
+            val dz = data.transformArray[offset + 2] - data.currentTransforms[offset + 2]
+            if (dx * dx + dy * dy + dz * dz > thresholdSq) {
+                return true
+            }
+        }
+        return false
     }
 
 
@@ -215,23 +238,7 @@ class RenderSceneImpl(
                 data.lastPhysicsTime = time
 
                 instance.updateWorldTransformsNoPhysics()
-                executePhase(instance, UpdatePhase.PhysicsUpdatePre)
-                data.world.pushTransforms(data.transformArray)
-
-                val initPos = Vector3f()
-                val initRot = Quaternionf()
-                for ((nodeIndex, component) in rigidBodyComponents) {
-                    val nodeWorld = instance.modelData.worldTransforms[nodeIndex]
-                    nodeWorld.getTranslation(initPos)
-                    nodeWorld.getUnnormalizedRotation(initRot)
-                    data.world.resetRigidBody(component.rigidBodyIndex, initPos, initRot)
-                }
-                
-                instance.modelData.worldTransformsNoPhysics[rootNode.nodeIndex].getTranslation(data.lastRootPos)
-
-                data.world.pullTransforms(data.transformArray)
-                data.transformArray.copyInto(data.previousTransforms)
-                data.transformArray.copyInto(data.currentTransforms)
+                resetRigidBodiesToCurrentPose(instance, data)
 
                 return@let
             }
@@ -252,40 +259,29 @@ class RenderSceneImpl(
             val minInterval = ModelInstanceImpl.PhysicsData.MIN_INTERVAL / distanceFpsMultiplier
             val effectiveInterval = maxOf(data.currentPhysicsInterval, minInterval)
             val maxAccumulator = effectiveInterval * 2f
-            // Safety: Never accumulate more than 0.5 seconds of physics time.
-            data.physicsAccumulator = minOf(data.physicsAccumulator + timeStep, 0.5f)
+            data.physicsAccumulator = minOf(data.physicsAccumulator + timeStep, maxAccumulator)
 
             if (data.physicsAccumulator >= effectiveInterval) {
                 data.currentTransforms.copyInto(data.previousTransforms)
 
                 instance.updateWorldTransformsNoPhysics()
                 executePhase(instance, UpdatePhase.PhysicsUpdatePre)
-                
-                val rootPos = Vector3f()
-                instance.modelData.worldTransformsNoPhysics[rootNode.nodeIndex].getTranslation(rootPos)
-                val distSq = rootPos.distanceSquared(data.lastRootPos)
-                
-                val avgSpeed = data.averageRecentSpeed()
-                if (distSq > 4.0f || (avgSpeed > ModelInstanceImpl.PhysicsData.SPRINT_SPEED_THRESHOLD && distSq < ModelInstanceImpl.PhysicsData.STOP_SPEED_THRESHOLD * 2f)) {
-                    val initPos = Vector3f()
-                    val initRot = Quaternionf()
-                    for ((nodeIndex, component) in rigidBodyComponents) {
-                        val nodeWorld = instance.modelData.worldTransformsNoPhysics[nodeIndex]
-                        nodeWorld.getTranslation(initPos)
-                        nodeWorld.getUnnormalizedRotation(initRot)
-                        data.world.resetRigidBody(component.rigidBodyIndex, initPos, initRot)
-                    }
-                    executePhase(instance, UpdatePhase.PhysicsUpdatePre)
+
+                if (hasAbruptKinematicPoseChange(data)) {
+                    resetRigidBodiesToCurrentPose(instance, data)
                 }
-                
-                data.recordSpeed(distSq)
-                data.lastFrameDistSq = distSq
-                data.lastRootPos.set(rootPos)
 
                 data.world.pushTransforms(data.transformArray)
 
                 val stepStart = System.nanoTime()
-                data.world.step(data.physicsAccumulator, PHYSICS_MAX_SUB_STEP_COUNT, PHYSICS_TIME_STEP)
+                // Adaptive throttling can wait longer than four 120 Hz steps. Widen the
+                // fixed step so Bullet consumes the full elapsed interval instead of
+                // leaving dynamic bones progressively behind the animated skeleton.
+                val fixedTimeStep = maxOf(
+                    PHYSICS_TIME_STEP,
+                    data.physicsAccumulator / PHYSICS_MAX_SUB_STEP_COUNT,
+                )
+                data.world.step(data.physicsAccumulator, PHYSICS_MAX_SUB_STEP_COUNT, fixedTimeStep)
                 val stepTimeMs = (System.nanoTime() - stepStart) / 1_000_000f
                 data.debugStepCount++
 
