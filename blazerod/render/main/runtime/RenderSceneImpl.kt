@@ -197,33 +197,6 @@ class RenderSceneImpl(
 
 
 
-    /**
-     * Interpolates between previous and current transform arrays using nlerp for rotations.
-     * Each rigid body has 7 floats: [px, py, pz, qx, qy, qz, qw].
-     */
-    private fun interpolateTransforms(
-        prev: FloatArray, curr: FloatArray, dst: FloatArray,
-        count: Int, alpha: Float
-    ) {
-        for (i in 0 until count) {
-            val o = i * 7
-            // Position: linear interpolation
-            dst[o + 0] = prev[o + 0] + (curr[o + 0] - prev[o + 0]) * alpha
-            dst[o + 1] = prev[o + 1] + (curr[o + 1] - prev[o + 1]) * alpha
-            dst[o + 2] = prev[o + 2] + (curr[o + 2] - prev[o + 2]) * alpha
-            // Rotation: nlerp (normalized linear interpolation, cheaper than slerp)
-            var qx = prev[o + 3] + (curr[o + 3] - prev[o + 3]) * alpha
-            var qy = prev[o + 4] + (curr[o + 4] - prev[o + 4]) * alpha
-            var qz = prev[o + 5] + (curr[o + 5] - prev[o + 5]) * alpha
-            var qw = prev[o + 6] + (curr[o + 6] - prev[o + 6]) * alpha
-            val invLen = 1f / sqrt(qx * qx + qy * qy + qz * qz + qw * qw)
-            dst[o + 3] = qx * invLen
-            dst[o + 4] = qy * invLen
-            dst[o + 5] = qz * invLen
-            dst[o + 6] = qw * invLen
-        }
-    }
-
     private fun updatePhysics(
         instance: ModelInstanceImpl,
         time: Float,
@@ -286,7 +259,7 @@ class RenderSceneImpl(
                 data.debugStepCount++
 
                 data.world.pullTransforms(data.transformArray)
-                if (hasNonFiniteTransforms(data)) {
+                if (hasInvalidTransforms(data)) {
                     logPhysicsAnomalies(instance, data, "step")
                     logger.warn(
                         "[PMX-PHYSICS-RUNTIME] recreating physics world after non-finite step output count={} time={}",
@@ -318,10 +291,18 @@ class RenderSceneImpl(
                 executePhase(instance, UpdatePhase.GlobalTransformPropagation)
             } else {
                 val alpha = data.physicsAccumulator / effectiveInterval
-                interpolateTransforms(
+                PhysicsTransformUtil.interpolate(
                     data.previousTransforms, data.currentTransforms, data.transformArray,
                     rigidBodyComponents.size, alpha
                 )
+                if (hasInvalidTransforms(data)) {
+                    logger.warn(
+                        "[PMX-PHYSICS-RUNTIME] resetting physics after invalid interpolated transform time={}",
+                        time,
+                    )
+                    resetPhysics(instance, time)
+                    return@let
+                }
 
                 executePhase(instance, UpdatePhase.PhysicsUpdatePost)
                 executePhase(instance, UpdatePhase.GlobalTransformPropagation)
@@ -401,18 +382,11 @@ class RenderSceneImpl(
         }
     }
 
-    private fun hasNonFiniteTransforms(data: ModelInstanceImpl.PhysicsData): Boolean {
+    private fun hasInvalidTransforms(data: ModelInstanceImpl.PhysicsData): Boolean {
         val count = rigidBodyComponents.size
         for (i in 0 until count) {
             val offset = i * 7
-            if (!data.transformArray[offset + 0].isFinite() ||
-                !data.transformArray[offset + 1].isFinite() ||
-                !data.transformArray[offset + 2].isFinite() ||
-                !data.transformArray[offset + 3].isFinite() ||
-                !data.transformArray[offset + 4].isFinite() ||
-                !data.transformArray[offset + 5].isFinite() ||
-                !data.transformArray[offset + 6].isFinite()
-            ) {
+            if (!PhysicsTransformUtil.isValidTransform(data.transformArray, offset)) {
                 return true
             }
         }

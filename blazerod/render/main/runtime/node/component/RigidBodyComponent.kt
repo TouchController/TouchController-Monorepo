@@ -7,6 +7,7 @@ import org.joml.Vector3f
 import top.fifthlight.blazerod.model.RigidBody
 import top.fifthlight.blazerod.model.TransformId
 import top.fifthlight.blazerod.runtime.ModelInstanceImpl
+import top.fifthlight.blazerod.runtime.PhysicsTransformUtil
 import top.fifthlight.blazerod.runtime.node.RenderNodeImpl
 import top.fifthlight.blazerod.runtime.node.UpdatePhase
 import top.fifthlight.blazerod.runtime.node.getTransformMap
@@ -84,9 +85,7 @@ class RigidBodyComponent(
                         val qy = array[offset + 4]
                         val qz = array[offset + 5]
                         val qw = array[offset + 6]
-                        if (!px.isFinite() || !py.isFinite() || !pz.isFinite() ||
-                            !qx.isFinite() || !qy.isFinite() || !qz.isFinite() || !qw.isFinite()
-                        ) {
+                        if (!PhysicsTransformUtil.isValidTransform(array, offset)) {
                             instance.setTransformMatrix(node.nodeIndex, TransformId.PHYSICS) {
                                 this.matrix.identity()
                             }
@@ -103,15 +102,19 @@ class RigidBodyComponent(
                                 .firstOrNull()
                             if (parentRigidBody != null) {
                                 val parentOffset = parentRigidBody.rigidBodyIndex * 7
-                                parentWorldMatrix.translationRotate(
-                                    physicsData.transformArray[parentOffset + 0],
-                                    physicsData.transformArray[parentOffset + 1],
-                                    physicsData.transformArray[parentOffset + 2],
-                                    physicsData.transformArray[parentOffset + 3],
-                                    physicsData.transformArray[parentOffset + 4],
-                                    physicsData.transformArray[parentOffset + 5],
-                                    physicsData.transformArray[parentOffset + 6],
-                                )
+                                if (PhysicsTransformUtil.isValidTransform(physicsData.transformArray, parentOffset)) {
+                                    parentWorldMatrix.translationRotate(
+                                        physicsData.transformArray[parentOffset + 0],
+                                        physicsData.transformArray[parentOffset + 1],
+                                        physicsData.transformArray[parentOffset + 2],
+                                        physicsData.transformArray[parentOffset + 3],
+                                        physicsData.transformArray[parentOffset + 4],
+                                        physicsData.transformArray[parentOffset + 5],
+                                        physicsData.transformArray[parentOffset + 6],
+                                    )
+                                } else {
+                                    parentWorldMatrix.set(instance.getWorldTransformNoPhysics(parent))
+                                }
                             } else {
                                 parentWorldMatrix.set(instance.getWorldTransform(parent))
                             }
