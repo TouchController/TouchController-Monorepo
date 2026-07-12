@@ -1,6 +1,16 @@
 load("//rule:junit_test.bzl", "kt_junit_test")
 
 kt_junit_test(
+    name = "physics_transform_util_test",
+    srcs = ["PhysicsTransformUtilTest.kt"],
+    test_class = "top.fifthlight.blazerod.runtime.test.PhysicsTransformUtilTest",
+    deps = [
+        "//blazerod/render/main/runtime",
+        "@maven//:org_jetbrains_kotlin_kotlin_test",
+    ],
+)
+
+kt_junit_test(
     name = "transform_map_test",
     srcs = ["TransformMapTest.kt"],
     test_class = "top.fifthlight.blazerod.runtime.test.TransformMapTest",
@@ -15,6 +25,7 @@ kt_junit_test(
 test_suite(
     name = "test",
     tests = [
+        ":physics_transform_util_test",
         ":transform_map_test",
     ],
     visibility = ["//blazerod/render/main/layout:__pkg__"],
